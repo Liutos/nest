@@ -1,0 +1,7 @@
+{
+  "python.linting.pylintEnabled": false,
+  "python.linting.pycodestyleEnabled": true,
+  "python.linting.enabled": true,
+"editor.tabSize": 4,
+"python.pythonPath": "venv/bin/python"
+}

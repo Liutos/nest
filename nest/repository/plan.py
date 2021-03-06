@@ -2,6 +2,8 @@
 from datetime import datetime
 from typing import List
 
+from pypika import Order, Query, Tables
+
 from nest.app.entity.plan import IPlanRepository, Plan
 from nest.repository.db_operation import DatabaseOperationMixin
 
@@ -22,27 +24,24 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         plan.id = insert_id
 
     def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
-        conditions = [
-            '`t_task`.`user_id` = %s',
-        ]
-        values = [
-            user_id,
-        ]
-        if isinstance(max_trigger_time, datetime):
-            conditions.append('`t_plan`.`trigger_time` < %s')
-            values.append(max_trigger_time)
+        plan_table, task_table = Tables('t_plan', 't_task')
+        query = Query\
+            .from_(plan_table)\
+            .left_join(task_table)\
+            .on(plan_table.task_id == task_table.id)\
+            .select(plan_table.star)\
+            .where(task_table.user_id == user_id)\
+            .orderby(plan_table.trigger_time, order=Order.asc)\
+            .limit(per_page)\
+            .offset((page - 1) * per_page)
 
-        select_part = 'SELECT * FROM `t_plan` LEFT JOIN `t_task` ON `t_plan`.`task_id` = `t_task`.`id`'
-        where_part = ' WHERE ' + ' AND '.join(conditions)
-        order_part = ' ORDER BY `t_plan`.`trigger_time` ASC LIMIT %s OFFSET %s'
-        sql = select_part + where_part + order_part
-        print('sql', sql)
-        values.append(per_page)
-        values.append((page - 1) * per_page)
-        print('values', values)
+        if isinstance(max_trigger_time, datetime):
+            query = query.where(plan_table.trigger_time < max_trigger_time)
+
+        print('sql', query.get_sql(quote_char=None))
         plans = []
         with self.connection.cursor() as cursor:
-            cursor.execute(sql, tuple(values))
+            cursor.execute(query.get_sql(quote_char=None))
             plan_dicts = cursor.fetchall()
 
         for plan_dict in plan_dicts:

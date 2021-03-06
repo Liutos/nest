@@ -40,6 +40,23 @@ class HTTPParams(IParams):
         return self.user_id
 
 
+class ListPlanPresenter:
+    def __init__(self, plans):
+        self.plans = plans
+
+    def format(self):
+        plans = []
+        for plan in self.plans:
+            plans.append({
+                'id': plan.id,
+                'task_id': plan.task_id,
+                'trigger_time': plan.trigger_time,
+            })
+        return {
+            'plans': plans
+        }
+
+
 @wrap_response
 def list_plan():
     params = HTTPParams()
@@ -53,6 +70,5 @@ def list_plan():
         plan_repository=RepositoryFactory.plan(),
     )
     plans = use_case.run()
-    return {
-        'plans': plans,
-    }, 200
+    presenter = ListPlanPresenter(plans)
+    return presenter.format(), 200

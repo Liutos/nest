@@ -1,5 +1,6 @@
 attrs==20.3.0
 autopep8==1.5.5
+build==0.3.0
 click==7.1.2
 Flask==1.1.2
 gittyleaks==0.0.31
@@ -10,10 +11,10 @@ Jinja2==2.11.2
 MarkupSafe==1.1.1
 marshmallow==3.10.0
 packaging==20.9
+pep517==0.9.1
 pluggy==0.13.1
 py==1.10.0
 pycodestyle==2.6.0
-pycryptodome==3.9.9
 PyMySQL==1.0.2
 pyparsing==2.4.7
 PyPika==0.47.7
@@ -23,6 +24,5 @@ rope==0.18.0
 scandir==1.10.0
 sh==1.14.1
 toml==0.10.2
-uWSGI==2.0.19.1
 webargs==7.0.1
 Werkzeug==1.0.1

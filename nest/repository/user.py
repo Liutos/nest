@@ -24,20 +24,21 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
         return self.get_by_email(user.email)
 
     def get_by_email(self, email: str) -> Union[User, None]:
-        with self.connection.cursor() as cursor:
-            sql = "SELECT * FROM `t_user` WHERE `email` = %s"
-            cursor.execute(sql, (email,))
-            row = cursor.fetchone()
-            if row is None:
-                return None
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT * FROM `t_user` WHERE `email` = %s"
+                cursor.execute(sql, (email,))
+                row = cursor.fetchone()
+                if row is None:
+                    return None
 
-            user = User()
-            user.email = row['email']
-            user.id = row['id']
-            user.nickname = row['nickname']
-            user.password_hash = row['password_hash']
-            user.salt = row['salt']
-            return user
+                user = User()
+                user.email = row['email']
+                user.id = row['id']
+                user.nickname = row['nickname']
+                user.password_hash = row['password_hash']
+                user.salt = row['salt']
+                return user
 
     def remove(self, user: Union[User, int]):
         if isinstance(user, User):

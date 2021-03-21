@@ -16,6 +16,7 @@ pluggy==0.13.1
 py==1.10.0
 pycodestyle==2.6.0
 PyMySQL==1.0.2
+pymysql-pooling==1.0.6
 pyparsing==2.4.7
 PyPika==0.47.7
 pytest==6.2.2

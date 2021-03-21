@@ -22,24 +22,26 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
         task.id = insert_id
 
     def find(self, *, count, start, user_id) -> [Task]:
-        with self.connection.cursor() as cursor:
-            sql = "SELECT * FROM `t_task` WHERE `user_id` = %s ORDER BY `ctime` DESC LIMIT %s OFFSET %s"
-            cursor.execute(sql, (user_id, count, start))
-            return cursor.fetchall()
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT * FROM `t_task` WHERE `user_id` = %s ORDER BY `ctime` DESC LIMIT %s OFFSET %s"
+                cursor.execute(sql, (user_id, count, start))
+                return cursor.fetchall()
 
     def find_by_id(self, id_: int) -> Task:
-        with self.connection.cursor() as cursor:
-            sql = "SELECT * FROM `t_task` WHERE `id` = %s"
-            cursor.execute(sql, (id_,))
-            row = cursor.fetchone()
-            if row is None:
-                return None
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT * FROM `t_task` WHERE `id` = %s"
+                cursor.execute(sql, (id_,))
+                row = cursor.fetchone()
+                if row is None:
+                    return None
 
-            task = Task()
-            task.brief = row['brief']
-            task.id = row['id']
-            task.user_id = row['user_id']
-            return task
+                task = Task()
+                task.brief = row['brief']
+                task.id = row['id']
+                task.user_id = row['user_id']
+                return task
 
     def remove(self, task: Union[Task, int]):
         if isinstance(task, Task):

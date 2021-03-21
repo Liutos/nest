@@ -40,9 +40,10 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
         print('sql', query.get_sql(quote_char=None))
         plans = []
-        with self.connection.cursor() as cursor:
-            cursor.execute(query.get_sql(quote_char=None))
-            plan_dicts = cursor.fetchall()
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query.get_sql(quote_char=None))
+                plan_dicts = cursor.fetchall()
 
         for plan_dict in plan_dicts:
             plan = Plan()

@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from typing import Union
+
 from nest.app.entity.certificate import ICertificateRepository, Certificate
 from nest.app.entity.task import ITaskRepository, Task
 from nest.app.use_case.authentication_plugin import IAuthenticationPlugin
@@ -43,6 +45,9 @@ class MockTaskRepository(ITaskRepository):
 
     def find(self, *, count, start, user_id):
         return [{}]
+
+    def find_by_id(self, *, id_) -> Union[None, Task]:
+        pass
 
 
 def test_create():

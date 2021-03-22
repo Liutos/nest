@@ -28,7 +28,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                 cursor.execute(sql, (user_id, count, start))
                 return cursor.fetchall()
 
-    def find_by_id(self, id_: int) -> Task:
+    def find_by_id(self, id_: int) -> Union[None, Task]:
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
                 sql = "SELECT * FROM `t_task` WHERE `id` = %s"

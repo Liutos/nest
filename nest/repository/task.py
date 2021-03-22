@@ -26,7 +26,8 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             with connection.cursor() as cursor:
                 sql = "SELECT * FROM `t_task` WHERE `user_id` = %s ORDER BY `ctime` DESC LIMIT %s OFFSET %s"
                 cursor.execute(sql, (user_id, count, start))
-                return cursor.fetchall()
+                rows = cursor.fetchall()
+                return [self._row_to_task(row) for row in rows]
 
     def find_by_id(self, id_: int) -> Union[None, Task]:
         with self.get_connection() as connection:
@@ -37,11 +38,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                 if row is None:
                     return None
 
-                task = Task()
-                task.brief = row['brief']
-                task.id = row['id']
-                task.user_id = row['user_id']
-                return task
+                return self._row_to_task(row)
 
     def remove(self, task: Union[Task, int]):
         if isinstance(task, Task):
@@ -51,3 +48,10 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             task_id = task
 
         self.remove_from_db(task_id, 't_task')
+
+    def _row_to_task(self, row):
+        task = Task()
+        task.brief = row['brief']
+        task.id = row['id']
+        task.user_id = row['user_id']
+        return task

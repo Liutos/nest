@@ -6,13 +6,13 @@ from webargs import fields
 
 from ...app.use_case.create_plan import CreatePlanUseCase, IParams
 from ..repository import RepositoryFactory
-from nest.web.authentication_plugin import AuthenticationPlugin
+from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.certificate_repository import certificate_repository
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
 
-class HTTPParams(IParams):
+class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
             'task_id': fields.Int(required=True),

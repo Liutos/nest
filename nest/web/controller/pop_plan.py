@@ -4,13 +4,13 @@ from webargs import fields
 
 from ...app.use_case.pop_plan import IParams, PopPlanUseCase
 from ..repository import RepositoryFactory
-from nest.web.authentication_plugin import AuthenticationPlugin
+from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.certificate_repository import certificate_repository
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
 
-class HTTPParams(IParams):
+class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
             'size': fields.Int(required=True),

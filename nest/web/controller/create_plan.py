@@ -15,10 +15,12 @@ from nest.web.parser import parser
 class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
+            'repeat_type': fields.Str(),
             'task_id': fields.Int(required=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S', required=True),
         }
         parsed_args = parser.parse(args, request)
+        self.repeat_type = parsed_args.get('repeat_type')
         self.task_id = parsed_args['task_id']
         self.trigger_time = parsed_args['trigger_time']
         args = {
@@ -31,6 +33,9 @@ class HTTPParams(AuthenticationParams, IParams):
 
     def get_certificate_id(self):
         return self.certificate_id
+
+    def get_repeat_type(self) -> str:
+        return self.repeat_type
 
     def get_task_id(self) -> int:
         return self.task_id

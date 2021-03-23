@@ -15,6 +15,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
     def add(self, plan: Plan):
         now = datetime.now()
         insert_id = self.insert_to_db({
+            'repeat_type': plan.repeat_type,
             'task_id': plan.task_id,
             'trigger_time': plan.trigger_time,
             'ctime': now,
@@ -48,6 +49,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         for plan_dict in plan_dicts:
             plan = Plan()
             plan.id = plan_dict['id']
+            plan.repeat_type = plan_dict['repeat_type']
             plan.task_id = plan_dict['task_id']
             plan.trigger_time = plan_dict['trigger_time']
             plans.append(plan)

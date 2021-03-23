@@ -38,5 +38,8 @@ class PopPlanUseCase:
             user_id=user_id,
         )
         for plan in plans:
+            if plan.is_repeated():
+                next_plan = plan.rebirth()
+                plan_repository.add(next_plan)
             plan_repository.remove(plan.id)
         return plans

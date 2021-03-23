@@ -52,6 +52,7 @@ def test_create_plan(client):
         'password': 'def',
     })
     rv = client.post('/plan', json={
+        'repeat_type': 'hello',
         'task_id': _task_id,
         'trigger_time': '2021-02-20 17:39:00',
     })

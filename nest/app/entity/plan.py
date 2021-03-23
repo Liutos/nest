@@ -1,19 +1,69 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
 from typing import List
+
+
+class IRepeater(ABC):
+    @abstractmethod
+    def compute_next_trigger_time(self) -> datetime:
+        pass
+
+
+class HourRepeater(IRepeater):
+    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
+        self.last_trigger_time = last_trigger_time
+        self.repeat_interval = repeat_interval
+
+    def compute_next_trigger_time(self):
+        next_trigger_time = self.last_trigger_time
+        now = datetime.now()
+        while next_trigger_time.timestamp() < now.timestamp():
+            next_trigger_time += timedelta(hours=1)
+        return next_trigger_time
+
+
+class RepeaterFactory:
+    @classmethod
+    def get_repeater(cls, *, last_trigger_time, repeat_interval, repeat_type):
+        if repeat_type == 'hourly':
+            return HourRepeater(
+                last_trigger_time=last_trigger_time,
+                repeat_interval=repeat_interval,
+            )
 
 
 class Plan:
     def __init__(self):
         self.id = None
+        self.repeat_type = None
         self.task_id = None
         self.trigger_time = None
 
     @classmethod
-    def new(cls, task_id, trigger_time):
+    def new(cls, task_id, trigger_time, *, repeat_type=None):
         instance = Plan()
+        instance.repeat_type = repeat_type
         instance.task_id = task_id
         instance.trigger_time = trigger_time
+        return instance
+
+    def is_repeated(self):
+        return not not self.repeat_type
+
+    def rebirth(self):
+        """
+        生成下一个触发时间的计划。
+        """
+        repeater = RepeaterFactory.get_repeater(
+            last_trigger_time=self.trigger_time,
+            repeat_interval=None,
+            repeat_type=self.repeat_type,
+        )
+        instance = Plan()
+        instance.repeat_type = self.repeat_type
+        instance.task_id = self.task_id
+        instance.trigger_time = repeater.compute_next_trigger_time()
         return instance
 
 

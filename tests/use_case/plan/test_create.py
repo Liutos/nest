@@ -12,6 +12,9 @@ class MockAuthenticationPlugin(IAuthenticationPlugin):
 
 
 class MockParams(IParams):
+    def get_repeat_type(self) -> str:
+        return 'hello'
+
     def get_task_id(self) -> int:
         return 1
 
@@ -39,5 +42,6 @@ def test_create():
     plan = use_case.run()
     assert plan
     assert plan.id
+    assert plan.repeat_type == 'hello'
     assert plan.task_id == 1
     assert plan.trigger_time == 1234567890

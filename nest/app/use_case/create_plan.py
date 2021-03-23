@@ -8,6 +8,10 @@ from .authentication_plugin import IAuthenticationPlugin
 
 class IParams(ABC):
     @abstractmethod
+    def get_repeat_type(self) -> str:
+        pass
+
+    @abstractmethod
     def get_task_id(self) -> int:
         pass
 
@@ -29,9 +33,14 @@ class CreatePlanUseCase:
         self.authentication_plugin.authenticate()
 
         params = self.params
+        repeat_type = params.get_repeat_type()
         task_id = params.get_task_id()
         trigger_time = params.get_trigger_time()
         # TODO: 检查task_id是否能找到一个任务
-        plan = Plan.new(task_id, trigger_time)
+        plan = Plan.new(
+            task_id,
+            trigger_time,
+            repeat_type=repeat_type,
+        )
         self.plan_repository.add(plan)
         return plan

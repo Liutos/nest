@@ -1,13 +1,16 @@
 # -*- coding: utf8 -*-
+from typing import List
+
 from flask import request
 from webargs import fields
 
-from ...app.use_case.list_task import IParams, ListTaskUseCase
-from ..repository import RepositoryFactory
+from nest.app.entity.task import Task
+from nest.app.use_case.list_task import IParams, ListTaskUseCase
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.certificate_repository import certificate_repository
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
+from nest.web.repository import RepositoryFactory
 
 
 class HTTPParams(AuthenticationParams, IParams):
@@ -40,6 +43,20 @@ class HTTPParams(AuthenticationParams, IParams):
         return self.user_id
 
 
+class Presenter:
+    def __init__(self, *, tasks: List[Task]):
+        self.tasks = tasks
+
+    def build(self):
+        tasks = [{
+            'brief': task.brief,
+            'id': task.id,
+        } for task in self.tasks]
+        return {
+            'tasks': tasks,
+        }
+
+
 @wrap_response
 def list_task():
     params = HTTPParams()
@@ -54,6 +71,4 @@ def list_task():
         task_repository=RepositoryFactory.task(),
     )
     tasks = use_case.run()
-    return {
-        'tasks': tasks,
-    }, 201
+    return Presenter(tasks=tasks).build(), 200

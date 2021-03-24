@@ -23,14 +23,19 @@ class HourRepeater(IRepeater):
         return next_trigger_time
 
 
+_TYPE_TO_REPEATER_CLASS = {
+    'hourly': HourRepeater,
+}
+
+
 class RepeaterFactory:
     @classmethod
     def get_repeater(cls, *, last_trigger_time, repeat_interval, repeat_type):
-        if repeat_type == 'hourly':
-            return HourRepeater(
-                last_trigger_time=last_trigger_time,
-                repeat_interval=repeat_interval,
-            )
+        repeater_class = _TYPE_TO_REPEATER_CLASS[repeat_type]
+        return repeater_class(
+            last_trigger_time=last_trigger_time,
+            repeat_interval=repeat_interval,
+        )
 
 
 class Plan:
@@ -50,6 +55,10 @@ class Plan:
 
     def is_repeated(self):
         return not not self.repeat_type
+
+    @classmethod
+    def is_valid_repeat_type(cls, repeat_type):
+        return repeat_type in _TYPE_TO_REPEATER_CLASS
 
     def rebirth(self):
         """

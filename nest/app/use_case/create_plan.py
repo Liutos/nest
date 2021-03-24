@@ -20,6 +20,11 @@ class IParams(ABC):
         pass
 
 
+class InvalidRepeatTypeError(Exception):
+    def __init__(self, repeat_type):
+        self.repeat_type = repeat_type
+
+
 class CreatePlanUseCase:
     def __init__(self, *, authentication_plugin, params, plan_repository):
         assert isinstance(authentication_plugin, IAuthenticationPlugin)
@@ -34,6 +39,9 @@ class CreatePlanUseCase:
 
         params = self.params
         repeat_type = params.get_repeat_type()
+        if repeat_type and not Plan.is_valid_repeat_type(repeat_type):
+            raise InvalidRepeatTypeError(repeat_type)
+
         task_id = params.get_task_id()
         trigger_time = params.get_trigger_time()
         # TODO: 检查task_id是否能找到一个任务

@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request
 from webargs import fields
 
-from ...app.use_case.create_plan import CreatePlanUseCase, IParams
+from nest.app.use_case.create_plan import CreatePlanUseCase, InvalidRepeatTypeError, IParams
 from ..repository import RepositoryFactory
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.certificate_repository import certificate_repository
@@ -59,7 +59,12 @@ def create_plan():
         params=params,
         plan_repository=RepositoryFactory.plan(),
     )
-    plan = use_case.run()
-    return {
-        'id': plan.id,
-    }, 201
+    try:
+        plan = use_case.run()
+        return {
+            'id': plan.id,
+        }, 201
+    except InvalidRepeatTypeError as e:
+        return {
+            'message': '不支持的重复类型：{}'.format(e.repeat_type)
+        }, 422

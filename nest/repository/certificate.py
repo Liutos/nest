@@ -1,4 +1,7 @@
 # -*- coding: utf8 -*-
+import random
+import string
+
 import redis
 
 from nest.app.entity.certificate import Certificate, ICertificateRepository
@@ -33,7 +36,7 @@ class MemoryCertificateRepository(ICertificateRepository):
         next_id = self.count
         self.count += 1
         _count += 1
-        return next_id
+        return str(next_id)
 
 
 class RedisCertificateRepository(ICertificateRepository):
@@ -53,7 +56,7 @@ class RedisCertificateRepository(ICertificateRepository):
         name = 'nest:user:certificate:{}'.format(id_)
         self.client.hset(name, 'user_id', certificate.user_id)
 
-    def get_by_certificate_id(self, certificate_id: int) -> Certificate:
+    def get_by_certificate_id(self, certificate_id: str) -> Certificate:
         name = 'nest:user:certificate:{}'.format(certificate_id)
         user_id = int(self.client.hget(name, 'user_id'))
         print('user_id', user_id)
@@ -63,5 +66,5 @@ class RedisCertificateRepository(ICertificateRepository):
         return certificate
 
     def _get_next_id(self):
-        name = 'nest:certificate:id'
-        return int(self.client.incr(name))
+        chars = string.ascii_uppercase + string.digits
+        return ''.join(random.choices(chars, k=16))

@@ -22,7 +22,7 @@ class HTTPParams(AuthenticationParams, IParams):
         return self.brief
 
     def get_certificate_id(self) -> int:
-        return int(request.cookies.get('certificate_id'))
+        return request.cookies.get('certificate_id')
 
     def get_user_id(self) -> int:
         return int(request.cookies.get('user_id'))

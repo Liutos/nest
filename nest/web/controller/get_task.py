@@ -15,14 +15,14 @@ class HTTPParams(AuthenticationParams, IParams):
     def __init__(self, *, task_id: str):
         self.task_id = int(task_id)
         args = {
-            'certificate_id': fields.Int(required=True),
+            'certificate_id': fields.Str(required=True),
             'user_id': fields.Int(required=True),
         }
         parsed_args = parser.parse(args, request, location='cookies')
         self.certificate_id = parsed_args['certificate_id']
         self.user_id = parsed_args['user_id']
 
-    def get_certificate_id(self) -> int:
+    def get_certificate_id(self) -> str:
         return self.certificate_id
 
     def get_task_id(self) -> int:

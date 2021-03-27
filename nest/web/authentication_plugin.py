@@ -7,7 +7,7 @@ from nest.app.use_case.authentication_plugin import IAuthenticationPlugin, Inval
 
 class IParams(ABC):
     @abstractmethod
-    def get_certificate_id(self) -> int:
+    def get_certificate_id(self) -> str:
         pass
 
     @abstractmethod

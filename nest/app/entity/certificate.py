@@ -20,5 +20,5 @@ class ICertificateRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_certificate_id(self, certificate_id: int) -> Certificate:
+    def get_by_certificate_id(self, certificate_id: str) -> Certificate:
         pass

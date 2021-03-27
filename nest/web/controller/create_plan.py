@@ -24,7 +24,7 @@ class HTTPParams(AuthenticationParams, IParams):
         self.task_id = parsed_args['task_id']
         self.trigger_time = parsed_args['trigger_time']
         args = {
-            'certificate_id': fields.Int(required=True),
+            'certificate_id': fields.Str(required=True),
             'user_id': fields.Int(required=True),
         }
         parsed_args = parser.parse(args, request, location='cookies')

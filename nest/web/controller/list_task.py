@@ -23,14 +23,14 @@ class HTTPParams(AuthenticationParams, IParams):
         self.count = parsed_args['count']
         self.start = parsed_args['start']
         args = {
-            'certificate_id': fields.Int(required=True),
+            'certificate_id': fields.Str(required=True),
             'user_id': fields.Int(required=True),
         }
         parsed_args = parser.parse(args, request, location='cookies')
         self.certificate_id = parsed_args['certificate_id']
         self.user_id = parsed_args['user_id']
 
-    def get_certificate_id(self) -> int:
+    def get_certificate_id(self) -> str:
         return self.certificate_id
 
     def get_count(self) -> int:

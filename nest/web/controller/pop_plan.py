@@ -18,7 +18,7 @@ class HTTPParams(AuthenticationParams, IParams):
         parsed_args = parser.parse(args, request)
         self.size = parsed_args['size']
         args = {
-            'certificate_id': fields.Int(required=True),
+            'certificate_id': fields.Str(required=True),
             'user_id': fields.Int(required=True),
         }
         parsed_args = parser.parse(args, request, location='cookies')

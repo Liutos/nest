@@ -16,7 +16,7 @@ class MockCertificateRepository(ICertificateRepository):
     def add(self, certificate: Certificate):
         pass
 
-    def get_by_certificate_id(self, certificate_id: int) -> Certificate:
+    def get_by_certificate_id(self, certificate_id: str) -> Certificate:
         certificate = Certificate()
         certificate.user_id = 2001
         return certificate

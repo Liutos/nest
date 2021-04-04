@@ -3,6 +3,7 @@ import argparse
 
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 # FIXME: cli不能依赖于web模块下的功能
+from nest.web.db_connection import mysql_connection
 from nest.web.repository import RepositoryFactory
 
 
@@ -44,7 +45,7 @@ class Params(IParams):
 
 def register():
     params = Params()
-    user_repository = RepositoryFactory.user()
+    user_repository = RepositoryFactory(mysql_connection).user()
     use_case = RegistrationUseCase(
         params=params,
         user_repository=user_repository,

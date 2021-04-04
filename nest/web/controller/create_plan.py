@@ -47,7 +47,7 @@ class HTTPParams(AuthenticationParams, IParams):
 
 
 @wrap_response
-def create_plan(certificate_repository):
+def create_plan(certificate_repository, repository_factory):
     params = HTTPParams()
     authentication_plugin = AuthenticationPlugin(
         certificate_repository=certificate_repository,
@@ -56,7 +56,7 @@ def create_plan(certificate_repository):
     use_case = CreatePlanUseCase(
         authentication_plugin=authentication_plugin,
         params=params,
-        plan_repository=RepositoryFactory.plan(),
+        plan_repository=repository_factory.plan(),
     )
     try:
         plan = use_case.run()

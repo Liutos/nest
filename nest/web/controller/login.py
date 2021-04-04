@@ -3,7 +3,6 @@ from flask import make_response, request
 from webargs import fields
 
 from ...app.use_case.login import IParams, LoginUseCase, PasswordError
-from ..repository import RepositoryFactory
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -26,13 +25,13 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def login(certificate_repository):
+def login(certificate_repository, repository_factory):
     try:
         params = HTTPParams()
         use_case = LoginUseCase(
             certificate_repository=certificate_repository,
             params=params,
-            user_repository=RepositoryFactory.user(),
+            user_repository=repository_factory.user(),
         )
         certificate = use_case.run()
         response = make_response({

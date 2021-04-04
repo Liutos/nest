@@ -4,6 +4,8 @@ from flask import Flask
 from nest.repository.certificate import RedisCertificateRepository
 from nest.web.config import config
 from nest.web.controller import create_plan, create_task, get_task, list_plan, list_task, login, pop_plan
+from nest.web.db_connection import mysql_connection
+from nest.web.repository import RepositoryFactory
 
 
 app = Flask(__name__)
@@ -18,24 +20,33 @@ certificate_repository = RedisCertificateRepository(
     port=port
 )
 
+repository_factory = RepositoryFactory(mysql_connection)
+
 app.add_url_rule('/plan', defaults={
     'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
 }, view_func=list_plan.list_plan, methods=['GET'])
 app.add_url_rule('/plan', defaults={
     'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
 }, view_func=create_plan.create_plan, methods=['POST'])
 app.add_url_rule('/plan/pop', defaults={
     'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
 }, view_func=pop_plan.pop_plan, methods=['POST'])
 app.add_url_rule('/task', defaults={
     'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
 }, view_func=create_task.create_task, methods=['POST'])
 app.add_url_rule('/task', defaults={
     'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
 }, view_func=list_task.list_task, methods=['GET'])
 app.add_url_rule('/task/<id_>', defaults={
     'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
 }, view_func=get_task.get_task, methods=['GET'])
 app.add_url_rule('/user/login', defaults={
     'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
 }, view_func=login.login, methods=['POST'])

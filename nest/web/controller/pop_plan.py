@@ -3,7 +3,6 @@ from flask import request
 from webargs import fields
 
 from ...app.use_case.pop_plan import IParams, PopPlanUseCase
-from ..repository import RepositoryFactory
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
@@ -35,7 +34,7 @@ class HTTPParams(AuthenticationParams, IParams):
 
 
 @wrap_response
-def pop_plan(certificate_repository):
+def pop_plan(certificate_repository, repository_factory):
     params = HTTPParams()
     authentication_plugin = AuthenticationPlugin(
         certificate_repository=certificate_repository,
@@ -44,7 +43,7 @@ def pop_plan(certificate_repository):
     use_case = PopPlanUseCase(
         authentication_plugin=authentication_plugin,
         params=params,
-        plan_repository=RepositoryFactory.plan(),
+        plan_repository=repository_factory.plan(),
     )
     plans = use_case.run()
     return {

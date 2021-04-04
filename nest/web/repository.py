@@ -2,18 +2,17 @@
 from ..repository.plan import DatabasePlanRepository
 from ..repository.task import DatabaseTaskRepository
 from ..repository.user import DatabaseUserRepository
-from nest.web.db_connection import mysql_connection
 
 
 class RepositoryFactory:
-    @staticmethod
-    def plan():
-        return DatabasePlanRepository(mysql_connection)
+    def __init__(self, mysql_connection):
+        self.mysql_connection = mysql_connection
 
-    @staticmethod
-    def task():
-        return DatabaseTaskRepository(mysql_connection)
+    def plan(self):
+        return DatabasePlanRepository(self.mysql_connection)
 
-    @staticmethod
-    def user():
-        return DatabaseUserRepository(mysql_connection)
+    def task(self):
+        return DatabaseTaskRepository(self.mysql_connection)
+
+    def user(self):
+        return DatabaseUserRepository(self.mysql_connection)

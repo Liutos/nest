@@ -3,7 +3,6 @@ from flask import request
 from webargs import fields
 
 from ...app.use_case.get_task import IParams, GetTaskUseCase
-from ..repository import RepositoryFactory
 from nest.app.entity.task import Task
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.handle_response import wrap_response
@@ -45,7 +44,7 @@ class Presenter:
 
 
 @wrap_response
-def get_task(certificate_repository, id_):
+def get_task(certificate_repository, id_, repository_factory):
     params = HTTPParams(task_id=id_)
     authentication_plugin = AuthenticationPlugin(
         certificate_repository=certificate_repository,
@@ -55,7 +54,7 @@ def get_task(certificate_repository, id_):
         authentication_plugin=authentication_plugin,
         certificate_repository=certificate_repository,
         params=params,
-        task_repository=RepositoryFactory.task(),
+        task_repository=repository_factory.task(),
     )
     task = use_case.run()
     presenter = Presenter(

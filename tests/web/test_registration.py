@@ -4,9 +4,10 @@ import pytest
 
 from nest.repository.user import DatabaseUserRepository
 from nest.web import main
-from nest.web.db_connection import mysql_connection
+from nest.web.db_connection import ConnectionPool
 
 _user_id = None
+mysql_connection = ConnectionPool()
 
 
 @pytest.fixture

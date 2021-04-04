@@ -4,7 +4,6 @@ from webargs import fields
 
 from ...app.use_case.login import IParams, LoginUseCase, PasswordError
 from ..repository import RepositoryFactory
-from nest.web.certificate_repository import certificate_repository
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -27,7 +26,7 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def login():
+def login(certificate_repository):
     try:
         params = HTTPParams()
         use_case = LoginUseCase(

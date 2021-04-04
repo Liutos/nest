@@ -5,7 +5,6 @@ from webargs import fields
 from ...app.use_case.list_plan import IParams, ListPlanUseCase
 from ..repository import RepositoryFactory
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
-from nest.web.certificate_repository import certificate_repository
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -58,7 +57,7 @@ class ListPlanPresenter:
 
 
 @wrap_response
-def list_plan():
+def list_plan(certificate_repository):
     params = HTTPParams()
     authentication_plugin = AuthenticationPlugin(
         certificate_repository=certificate_repository,

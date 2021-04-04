@@ -7,7 +7,6 @@ from webargs import fields
 from nest.app.use_case.create_plan import CreatePlanUseCase, InvalidRepeatTypeError, IParams
 from ..repository import RepositoryFactory
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
-from nest.web.certificate_repository import certificate_repository
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -48,7 +47,7 @@ class HTTPParams(AuthenticationParams, IParams):
 
 
 @wrap_response
-def create_plan():
+def create_plan(certificate_repository):
     params = HTTPParams()
     authentication_plugin = AuthenticationPlugin(
         certificate_repository=certificate_repository,

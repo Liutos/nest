@@ -7,7 +7,6 @@ from webargs import fields
 from nest.app.entity.task import Task
 from nest.app.use_case.list_task import IParams, ListTaskUseCase
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
-from nest.web.certificate_repository import certificate_repository
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.repository import RepositoryFactory
@@ -58,7 +57,7 @@ class Presenter:
 
 
 @wrap_response
-def list_task():
+def list_task(certificate_repository):
     params = HTTPParams()
     authentication_plugin = AuthenticationPlugin(
         certificate_repository=certificate_repository,

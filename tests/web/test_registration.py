@@ -19,6 +19,7 @@ def client():
         user_repository.remove(_user_id)
 
 
+@pytest.mark.skip(reason='暂时移除了注册接口')
 def test_param_missing(client):
     rv = client.post('/user', json={})
     print('type(client)', type(client))
@@ -27,6 +28,7 @@ def test_param_missing(client):
     assert isinstance(json_data['message'], str)
 
 
+@pytest.mark.skip(reason='暂时移除了注册接口')
 def test_registration_succeed(client):
     rv = client.post('/user', json={
         'email': 'abcdefgh',

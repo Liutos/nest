@@ -20,3 +20,7 @@
 - 每一个接口的实现类都要在所实现的方法中添加type hints；
 - 不同用例的输入参数不完全相同，因此建议在它们的类名中添加用例名作为前缀，例如`IRegistrationParams`和`ILoginParams`；
 - Repository应当是对应于某一个Entity的，不随着用例的变化而变化，因此不需要区分`ILoginUserRepository`和`IRegistrationUserRepository`，统一为`IUserRepository`即可。
+
+## 目录`nest/cli`
+
+对应于整洁架构中的infrastructure层。

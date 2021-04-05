@@ -3,11 +3,10 @@ import pymysql.cursors
 from pymysqlpool.pool import Pool
 
 from nest.repository.db_operation import IConnectionPool
-from nest.web.config import config
 
 
 class ConnectionPool(IConnectionPool):
-    def __init__(self):
+    def __init__(self, config):
         mysql_section = config['mysql']
         database = mysql_section['database']
         host = mysql_section['host']

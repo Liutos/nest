@@ -4,12 +4,14 @@ import pytest
 from nest.repository.plan import DatabasePlanRepository
 from nest.repository.task import DatabaseTaskRepository
 from nest.web import main
+from nest.web.config import Config
 from nest.web.db_connection import ConnectionPool
 from .user_helper import destroy_user, register_user
 
 _plan_ids = []
 _task_id = None
-mysql_connection = ConnectionPool()
+config = Config()
+mysql_connection = ConnectionPool(config)
 
 
 @pytest.fixture

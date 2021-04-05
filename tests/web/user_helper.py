@@ -3,11 +3,13 @@ from typing import Union
 
 from nest.repository.user import DatabaseUserRepository
 from nest.app.use_case.registration import IParams, RegistrationUseCase
+from nest.web.config import Config
 from nest.web.db_connection import ConnectionPool
 
 
 _user_id: Union[None, int] = None
-mysql_connection = ConnectionPool()
+config = Config()
+mysql_connection = ConnectionPool(config)
 
 
 class MockParams(IParams):

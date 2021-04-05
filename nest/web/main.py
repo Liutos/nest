@@ -2,7 +2,7 @@
 from flask import Flask
 
 from nest.repository.certificate import RedisCertificateRepository
-from nest.web.config import config
+from nest.web.config import Config
 from nest.web.controller import create_plan, create_task, get_task, list_plan, list_task, login, pop_plan
 from nest.web.db_connection import ConnectionPool
 from nest.web.repository import RepositoryFactory
@@ -10,6 +10,7 @@ from nest.web.repository import RepositoryFactory
 
 app = Flask(__name__)
 
+config = Config()
 redis_section = config['redis']
 db = int(redis_section['db'])
 host = redis_section['host']
@@ -20,7 +21,7 @@ certificate_repository = RedisCertificateRepository(
     port=port
 )
 
-mysql_connection = ConnectionPool()
+mysql_connection = ConnectionPool(config)
 repository_factory = RepositoryFactory(mysql_connection)
 
 app.add_url_rule('/plan', defaults={

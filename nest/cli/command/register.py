@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 import argparse
+import os
 
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 # FIXME: cli不能依赖于web模块下的功能
@@ -45,7 +46,14 @@ class Params(IParams):
 
 
 def register():
-    config = Config()
+    current_dir = os.path.dirname(__file__)
+    config_dir = os.path.join(current_dir, '../config')
+    file_name = 'default'
+    mode = os.environ.get('MODE')
+    if mode == 'unittest':
+        file_name = 'unittest'
+    config_file = os.path.join(config_dir, file_name + '.ini')
+    config = Config(config_file)
     mysql_connection = ConnectionPool(config)
     params = Params()
     user_repository = RepositoryFactory(mysql_connection).user()

@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+import os
+
 from flask import Flask
 
 from nest.repository.certificate import RedisCertificateRepository
@@ -10,7 +12,14 @@ from nest.web.repository import RepositoryFactory
 
 app = Flask(__name__)
 
-config = Config()
+current_dir = os.path.dirname(__file__)
+config_dir = os.path.join(current_dir, './config')
+file_name = 'default'
+mode = os.environ.get('MODE')
+if mode == 'unittest':
+    file_name = 'unittest'
+config_file = os.path.join(config_dir, file_name + '.ini')
+config = Config(config_file)
 redis_section = config['redis']
 db = int(redis_section['db'])
 host = redis_section['host']

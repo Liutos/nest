@@ -5,10 +5,11 @@ from nest.repository.user import DatabaseUserRepository
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 from nest.web.config import Config
 from nest.web.db_connection import ConnectionPool
+from tests.web.helper import get_config_file_path
 
 
 _user_id: Union[None, int] = None
-config = Config()
+config = Config(get_config_file_path())
 mysql_connection = ConnectionPool(config)
 
 

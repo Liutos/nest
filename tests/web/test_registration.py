@@ -6,9 +6,10 @@ from nest.repository.user import DatabaseUserRepository
 from nest.web import main
 from nest.web.config import Config
 from nest.web.db_connection import ConnectionPool
+from tests.web.helper import get_config_file_path
 
 _user_id = None
-config = Config()
+config = Config(get_config_file_path())
 mysql_connection = ConnectionPool(config)
 
 

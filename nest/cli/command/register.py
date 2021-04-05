@@ -3,10 +3,9 @@ import argparse
 import os
 
 from nest.app.use_case.registration import IParams, RegistrationUseCase
-# FIXME: cli不能依赖于web模块下的功能
-from nest.web.config import Config
-from nest.web.db_connection import ConnectionPool
-from nest.web.repository import RepositoryFactory
+from nest.infra.config import Config
+from nest.infra.db_connection import ConnectionPool
+from nest.infra.repository import RepositoryFactory
 
 
 class Params(IParams):

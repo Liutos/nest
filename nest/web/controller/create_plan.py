@@ -5,7 +5,6 @@ from flask import request
 from webargs import fields
 
 from nest.app.use_case.create_plan import CreatePlanUseCase, InvalidRepeatTypeError, IParams
-from ..repository import RepositoryFactory
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser

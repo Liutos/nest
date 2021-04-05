@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
-from ..repository.plan import DatabasePlanRepository
-from ..repository.task import DatabaseTaskRepository
-from ..repository.user import DatabaseUserRepository
+from nest.repository.plan import DatabasePlanRepository
+from nest.repository.task import DatabaseTaskRepository
+from nest.repository.user import DatabaseUserRepository
 
 
 class RepositoryFactory:

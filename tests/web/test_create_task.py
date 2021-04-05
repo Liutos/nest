@@ -4,8 +4,8 @@ import pytest
 
 from nest.repository.task import DatabaseTaskRepository
 from nest.web import main
-from nest.web.config import Config
-from nest.web.db_connection import ConnectionPool
+from nest.infra.config import Config
+from nest.infra.db_connection import ConnectionPool
 from .user_helper import destroy_user, register_user
 from tests.web.helper import get_config_file_path
 

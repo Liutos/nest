@@ -4,10 +4,10 @@ import os
 from flask import Flask
 
 from nest.repository.certificate import RedisCertificateRepository
-from nest.web.config import Config
+from nest.infra.config import Config
 from nest.web.controller import create_plan, create_task, get_task, list_plan, list_task, login, pop_plan
-from nest.web.db_connection import ConnectionPool
-from nest.web.repository import RepositoryFactory
+from nest.infra.db_connection import ConnectionPool
+from nest.infra.repository import RepositoryFactory
 
 
 app = Flask(__name__)

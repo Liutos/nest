@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 import configparser
-import os
 
 
 class Config:

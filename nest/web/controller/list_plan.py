@@ -47,6 +47,7 @@ class ListPlanPresenter:
         for plan in self.plans:
             plans.append({
                 'id': plan.id,
+                'repeat_type': plan.repeat_type,
                 'task_id': plan.task_id,
                 'trigger_time': plan.trigger_time,
             })

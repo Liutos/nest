@@ -10,6 +10,19 @@ class IRepeater(ABC):
         pass
 
 
+class DailyRepeater(IRepeater):
+    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
+        self.last_trigger_time = last_trigger_time
+        self.repeat_interval = repeat_interval
+
+    def compute_next_trigger_time(self) -> datetime:
+        next_trigger_time = self.last_trigger_time
+        now = datetime.now()
+        while next_trigger_time.timestamp() < now.timestamp():
+            next_trigger_time += timedelta(days=1)
+        return next_trigger_time
+
+
 class HourRepeater(IRepeater):
     def __init__(self, *, last_trigger_time: datetime, repeat_interval):
         self.last_trigger_time = last_trigger_time
@@ -24,6 +37,7 @@ class HourRepeater(IRepeater):
 
 
 _TYPE_TO_REPEATER_CLASS = {
+    'daily': DailyRepeater,
     'hourly': HourRepeater,
 }
 

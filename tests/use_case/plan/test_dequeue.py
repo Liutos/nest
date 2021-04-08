@@ -26,6 +26,9 @@ class MockPlanRepository(IPlanRepository):
     def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
         return [Plan()]
 
+    def find_by_id(self, id_: int) -> Plan:
+        pass
+
     def remove(self, id_: int):
         pass
 

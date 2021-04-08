@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from pypika import Order, Query, Tables
+from pypika import Order, Query, Table, Tables
 
 from nest.app.entity.plan import IPlanRepository, Plan
 from nest.repository.db_operation import DatabaseOperationMixin
@@ -54,6 +54,27 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             plan.trigger_time = plan_dict['trigger_time']
             plans.append(plan)
         return plans
+
+    def find_by_id(self, id_: int) -> Plan:
+        plan_table = Table('t_plan')
+        query = Query\
+            .from_(plan_table)\
+            .delete()\
+            .where(plan_table.id == id_)
+        sql = query.get_sql(quote_char=None)
+        print('sql', sql)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                plan_dict = cursor.fetchone()
+                if plan_dict is None:
+                    return None
+                plan = Plan()
+                plan.id = plan_dict['id']
+                plan.repeat_type = plan_dict['repeat_type']
+                plan.task_id = plan_dict['task_id']
+                plan.trigger_time = plan_dict['trigger_time']
+                return plan
 
     def remove(self, id_: int):
         self.remove_from_db(id_, 't_plan')

@@ -100,5 +100,9 @@ class IPlanRepository(ABC):
         pass
 
     @abstractmethod
+    def find_by_id(self, id_: int) -> Plan:
+        pass
+
+    @abstractmethod
     def remove(self, id_: int):
         pass

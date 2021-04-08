@@ -5,7 +5,16 @@ from flask import Flask
 
 from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
-from nest.web.controller import create_plan, create_task, get_task, list_plan, list_task, login, pop_plan
+from nest.web.controller import (
+    create_plan,
+    create_task,
+    delete_plan,
+    get_task,
+    list_plan,
+    list_task,
+    login,
+    pop_plan,
+)
 from nest.infra.db_connection import ConnectionPool
 from nest.infra.repository import RepositoryFactory
 
@@ -45,6 +54,10 @@ app.add_url_rule('/plan/pop', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,
 }, view_func=pop_plan.pop_plan, methods=['POST'])
+app.add_url_rule('/plan/<id_>', defaults={
+    'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
+}, view_func=delete_plan.delete_plan, methods=['DELETE'])
 app.add_url_rule('/task', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,

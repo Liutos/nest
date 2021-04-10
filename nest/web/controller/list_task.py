@@ -14,12 +14,12 @@ from nest.web.parser import parser
 class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
-            'count': fields.Int(missing=10),
-            'start': fields.Int(missing=0),
+            'page': fields.Int(missing=1),
+            'per_page': fields.Int(missing=10),
         }
         parsed_args = parser.parse(args, request, location='querystring')
-        self.count = parsed_args['count']
-        self.start = parsed_args['start']
+        self.count = parsed_args['per_page']
+        self.start = (parsed_args['page'] - 1) * parsed_args['per_page']
         args = {
             'certificate_id': fields.Str(required=True),
             'user_id': fields.Int(required=True),

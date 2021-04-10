@@ -2,7 +2,11 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from ..entity.plan import IPlanRepository, Plan
+from nest.app.entity.plan import (
+    InvalidRepeatTypeError,
+    IPlanRepository,
+    Plan,
+)
 from .authentication_plugin import IAuthenticationPlugin
 
 
@@ -18,11 +22,6 @@ class IParams(ABC):
     @abstractmethod
     def get_trigger_time(self) -> datetime:
         pass
-
-
-class InvalidRepeatTypeError(Exception):
-    def __init__(self, repeat_type):
-        self.repeat_type = repeat_type
 
 
 class CreatePlanUseCase:

@@ -6,6 +6,7 @@ from flask import Flask
 from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
 from nest.web.controller import (
+    change_plan,
     create_plan,
     create_task,
     delete_plan,
@@ -58,6 +59,10 @@ app.add_url_rule('/plan/<id_>', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,
 }, view_func=delete_plan.delete_plan, methods=['DELETE'])
+app.add_url_rule('/plan/<int:plan_id>', defaults={
+    'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
+}, view_func=change_plan.change_plan, methods=['PATCH'])
 app.add_url_rule('/task', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,

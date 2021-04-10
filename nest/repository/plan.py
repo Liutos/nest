@@ -13,16 +13,31 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         super(DatabasePlanRepository, self).__init__(connection)
 
     def add(self, plan: Plan):
-        now = datetime.now()
-        insert_id = self.insert_to_db({
-            'repeat_type': plan.repeat_type,
-            'task_id': plan.task_id,
-            'trigger_time': plan.trigger_time,
-            'ctime': now,
-            'mtime': now,
-        }, 't_plan')
+        """
+        将计划存储到数据库，或更新数据库已有的计划。
+        """
+        if plan.id is None:
+            now = datetime.now()
+            insert_id = self.insert_to_db({
+                'repeat_type': plan.repeat_type,
+                'task_id': plan.task_id,
+                'trigger_time': plan.trigger_time,
+                'ctime': now,
+                'mtime': now,
+            }, 't_plan')
 
-        plan.id = insert_id
+            plan.id = insert_id
+        else:
+            plan_table = Table('t_plan')
+            query = Query\
+                .update(plan_table)\
+                .set(plan_table.repeat_type, plan.repeat_type)\
+                .set(plan_table.trigger_time, plan.trigger_time)\
+                .where(plan_table.id == plan.id)
+            sql = query.get_sql(quote_char=None)
+            with self.get_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(sql)
 
     def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
         plan_table, task_table = Tables('t_plan', 't_task')
@@ -59,7 +74,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         plan_table = Table('t_plan')
         query = Query\
             .from_(plan_table)\
-            .delete()\
+            .select(plan_table.star)\
             .where(plan_table.id == id_)
         sql = query.get_sql(quote_char=None)
         print('sql', sql)

@@ -113,3 +113,8 @@ class IPlanRepository(ABC):
     @abstractmethod
     def remove(self, id_: int):
         pass
+
+
+class InvalidRepeatTypeError(Exception):
+    def __init__(self, repeat_type):
+        self.repeat_type = repeat_type

@@ -10,7 +10,7 @@ class IRepeater(ABC):
         pass
 
 
-class DailyRepeater(IRepeater):
+class FixedIntervalRepeaterMixin(ABC):
     def __init__(self, *, last_trigger_time: datetime, repeat_interval):
         self.last_trigger_time = last_trigger_time
         self.repeat_interval = repeat_interval
@@ -19,34 +19,27 @@ class DailyRepeater(IRepeater):
         next_trigger_time = self.last_trigger_time
         now = datetime.now()
         while next_trigger_time.timestamp() < now.timestamp():
-            next_trigger_time += timedelta(days=1)
+            next_trigger_time += self.get_interval()
         return next_trigger_time
 
-
-class HourRepeater(IRepeater):
-    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
-        self.last_trigger_time = last_trigger_time
-        self.repeat_interval = repeat_interval
-
-    def compute_next_trigger_time(self):
-        next_trigger_time = self.last_trigger_time
-        now = datetime.now()
-        while next_trigger_time.timestamp() < now.timestamp():
-            next_trigger_time += timedelta(hours=1)
-        return next_trigger_time
+    @abstractmethod
+    def get_interval(self) -> timedelta:
+        pass
 
 
-class WeeklyRepeater(IRepeater):
-    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
-        self.last_trigger_time = last_trigger_time
-        self.repeat_interval = repeat_interval
+class DailyRepeater(FixedIntervalRepeaterMixin, IRepeater):
+    def get_interval(self) -> timedelta:
+        return timedelta(days=1)
 
-    def compute_next_trigger_time(self):
-        next_trigger_time = self.last_trigger_time
-        now = datetime.now()
-        while next_trigger_time.timestamp() < now.timestamp():
-            next_trigger_time += timedelta(days=7)
-        return next_trigger_time
+
+class HourRepeater(FixedIntervalRepeaterMixin, IRepeater):
+    def get_interval(self) -> timedelta:
+        return timedelta(hours=1)
+
+
+class WeeklyRepeater(FixedIntervalRepeaterMixin, IRepeater):
+    def get_interval(self) -> timedelta:
+        return timedelta(days=7)
 
 
 _TYPE_TO_REPEATER_CLASS = {

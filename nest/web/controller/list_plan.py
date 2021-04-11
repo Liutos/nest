@@ -6,6 +6,7 @@ from ...app.use_case.list_plan import IParams, ListPlanUseCase
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
+from nest.web.presenter.plan import PlanPresenter
 
 
 class HTTPParams(AuthenticationParams, IParams):
@@ -45,12 +46,8 @@ class ListPlanPresenter:
     def format(self):
         plans = []
         for plan in self.plans:
-            plans.append({
-                'id': plan.id,
-                'repeat_type': plan.repeat_type,
-                'task_id': plan.task_id,
-                'trigger_time': plan.trigger_time,
-            })
+            presenter = PlanPresenter(plan=plan)
+            plans.append(presenter.format())
         return {
             'plans': plans
         }

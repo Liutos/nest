@@ -6,6 +6,7 @@ from ...app.use_case.pop_plan import IParams, PopPlanUseCase
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
+from nest.web.presenter.plan import PlanPresenter
 
 
 class HTTPParams(AuthenticationParams, IParams):
@@ -47,9 +48,5 @@ def pop_plan(certificate_repository, repository_factory):
     )
     plans = use_case.run()
     return {
-        'plans': [{
-            'id': plan.id,
-            'task_id': plan.task_id,
-            'trigger_time': plan.trigger_time,
-        } for plan in plans],
+        'plans': [PlanPresenter(plan=plan).format() for plan in plans],
     }, 200

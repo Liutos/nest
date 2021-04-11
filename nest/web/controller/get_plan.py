@@ -6,6 +6,7 @@ from nest.app.use_case.get_plan import GetPlanUseCase, IParams
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
 from nest.web.parser import parser
 from nest.web.handle_response import wrap_response
+from nest.web.presenter.plan import PlanPresenter
 
 
 class HTTPParams(AuthenticationParams, IParams):
@@ -47,12 +48,9 @@ def get_plan(certificate_repository, id_, repository_factory):
             'result': None,
             'status': 'success',
         }, 200
+    presenter = PlanPresenter(plan=plan)
     return {
         'error': None,
-        'result': {
-            'id': plan.id,
-            'task_id': plan.task_id,
-            'trigger_time': plan.trigger_time,
-        },
+        'result': presenter.format(),
         'status': 'success',
     }, 200

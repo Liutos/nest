@@ -10,6 +10,7 @@ from nest.web.controller import (
     create_plan,
     create_task,
     delete_plan,
+    get_plan,
     get_task,
     list_plan,
     list_task,
@@ -55,6 +56,10 @@ app.add_url_rule('/plan/pop', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,
 }, view_func=pop_plan.pop_plan, methods=['POST'])
+app.add_url_rule('/plan/<id_>', defaults={
+    'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
+}, view_func=get_plan.get_plan, methods=['GET'])
 app.add_url_rule('/plan/<id_>', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,

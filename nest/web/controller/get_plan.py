@@ -2,10 +2,10 @@
 from flask import request
 from webargs import fields
 
-from nest.app.use_case.delete_plan import DeletePlanUseCase, IParams
+from nest.app.use_case.get_plan import GetPlanUseCase, IParams
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
-from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
+from nest.web.handle_response import wrap_response
 
 
 class HTTPParams(AuthenticationParams, IParams):
@@ -30,11 +30,9 @@ class HTTPParams(AuthenticationParams, IParams):
 
 
 @wrap_response
-def delete_plan(certificate_repository, id_, repository_factory):
-    params = HTTPParams(
-        plan_id=id_,
-    )
-    use_case = DeletePlanUseCase(
+def get_plan(certificate_repository, id_, repository_factory):
+    params = HTTPParams(plan_id=id_)
+    use_case = GetPlanUseCase(
         authentication_plugin=AuthenticationPlugin(
             certificate_repository=certificate_repository,
             params=params,
@@ -42,9 +40,19 @@ def delete_plan(certificate_repository, id_, repository_factory):
         params=params,
         plan_repository=repository_factory.plan(),
     )
-    use_case.run()
+    plan = use_case.run()
+    if plan is None:
+        return {
+            'error': None,
+            'result': None,
+            'status': 'success',
+        }, 200
     return {
         'error': None,
-        'result': None,
+        'result': {
+            'id': plan.id,
+            'task_id': plan.task_id,
+            'trigger_time': plan.trigger_time,
+        },
         'status': 'success',
     }, 200

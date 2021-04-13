@@ -15,4 +15,6 @@ class PlanPresenter:
             'repeat_type': self.plan.repeat_type,
             'task_id': self.plan.task_id,
             'trigger_time': trigger_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'visible_hours': list(self.plan.visible_hours),
+            'visible_wdays': list(self.plan.visible_wdays),
         }

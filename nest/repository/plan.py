@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from datetime import datetime
+import json
 from typing import List
 
 from pypika import Order, Query, Table, Tables
@@ -22,6 +23,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 'repeat_type': plan.repeat_type,
                 'task_id': plan.task_id,
                 'trigger_time': plan.trigger_time,
+                'visible_hours': json.dumps(list(plan.visible_hours)),
+                'visible_wdays': json.dumps(list(plan.visible_wdays)),
                 'ctime': now,
                 'mtime': now,
             }, 't_plan')
@@ -33,6 +36,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 .update(plan_table)\
                 .set(plan_table.repeat_type, plan.repeat_type)\
                 .set(plan_table.trigger_time, plan.trigger_time)\
+                .set(plan_table.visible_hours, json.dumps(plan.visible_hours)) \
+                .set(plan_table.visible_wdays, json.dumps(plan.visible_wdays))\
                 .where(plan_table.id == plan.id)
             sql = query.get_sql(quote_char=None)
             with self.get_connection() as connection:
@@ -67,6 +72,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             plan.repeat_type = plan_dict['repeat_type']
             plan.task_id = plan_dict['task_id']
             plan.trigger_time = plan_dict['trigger_time']
+            plan.visible_hours = json.loads(plan_dict['visible_hours'])
+            plan.visible_wdays = json.loads(plan_dict['visible_wdays'])
             plans.append(plan)
         return plans
 
@@ -89,6 +96,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 plan.repeat_type = plan_dict['repeat_type']
                 plan.task_id = plan_dict['task_id']
                 plan.trigger_time = plan_dict['trigger_time']
+                plan.visible_hours = json.loads(plan_dict['visible_hours'])
+                plan.visible_wdays = json.loads(plan_dict['visible_wdays'])
                 return plan
 
     def remove(self, id_: int):

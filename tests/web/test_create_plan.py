@@ -64,6 +64,8 @@ def test_create_plan(client):
     json_data = rv.get_json()
     assert json_data['id']
     assert isinstance(json_data['id'], int)
+    assert isinstance(json_data['visible_hours'], list)
+    assert set(json_data['visible_hours']) == {0, 1, 2, 3, 5}
     global _plan_ids
     _plan_ids.append(json_data['id'])
 
@@ -82,6 +84,8 @@ def test_create_plan_again(client):
     json_data = rv.get_json()
     assert json_data['id']
     assert isinstance(json_data['id'], int)
+    assert isinstance(json_data['visible_wdays'], list)
+    assert set(json_data['visible_wdays']) == {0, 2, 4, 6}
     global _plan_ids
     _plan_ids.append(json_data['id'])
 

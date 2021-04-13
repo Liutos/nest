@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import List
+from typing import List, Set, Union
 
 from nest.app.entity.plan import IPlanRepository, Plan
 from nest.app.use_case.authentication_plugin import IAuthenticationPlugin
@@ -20,6 +20,12 @@ class MockParams(IParams):
 
     def get_trigger_time(self) -> int:
         return 1234567890
+
+    def get_visible_hours(self) -> Union[None, Set[int]]:
+        return None
+
+    def get_visible_wdays(self) -> Union[None, Set[int]]:
+        return None
 
 
 class MockPlanRepository(IPlanRepository):

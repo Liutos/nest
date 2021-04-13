@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Set, Union
 
 from nest.app.entity.plan import (
     InvalidRepeatTypeError,
@@ -23,6 +24,14 @@ class IParams(ABC):
     def get_trigger_time(self) -> datetime:
         pass
 
+    @abstractmethod
+    def get_visible_hours(self) -> Union[None, Set[int]]:
+        pass
+
+    @abstractmethod
+    def get_visible_wdays(self) -> Union[None, Set[int]]:
+        pass
+
 
 class CreatePlanUseCase:
     def __init__(self, *, authentication_plugin, params, plan_repository):
@@ -43,11 +52,15 @@ class CreatePlanUseCase:
 
         task_id = params.get_task_id()
         trigger_time = params.get_trigger_time()
+        visible_hours = params.get_visible_hours()
+        visible_wdays = params.get_visible_wdays()
         # TODO: 检查task_id是否能找到一个任务
         plan = Plan.new(
             task_id,
             trigger_time,
             repeat_type=repeat_type,
+            visible_hours=visible_hours,
+            visible_wdays=visible_wdays,
         )
         self.plan_repository.add(plan)
         return plan

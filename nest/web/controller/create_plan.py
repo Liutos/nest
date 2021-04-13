@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from datetime import datetime
+from typing import Set, Union
 
 from flask import request
 from webargs import fields
@@ -17,11 +18,15 @@ class HTTPParams(AuthenticationParams, IParams):
             'repeat_type': fields.Str(),
             'task_id': fields.Int(required=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S', required=True),
+            'visible_hours': fields.List(fields.Int, missing=[]),
+            'visible_wdays': fields.List(fields.Int, missing=[]),
         }
         parsed_args = parser.parse(args, request)
         self.repeat_type = parsed_args.get('repeat_type')
         self.task_id = parsed_args['task_id']
         self.trigger_time = parsed_args['trigger_time']
+        self.visible_hours = set(parsed_args['visible_hours'])
+        self.visible_wdays = set(parsed_args['visible_wdays'])
         args = {
             'certificate_id': fields.Str(required=True),
             'user_id': fields.Int(required=True),
@@ -44,6 +49,12 @@ class HTTPParams(AuthenticationParams, IParams):
 
     def get_user_id(self):
         return self.user_id
+
+    def get_visible_hours(self) -> Union[None, Set[int]]:
+        return self.visible_hours
+
+    def get_visible_wdays(self) -> Union[None, Set[int]]:
+        return self.visible_wdays
 
 
 @wrap_response

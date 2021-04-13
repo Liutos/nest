@@ -59,6 +59,7 @@ def test_create_plan(client):
         'repeat_type': 'hourly',
         'task_id': _task_id,
         'trigger_time': '2021-02-20 17:39:00',
+        'visible_hours': [0, 1, 1, 2, 3, 5],
     })
     json_data = rv.get_json()
     assert json_data['id']
@@ -76,6 +77,7 @@ def test_create_plan_again(client):
     rv = client.post('/plan', json={
         'task_id': _task_id,
         'trigger_time': '2019-02-21 17:39:00',
+        'visible_wdays': [0, 2, 4, 6],
     })
     json_data = rv.get_json()
     assert json_data['id']

@@ -17,6 +17,30 @@ def test_rebirth():
     assert rebirth_plan.trigger_time.timestamp() - trigger_time.timestamp() == 60 * 60
 
 
+def test_visible_hours():
+    """
+    测试可见小时的判断逻辑。
+    """
+    plan = Plan()
+    plan.visible_hours = {12, 22}
+    trigger_time1 = datetime(2020, 3, 12, 22, 14)
+    trigger_time2 = datetime(2021, 4, 13, 23, 15)
+    assert plan.is_visible(trigger_time=trigger_time1)
+    assert not plan.is_visible(trigger_time=trigger_time2)
+
+
+def test_visible_wdays():
+    """
+    测试星期几可见的判断逻辑。
+    """
+    plan = Plan()
+    plan.visible_wdays = {0, 4}
+    trigger_time1 = datetime(2021, 4, 12)
+    trigger_time2 = datetime(2021, 4, 13)
+    assert plan.is_visible(trigger_time=trigger_time1)
+    assert not plan.is_visible(trigger_time=trigger_time2)
+
+
 def test_weekly_repeater():
     """
     测试周重复模式。

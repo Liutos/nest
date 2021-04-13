@@ -72,8 +72,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             plan.repeat_type = plan_dict['repeat_type']
             plan.task_id = plan_dict['task_id']
             plan.trigger_time = plan_dict['trigger_time']
-            plan.visible_hours = json.loads(plan_dict['visible_hours'])
-            plan.visible_wdays = json.loads(plan_dict['visible_wdays'])
+            plan.visible_hours = json.loads(plan_dict.get('visible_hours') or '[]')
+            plan.visible_wdays = json.loads(plan_dict.get('visible_wdays') or '[]')
             plans.append(plan)
         return plans
 
@@ -96,8 +96,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 plan.repeat_type = plan_dict['repeat_type']
                 plan.task_id = plan_dict['task_id']
                 plan.trigger_time = plan_dict['trigger_time']
-                plan.visible_hours = json.loads(plan_dict['visible_hours'])
-                plan.visible_wdays = json.loads(plan_dict['visible_wdays'])
+                plan.visible_hours = json.loads(plan_dict.get('visible_hours') or '[]')
+                plan.visible_wdays = json.loads(plan_dict.get('visible_wdays') or '[]')
                 return plan
 
     def remove(self, id_: int):

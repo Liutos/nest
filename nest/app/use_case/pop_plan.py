@@ -42,4 +42,7 @@ class PopPlanUseCase:
                 next_plan = plan.rebirth()
                 plan_repository.add(next_plan)
             plan_repository.remove(plan.id)
+
+        now = datetime.now()
+        plans = [plan for plan in plans if plan.is_visible(trigger_time=now)]
         return plans

@@ -112,6 +112,8 @@ class Plan:
         instance.repeat_type = self.repeat_type
         instance.task_id = self.task_id
         instance.trigger_time = repeater.compute_next_trigger_time()
+        instance.visible_hours = self.visible_hours
+        instance.visible_wdays = self.visible_wdays
         return instance
 
 

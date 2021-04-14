@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from datetime import datetime
-from typing import Tuple, Union
+from typing import Set, Tuple, Union
 
 from flask import request
 from webargs import fields
@@ -18,6 +18,8 @@ class HTTPParams(AuthenticationParams, IParams):
         args = {
             'repeat_type': fields.Str(allow_none=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S'),
+            'visible_hours': fields.List(fields.Int, allow_none=True),
+            'visible_wdays': fields.List(fields.Int, allow_none=True),
         }
         parsed_args = parser.parse(args, request)
         self.parsed_args = parsed_args
@@ -45,6 +47,14 @@ class HTTPParams(AuthenticationParams, IParams):
 
     def get_user_id(self):
         return self.user_id
+
+    def get_visible_hours(self) -> Tuple[bool, Union[None, Set[int]]]:
+        found = 'visible_hours' in self.parsed_args
+        return found, self.parsed_args.get('visible_hours')
+
+    def get_visible_wdays(self) -> Tuple[bool, Union[None, Set[int]]]:
+        found = 'visible_wdays' in self.parsed_args
+        return found, self.parsed_args.get('visible_wdays')
 
 
 @wrap_response

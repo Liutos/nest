@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Tuple, Union
+from typing import Set, Tuple, Union
 
 from nest.app.entity.plan import (
     InvalidRepeatTypeError,
@@ -22,6 +22,14 @@ class IParams(ABC):
 
     @abstractmethod
     def get_trigger_time(self) -> Tuple[bool, Union[None, datetime]]:
+        pass
+
+    @abstractmethod
+    def get_visible_hours(self) -> Tuple[bool, Union[None, Set[int]]]:
+        pass
+
+    @abstractmethod
+    def get_visible_wdays(self) -> Tuple[bool, Union[None, Set[int]]]:
         pass
 
 
@@ -55,4 +63,10 @@ class ChangePlanUseCase:
         found, trigger_time = params.get_trigger_time()
         if found:
             plan.trigger_time = trigger_time
+        found, visible_hours = params.get_visible_hours()
+        if found:
+            plan.visible_hours = visible_hours
+        found, visible_wdays = params.get_visible_wdays()
+        if found:
+            plan.visible_wdays = visible_wdays
         self.plan_repository.add(plan)

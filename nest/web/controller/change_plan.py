@@ -16,7 +16,7 @@ class HTTPParams(AuthenticationParams, IParams):
     def __init__(self, *, plan_id):
         self.plan_id = plan_id
         args = {
-            'repeat_type': fields.Str(),
+            'repeat_type': fields.Str(allow_none=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S'),
         }
         parsed_args = parser.parse(args, request)

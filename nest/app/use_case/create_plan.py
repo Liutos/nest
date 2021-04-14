@@ -13,7 +13,7 @@ from .authentication_plugin import IAuthenticationPlugin
 
 class IParams(ABC):
     @abstractmethod
-    def get_repeat_type(self) -> str:
+    def get_repeat_type(self) -> Union[None, str]:
         pass
 
     @abstractmethod

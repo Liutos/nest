@@ -15,18 +15,18 @@ from nest.web.presenter.plan import PlanPresenter
 class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
-            'repeat_type': fields.Str(),
+            'repeat_type': fields.Str(allow_none=True),
             'task_id': fields.Int(required=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S', required=True),
-            'visible_hours': fields.List(fields.Int, missing=[]),
-            'visible_wdays': fields.List(fields.Int, missing=[]),
+            'visible_hours': fields.List(fields.Int, allow_none=True),
+            'visible_wdays': fields.List(fields.Int, allow_none=True),
         }
         parsed_args = parser.parse(args, request)
         self.repeat_type = parsed_args.get('repeat_type')
         self.task_id = parsed_args['task_id']
         self.trigger_time = parsed_args['trigger_time']
-        self.visible_hours = set(parsed_args['visible_hours'])
-        self.visible_wdays = set(parsed_args['visible_wdays'])
+        self.visible_hours = set(parsed_args.get('visible_hours') or [])
+        self.visible_wdays = set(parsed_args.get('visible_wdays') or [])
         args = {
             'certificate_id': fields.Str(required=True),
             'user_id': fields.Int(required=True),
@@ -38,7 +38,7 @@ class HTTPParams(AuthenticationParams, IParams):
     def get_certificate_id(self):
         return self.certificate_id
 
-    def get_repeat_type(self) -> str:
+    def get_repeat_type(self) -> Union[None, str]:
         return self.repeat_type
 
     def get_task_id(self) -> int:

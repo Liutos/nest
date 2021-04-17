@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `t_plan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `t_plan` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `task_id` int(11) NOT NULL COMMENT '该计划所属的任务',
   `location` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '能够执行该任务的地点',
   `repeat_interval` int(11) DEFAULT NULL COMMENT '配合“重复类型”，计算出下一次的触发时间',
@@ -20,7 +20,7 @@ DROP TABLE IF EXISTS `t_task`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `t_task` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '创建该任务的用户的ID',
   `brief` text COLLATE utf8mb4_bin NOT NULL COMMENT '对所要做的事情的简短描述',
   `ctime` datetime NOT NULL,
@@ -33,7 +33,7 @@ DROP TABLE IF EXISTS `t_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `t_user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `email` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用于登录的邮箱',
   `nickname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '昵称',
   `password_hash` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '原始密码和“盐”一起用哈希算法计算出的哈希值',

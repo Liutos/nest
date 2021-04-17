@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from flask import request
-from webargs import fields
+from webargs import fields, validate
 
 from ...app.use_case.list_plan import IParams, ListPlanUseCase
 from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
@@ -12,8 +12,8 @@ from nest.web.presenter.plan import PlanPresenter
 class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
-            'page': fields.Int(missing=1),
-            'per_page': fields.Int(missing=10),
+            'page': fields.Int(missing=1, validate=validate.Range(min=1)),
+            'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
         }
         parsed_args = parser.parse(args, request, location='querystring')
         self.page = parsed_args['page']

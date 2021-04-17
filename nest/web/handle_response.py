@@ -43,5 +43,14 @@ def wrap_response(func):
                 'result': None,
                 'status': 'failure',
             }, 422
+        except Exception as e:
+            return {
+                'error': {
+                    'code': 503,
+                    'message': str(e),
+                },
+                'result': None,
+                'status': 'failure',
+            }, 503
 
     return wrapper

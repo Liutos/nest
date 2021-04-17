@@ -83,7 +83,7 @@ class Plan:
 
     @classmethod
     def is_valid_repeat_type(cls, repeat_type):
-        return repeat_type in _TYPE_TO_REPEATER_CLASS
+        return repeat_type is None or repeat_type in _TYPE_TO_REPEATER_CLASS
 
     def is_visible(self, *, trigger_time: datetime):
         """

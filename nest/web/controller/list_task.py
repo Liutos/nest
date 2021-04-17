@@ -2,7 +2,7 @@
 from typing import List
 
 from flask import request
-from webargs import fields
+from webargs import fields, validate
 
 from nest.app.entity.task import Task
 from nest.app.use_case.list_task import IParams, ListTaskUseCase
@@ -14,8 +14,8 @@ from nest.web.parser import parser
 class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
-            'page': fields.Int(missing=1),
-            'per_page': fields.Int(missing=10),
+            'page': fields.Int(missing=1, validate=validate.Range(min=1)),
+            'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
         }
         parsed_args = parser.parse(args, request, location='querystring')
         self.count = parsed_args['per_page']

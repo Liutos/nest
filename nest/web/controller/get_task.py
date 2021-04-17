@@ -36,10 +36,12 @@ class Presenter:
 
     def build(self):
         return {
-            'task': {
+            'error': None,
+            'result': {
                 'brief': self.task.brief,
                 'id': self.task.id,
-            }
+            },
+            'status': 'success',
         }
 
 

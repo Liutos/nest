@@ -41,5 +41,9 @@ def create_task(certificate_repository, repository_factory):
     )
     task = use_case.run()
     return {
-        'id': task.id,
+        'error': None,
+        'result': {
+            'id': task.id,
+        },
+        'status': 'success',
     }, 201

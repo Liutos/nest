@@ -35,7 +35,7 @@ def test_create_task(client):
     })
     json_data = rv.get_json()
     global _task_id
-    _task_id = json_data['id']
+    _task_id = json_data['result']['id']
 
 
 def destroy_artefact():
@@ -61,10 +61,10 @@ def test_create_plan(client):
         'trigger_time': '2021-02-20 17:39:00',
     })
     json_data = rv.get_json()
-    assert json_data['id']
-    assert isinstance(json_data['id'], int)
+    assert json_data['result']['id']
+    assert isinstance(json_data['result']['id'], int)
     global _plan_ids
-    _plan_ids.append(json_data['id'])
+    _plan_ids.append(json_data['result']['id'])
 
 
 def test_delete_plan(client):

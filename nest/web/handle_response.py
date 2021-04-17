@@ -26,12 +26,22 @@ def wrap_response(func):
             return func(*args, **kw)
         except InvalidCertificateError:
             return {
-                'message': '请先登录'
+                'error': {
+                    'code': 401,
+                    'message': '请先登录',
+                },
+                'result': None,
+                'status': 'failure',
             }, 401
         except ValidationError as e:
             message = _extract_first_error_message(e.messages)
             return {
-                'message': message,
+                'error': {
+                    'code': 422,
+                    'message': message,
+                },
+                'result': None,
+                'status': 'failure',
             }, 422
 
     return wrapper

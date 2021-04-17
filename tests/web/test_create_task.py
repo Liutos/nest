@@ -37,7 +37,7 @@ def test_create_task(client):
     })
     print('rv', rv)
     json_data = rv.get_json()
-    assert json_data['id']
-    assert isinstance(json_data['id'], int)
+    assert json_data['result']['id']
+    assert isinstance(json_data['result']['id'], int)
     global _task_id
-    _task_id = json_data['id']
+    _task_id = json_data['result']['id']

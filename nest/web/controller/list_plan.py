@@ -49,7 +49,9 @@ class ListPlanPresenter:
             presenter = PlanPresenter(plan=plan)
             plans.append(presenter.format())
         return {
-            'plans': plans
+            'error': None,
+            'result': plans,
+            'status': 'success',
         }
 
 

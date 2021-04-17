@@ -51,7 +51,9 @@ class Presenter:
             'id': task.id,
         } for task in self.tasks]
         return {
-            'tasks': tasks,
+            'error': None,
+            'result': tasks,
+            'status': 'success',
         }
 
 

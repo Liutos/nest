@@ -35,7 +35,7 @@ def test_create_task(client):
     })
     json_data = rv.get_json()
     global _task_id
-    _task_id = json_data['id']
+    _task_id = json_data['result']['id']
 
 
 def destroy_artefact():
@@ -62,12 +62,12 @@ def test_create_plan(client):
         'visible_hours': [0, 1, 1, 2, 3, 5],
     })
     json_data = rv.get_json()
-    assert json_data['id']
-    assert isinstance(json_data['id'], int)
-    assert isinstance(json_data['visible_hours'], list)
-    assert set(json_data['visible_hours']) == {0, 1, 2, 3, 5}
+    assert json_data['result']['id']
+    assert isinstance(json_data['result']['id'], int)
+    assert isinstance(json_data['result']['visible_hours'], list)
+    assert set(json_data['result']['visible_hours']) == {0, 1, 2, 3, 5}
     global _plan_ids
-    _plan_ids.append(json_data['id'])
+    _plan_ids.append(json_data['result']['id'])
 
 
 def test_create_plan_again(client):
@@ -82,12 +82,12 @@ def test_create_plan_again(client):
         'visible_wdays': [0, 2, 4, 6],
     })
     json_data = rv.get_json()
-    assert json_data['id']
-    assert isinstance(json_data['id'], int)
-    assert isinstance(json_data['visible_wdays'], list)
-    assert set(json_data['visible_wdays']) == {0, 2, 4, 6}
+    assert json_data['result']['id']
+    assert isinstance(json_data['result']['id'], int)
+    assert isinstance(json_data['result']['visible_wdays'], list)
+    assert set(json_data['result']['visible_wdays']) == {0, 2, 4, 6}
     global _plan_ids
-    _plan_ids.append(json_data['id'])
+    _plan_ids.append(json_data['result']['id'])
 
 
 def test_list_plan(client):
@@ -101,7 +101,7 @@ def test_list_plan(client):
         'per_page': 10,
     })
     json_data = rv.get_json()
-    plans = json_data['plans']
+    plans = json_data['result']
     assert len(plans) == 2
     assert plans[0]['id'] == _plan_ids[1]
     assert plans[1]['id'] == _plan_ids[0]

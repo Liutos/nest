@@ -48,5 +48,7 @@ def pop_plan(certificate_repository, repository_factory):
     )
     plans = use_case.run()
     return {
-        'plans': [PlanPresenter(plan=plan).format() for plan in plans],
+        'error': None,
+        'result': [PlanPresenter(plan=plan).format() for plan in plans],
+        'status': 'success',
     }, 200

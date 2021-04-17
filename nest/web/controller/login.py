@@ -42,5 +42,10 @@ def login(certificate_repository, repository_factory):
         return response
     except PasswordError:
         return {
-            'message': '用户名或密码错误。'
+            'error': {
+                'code': 422,
+                'message': '用户名或密码错误。',
+            },
+            'result': None,
+            'status': 'failure',
         }, 422

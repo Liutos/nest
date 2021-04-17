@@ -72,8 +72,16 @@ def create_plan(certificate_repository, repository_factory):
     try:
         plan = use_case.run()
         presenter = PlanPresenter(plan=plan)
-        return presenter.format(), 201
+        return {
+            'error': None,
+            'result': presenter.format(),
+            'status': 'success',
+        }, 201
     except InvalidRepeatTypeError as e:
         return {
-            'message': '不支持的重复类型：{}'.format(e.repeat_type)
+            'error': {
+                'message': '不支持的重复类型：{}'.format(e.repeat_type),
+            },
+            'result': None,
+            'status': 'failure',
         }, 422

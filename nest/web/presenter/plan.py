@@ -11,6 +11,7 @@ class PlanPresenter:
     def format(self):
         trigger_time: datetime = self.plan.trigger_time
         return {
+            'duration': self.plan.duration,
             'id': self.plan.id,
             'repeat_type': self.plan.repeat_type,
             'task_id': self.plan.task_id,

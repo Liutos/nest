@@ -12,6 +12,9 @@ class MockAuthenticationPlugin(IAuthenticationPlugin):
 
 
 class MockParams(IParams):
+    def get_duration(self) -> Union[None, int]:
+        return 233
+
     def get_repeat_type(self) -> str:
         return 'hourly'
 
@@ -50,6 +53,7 @@ def test_create():
     )
     plan = use_case.run()
     assert plan
+    assert plan.duration == 233
     assert plan.id
     assert plan.repeat_type == 'hourly'
     assert plan.task_id == 1

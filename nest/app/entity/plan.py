@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Union
 
 
 class IRepeater(ABC):
@@ -59,8 +59,13 @@ class RepeaterFactory:
         )
 
 
+class InvalidDurationError(Exception):
+    pass
+
+
 class Plan:
     def __init__(self):
+        self.duration = None
         self.id = None
         self.repeat_type = None
         self.task_id = None
@@ -69,8 +74,14 @@ class Plan:
         self.visible_wdays = set([])
 
     @classmethod
-    def new(cls, task_id, trigger_time, *, repeat_type=None, visible_hours=None, visible_wdays=None):
+    def new(cls, task_id, trigger_time, *,
+            duration: Union[None, int] = None,
+            repeat_type=None, visible_hours=None, visible_wdays=None):
+        if isinstance(duration, int) and duration < 0:
+            raise InvalidDurationError()
+
         instance = Plan()
+        instance.duration = duration
         instance.repeat_type = repeat_type
         instance.task_id = task_id
         instance.trigger_time = trigger_time

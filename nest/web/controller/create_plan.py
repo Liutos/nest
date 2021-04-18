@@ -15,6 +15,7 @@ from nest.web.presenter.plan import PlanPresenter
 class HTTPParams(AuthenticationParams, IParams):
     def __init__(self):
         args = {
+            'duration': fields.Int(allow_none=True),
             'repeat_type': fields.Str(allow_none=True),
             'task_id': fields.Int(required=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S', required=True),
@@ -22,6 +23,7 @@ class HTTPParams(AuthenticationParams, IParams):
             'visible_wdays': fields.List(fields.Int, allow_none=True),
         }
         parsed_args = parser.parse(args, request)
+        self.duration = parsed_args.get('duration')
         self.repeat_type = parsed_args.get('repeat_type')
         self.task_id = parsed_args['task_id']
         self.trigger_time = parsed_args['trigger_time']
@@ -37,6 +39,9 @@ class HTTPParams(AuthenticationParams, IParams):
 
     def get_certificate_id(self):
         return self.certificate_id
+
+    def get_duration(self) -> Union[None, int]:
+        return self.duration
 
     def get_repeat_type(self) -> Union[None, str]:
         return self.repeat_type

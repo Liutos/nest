@@ -56,6 +56,7 @@ def test_create_plan(client):
         'password': 'def',
     })
     rv = client.post('/plan', json={
+        'duration': 234,
         'repeat_type': 'hourly',
         'task_id': _task_id,
         'trigger_time': '2021-02-20 17:39:00',
@@ -63,6 +64,7 @@ def test_create_plan(client):
     })
     json_data = rv.get_json()
     assert json_data['result']['id']
+    assert json_data['result']['duration'] == 234
     assert isinstance(json_data['result']['id'], int)
     assert isinstance(json_data['result']['visible_hours'], list)
     assert set(json_data['result']['visible_hours']) == {0, 1, 2, 3, 5}
@@ -105,4 +107,5 @@ def test_list_plan(client):
     assert len(plans) == 2
     assert plans[0]['id'] == _plan_ids[1]
     assert plans[1]['id'] == _plan_ids[0]
+    assert plans[1]['duration'] == 234
     destroy_artefact()

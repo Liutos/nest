@@ -16,6 +16,7 @@ class HTTPParams(AuthenticationParams, IParams):
     def __init__(self, *, plan_id):
         self.plan_id = plan_id
         args = {
+            'duration': fields.Int(allow_none=True),
             'repeat_type': fields.Str(allow_none=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S'),
             'visible_hours': fields.List(fields.Int, allow_none=True),
@@ -33,6 +34,12 @@ class HTTPParams(AuthenticationParams, IParams):
 
     def get_certificate_id(self):
         return self.certificate_id
+
+    def get_duration(self) -> Tuple[bool, Union[None, int]]:
+        return (
+            'duration' in self.parsed_args,
+            self.parsed_args.get('duration'),
+        )
 
     def get_plan_id(self) -> int:
         return self.plan_id

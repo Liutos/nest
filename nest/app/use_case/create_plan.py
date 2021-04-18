@@ -13,6 +13,10 @@ from .authentication_plugin import IAuthenticationPlugin
 
 class IParams(ABC):
     @abstractmethod
+    def get_duration(self) -> Union[None, int]:
+        pass
+
+    @abstractmethod
     def get_repeat_type(self) -> Union[None, str]:
         pass
 
@@ -46,6 +50,7 @@ class CreatePlanUseCase:
         self.authentication_plugin.authenticate()
 
         params = self.params
+        duration = params.get_duration()
         repeat_type = params.get_repeat_type()
         if repeat_type and not Plan.is_valid_repeat_type(repeat_type):
             raise InvalidRepeatTypeError(repeat_type)
@@ -58,6 +63,7 @@ class CreatePlanUseCase:
         plan = Plan.new(
             task_id,
             trigger_time,
+            duration=duration,
             repeat_type=repeat_type,
             visible_hours=visible_hours,
             visible_wdays=visible_wdays,

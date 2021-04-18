@@ -20,6 +20,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         if plan.id is None:
             now = datetime.now()
             insert_id = self.insert_to_db({
+                'duration': plan.duration,
                 'repeat_type': plan.repeat_type,
                 'task_id': plan.task_id,
                 'trigger_time': plan.trigger_time,
@@ -34,6 +35,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             plan_table = Table('t_plan')
             query = Query\
                 .update(plan_table)\
+                .set(plan_table.duration, plan.duration)\
                 .set(plan_table.repeat_type, plan.repeat_type)\
                 .set(plan_table.trigger_time, plan.trigger_time)\
                 .set(plan_table.visible_hours, json.dumps(plan.visible_hours)) \
@@ -66,8 +68,10 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 cursor.execute(query.get_sql(quote_char=None))
                 plan_dicts = cursor.fetchall()
 
+        # TODO: 这里的代码需要与find_by_id中的统一起来。
         for plan_dict in plan_dicts:
             plan = Plan()
+            plan.duration = plan_dict['duration']
             plan.id = plan_dict['id']
             plan.repeat_type = plan_dict['repeat_type']
             plan.task_id = plan_dict['task_id']
@@ -92,6 +96,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 if plan_dict is None:
                     return None
                 plan = Plan()
+                plan.duration = plan_dict['duration']
                 plan.id = plan_dict['id']
                 plan.repeat_type = plan_dict['repeat_type']
                 plan.task_id = plan_dict['task_id']

@@ -13,6 +13,10 @@ from nest.app.use_case.authentication_plugin import IAuthenticationPlugin
 
 class IParams(ABC):
     @abstractmethod
+    def get_duration(self) -> Tuple[bool, Union[None, int]]:
+        pass
+
+    @abstractmethod
     def get_plan_id(self) -> int:
         pass
 
@@ -55,6 +59,10 @@ class ChangePlanUseCase:
         if plan is None:
             raise PlanNotFoundError(plan_id=plan_id)
 
+        found, duration = params.get_duration()
+        if found:
+            # TODO: 是否应当让duration成为一个property呢？还是用setter来做检查？
+            plan.duration = duration
         found, repeat_type = params.get_repeat_type()
         if found:
             if not Plan.is_valid_repeat_type(repeat_type):

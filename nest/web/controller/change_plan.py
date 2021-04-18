@@ -7,12 +7,15 @@ from webargs import fields
 
 from nest.app.entity.plan import InvalidRepeatTypeError
 from nest.app.use_case.change_plan import ChangePlanUseCase, PlanNotFoundError, IParams
-from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
+from nest.web.authentication_plugin import (
+    AuthenticationPlugin,
+    AuthenticationParamsMixin,
+)
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
 
-class HTTPParams(AuthenticationParams, IParams):
+class HTTPParams(AuthenticationParamsMixin, IParams):
     def __init__(self, *, plan_id):
         self.plan_id = plan_id
         args = {
@@ -24,16 +27,6 @@ class HTTPParams(AuthenticationParams, IParams):
         }
         parsed_args = parser.parse(args, request)
         self.parsed_args = parsed_args
-        args = {
-            'certificate_id': fields.Str(required=True),
-            'user_id': fields.Int(required=True),
-        }
-        parsed_args = parser.parse(args, request, location='cookies')
-        self.certificate_id = parsed_args['certificate_id']
-        self.user_id = parsed_args['user_id']
-
-    def get_certificate_id(self):
-        return self.certificate_id
 
     def get_duration(self) -> Tuple[bool, Union[None, int]]:
         return (
@@ -51,9 +44,6 @@ class HTTPParams(AuthenticationParams, IParams):
     def get_trigger_time(self) -> Tuple[bool, Union[None, datetime]]:
         found = 'trigger_time' in self.parsed_args
         return found, self.parsed_args.get('trigger_time')
-
-    def get_user_id(self):
-        return self.user_id
 
     def get_visible_hours(self) -> Tuple[bool, Union[None, Set[int]]]:
         found = 'visible_hours' in self.parsed_args

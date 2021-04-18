@@ -3,12 +3,15 @@ from flask import request
 from webargs import fields
 
 from ...app.use_case.create_task import CreateTaskUseCase, IParams
-from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
+from nest.web.authentication_plugin import (
+    AuthenticationParamsMixin,
+    AuthenticationPlugin,
+)
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
 
-class HTTPParams(AuthenticationParams, IParams):
+class HTTPParams(AuthenticationParamsMixin, IParams):
     def __init__(self):
         args = {
             'brief': fields.Str(required=True),
@@ -18,12 +21,6 @@ class HTTPParams(AuthenticationParams, IParams):
 
     def get_brief(self):
         return self.brief
-
-    def get_certificate_id(self) -> int:
-        return request.cookies.get('certificate_id')
-
-    def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
 
 
 @wrap_response

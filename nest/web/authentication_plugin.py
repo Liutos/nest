@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 
+from flask import request
+
 from nest.app.entity.certificate import ICertificateRepository
 from nest.app.use_case.authentication_plugin import IAuthenticationPlugin, InvalidCertificateError
 
@@ -13,6 +15,14 @@ class IParams(ABC):
     @abstractmethod
     def get_user_id(self) -> int:
         pass
+
+
+class AuthenticationParamsMixin(IParams):
+    def get_certificate_id(self) -> int:
+        return request.cookies.get('certificate_id')
+
+    def get_user_id(self) -> int:
+        return int(request.cookies.get('user_id'))
 
 
 class AuthenticationPlugin(IAuthenticationPlugin):

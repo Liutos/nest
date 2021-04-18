@@ -6,13 +6,16 @@ from flask import request
 from webargs import fields
 
 from nest.app.use_case.create_plan import CreatePlanUseCase, InvalidRepeatTypeError, IParams
-from nest.web.authentication_plugin import AuthenticationPlugin, IParams as AuthenticationParams
+from nest.web.authentication_plugin import (
+    AuthenticationPlugin,
+    AuthenticationParamsMixin,
+)
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.plan import PlanPresenter
 
 
-class HTTPParams(AuthenticationParams, IParams):
+class HTTPParams(AuthenticationParamsMixin, IParams):
     def __init__(self):
         args = {
             'duration': fields.Int(allow_none=True),
@@ -29,16 +32,6 @@ class HTTPParams(AuthenticationParams, IParams):
         self.trigger_time = parsed_args['trigger_time']
         self.visible_hours = set(parsed_args.get('visible_hours') or [])
         self.visible_wdays = set(parsed_args.get('visible_wdays') or [])
-        args = {
-            'certificate_id': fields.Str(required=True),
-            'user_id': fields.Int(required=True),
-        }
-        parsed_args = parser.parse(args, request, location='cookies')
-        self.certificate_id = parsed_args['certificate_id']
-        self.user_id = parsed_args['user_id']
-
-    def get_certificate_id(self):
-        return self.certificate_id
 
     def get_duration(self) -> Union[None, int]:
         return self.duration
@@ -51,9 +44,6 @@ class HTTPParams(AuthenticationParams, IParams):
 
     def get_trigger_time(self) -> datetime:
         return self.trigger_time
-
-    def get_user_id(self):
-        return self.user_id
 
     def get_visible_hours(self) -> Union[None, Set[int]]:
         return self.visible_hours

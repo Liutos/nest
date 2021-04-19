@@ -17,7 +17,10 @@ mysql_connection = ConnectionPool(config)
 @pytest.fixture
 def client():
     with main.app.test_client() as client:
-        register_user()
+        client.post('/user/login', json={
+            'email': 'foobar.bef@gmail.com',
+            'password': 'def',
+        })
         yield client
     # 在这里把数据库中插入的数据删掉
     if _task_id:
@@ -26,12 +29,7 @@ def client():
     destroy_user()
 
 
-def test_create_task(client):
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
+def test_create_task(register_user, client):
     rv = client.post('/task', json={
         'brief': 'Hello, nest!',
     })

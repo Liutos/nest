@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 from typing import Union
 
+import pytest
+
 from nest.repository.user import DatabaseUserRepository
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 from nest.infra.config import Config
@@ -29,6 +31,7 @@ def destroy_user():
     user_repository.remove(_user_id)
 
 
+@pytest.fixture
 def register_user():
     use_case = RegistrationUseCase(
         params=MockParams(),

@@ -18,17 +18,14 @@ mysql_connection = ConnectionPool(config)
 @pytest.fixture
 def client():
     with main.app.test_client() as client:
+        client.post('/user/login', json={
+            'email': 'foobar.bef@gmail.com',
+            'password': 'def',
+        })
         yield client
 
 
-def test_create_task(client):
-    # 注册用户
-    register_user()
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
+def test_create_task(register_user, client):
     # 创建任务以便联表查询
     rv = client.post('/task', json={
         'brief': 'test',
@@ -50,11 +47,6 @@ def destroy_artefact():
 
 
 def test_create_plan(client):
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
     rv = client.post('/plan', json={
         'repeat_type': 'hourly',
         'task_id': _task_id,
@@ -68,11 +60,6 @@ def test_create_plan(client):
 
 
 def test_get_plan(client):
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
     rv = client.get('/plan/{}'.format(_plan_ids[0]))
     assert rv.get_json()['status'] == 'success'
     result = rv.get_json()['result']

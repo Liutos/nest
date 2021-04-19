@@ -18,17 +18,14 @@ mysql_connection = ConnectionPool(config)
 @pytest.fixture
 def client():
     with main.app.test_client() as client:
+        client.post('/user/login', json={
+            'email': 'foobar.bef@gmail.com',
+            'password': 'def',
+        })
         yield client
 
 
-def test_create_task(client):
-    # 注册用户
-    register_user()
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
+def test_create_task(register_user, client):
     # 创建任务以便联表查询
     rv = client.post('/task', json={
         'brief': 'test',
@@ -50,11 +47,6 @@ def destroy_artefact():
 
 
 def test_create_plan(client):
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
     rv = client.post('/plan', json={
         'duration': 234,
         'repeat_type': 'hourly',
@@ -73,11 +65,6 @@ def test_create_plan(client):
 
 
 def test_create_plan_again(client):
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
     rv = client.post('/plan', json={
         'task_id': _task_id,
         'trigger_time': '2019-02-21 17:39:00',
@@ -93,11 +80,6 @@ def test_create_plan_again(client):
 
 
 def test_list_plan(client):
-    # 要先登录才能创建
-    client.post('/user/login', json={
-        'email': 'foobar.bef@gmail.com',
-        'password': 'def',
-    })
     rv = client.get('/plan', query_string={
         'page': 1,
         'per_page': 10,

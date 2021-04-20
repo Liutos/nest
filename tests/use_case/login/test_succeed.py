@@ -25,6 +25,9 @@ class MockUserRepository(IUserRepository):
     def add():
         pass
 
+    def clear(self):
+        pass
+
     def get_by_email(self, email):
         return User.new(
             'mat.liutos@gmail.com',

@@ -4,13 +4,9 @@ import pytest
 
 from nest.repository.user import DatabaseUserRepository
 from nest.web import main
-from nest.infra.config import Config
-from nest.infra.db_connection import ConnectionPool
-from tests.web.helper import get_config_file_path
+from tests.web.helper import mysql_connection
 
 _user_id = None
-config = Config(get_config_file_path())
-mysql_connection = ConnectionPool(config)
 
 
 @pytest.fixture

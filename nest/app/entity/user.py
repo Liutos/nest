@@ -53,5 +53,9 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
+    def clear(self):
+        pass
+
+    @abstractmethod
     def get_by_email(self, email: str) -> User:
         pass

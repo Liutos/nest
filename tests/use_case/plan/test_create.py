@@ -35,6 +35,9 @@ class MockPlanRepository(IPlanRepository):
     def add(self, plan: Plan):
         plan.id = 123
 
+    def clear(self):
+        pass
+
     def find_as_queue(self, *, page: int, per_page: int) -> List[Plan]:
         pass
 

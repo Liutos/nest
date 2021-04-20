@@ -1,9 +1,6 @@
 # -*- coding: utf8 -*-
 from typing import Union
 
-import pytest
-
-from nest.repository.user import DatabaseUserRepository
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 from nest.infra.config import Config
 from nest.infra.db_connection import ConnectionPool
@@ -26,16 +23,14 @@ class MockParams(IParams):
         return 'def'
 
 
-def destroy_user():
-    user_repository = DatabaseUserRepository(mysql_connection)
+def destroy_user(user_repository):
     user_repository.remove(_user_id)
 
 
-@pytest.fixture
-def register_user():
+def register_user(user_repository):
     use_case = RegistrationUseCase(
         params=MockParams(),
-        user_repository=DatabaseUserRepository(mysql_connection)
+        user_repository=user_repository,
     )
     user = use_case.run()
     global _user_id

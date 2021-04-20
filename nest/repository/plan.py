@@ -46,6 +46,19 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 with connection.cursor() as cursor:
                     cursor.execute(sql)
 
+    def clear(self):
+        """
+        清空整个t_plan表，用于单元测试的初始化。
+        """
+        plan_table = Table('t_plan')
+        query = Query\
+            .from_(plan_table)\
+            .delete()
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+
     def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
         plan_table, task_table = Tables('t_plan', 't_task')
         query = Query\

@@ -40,6 +40,9 @@ class MockTaskRepository(ITaskRepository):
     def add(self, task: Task):
         task.id = 3001
 
+    def clear(self):
+        pass
+
     def find(self, *, count, start, user_id):
         pass
 

@@ -26,6 +26,9 @@ class MockUserRepository(IUserRepository):
         assert email == 'foo@bar.com'
         self.user = user
 
+    def clear(self):
+        pass
+
     def get_by_email(self, email: str) -> User:
         assert email == 'foo@bar.com'
         return self.user

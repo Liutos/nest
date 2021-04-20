@@ -3,15 +3,35 @@
 import pytest
 
 from nest.repository.task import DatabaseTaskRepository
+from nest.repository.user import DatabaseUserRepository
 from nest.web import main
-from nest.infra.config import Config
-from nest.infra.db_connection import ConnectionPool
-from .user_helper import destroy_user, register_user
-from tests.web.helper import get_config_file_path
+from .user_helper import register_user
+from tests.web.helper import mysql_connection
 
 _task_id = None
-config = Config(get_config_file_path())
-mysql_connection = ConnectionPool(config)
+task_repository = DatabaseTaskRepository(
+    connection=mysql_connection,
+)
+user_repository = DatabaseUserRepository(
+    connection=mysql_connection,
+)
+
+
+def clear_database():
+    task_repository.clear()
+    user_repository.clear()
+
+
+# 写法来自这里：https://docs.pytest.org/en/stable/xunit_setup.html
+def setup_module():
+    clear_database()
+    register_user(user_repository)
+    print('初始化完毕')
+
+
+def teardown_module():
+    clear_database()
+    print('清理数据库')
 
 
 @pytest.fixture
@@ -22,14 +42,9 @@ def client():
             'password': 'def',
         })
         yield client
-    # 在这里把数据库中插入的数据删掉
-    if _task_id:
-        task_repository = DatabaseTaskRepository(mysql_connection)
-        task_repository.remove(_task_id)
-    destroy_user()
 
 
-def test_create_task(register_user, client):
+def test_create_task(client):
     rv = client.post('/task', json={
         'brief': 'Hello, nest!',
     })

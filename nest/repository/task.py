@@ -2,6 +2,8 @@
 from datetime import datetime
 from typing import Union
 
+from pypika import Query, Table
+
 from nest.app.entity.task import ITaskRepository, Task
 from nest.repository.db_operation import DatabaseOperationMixin
 
@@ -20,6 +22,19 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
         }, 't_task')
 
         task.id = insert_id
+
+    def clear(self):
+        """
+        清空整个t_task表，用于单元测试的初始化。
+        """
+        plan_table = Table('t_task')
+        query = Query\
+            .from_(plan_table)\
+            .delete()
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
 
     def find(self, *, count, start, user_id) -> [Task]:
         with self.get_connection() as connection:

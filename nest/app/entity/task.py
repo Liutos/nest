@@ -23,6 +23,10 @@ class ITaskRepository(ABC):
         pass
 
     @abstractmethod
+    def clear(self):
+        pass
+
+    @abstractmethod
     def find(self, *, count, start, user_id) -> [Task]:
         pass
 

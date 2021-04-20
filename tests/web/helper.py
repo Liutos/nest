@@ -1,6 +1,9 @@
 # -*- coding: utf8 -*-
 import os
 
+from nest.infra.db_connection import ConnectionPool
+from nest.infra.config import Config
+
 
 def get_config_file_path():
     current_dir = os.path.dirname(__file__)
@@ -11,3 +14,7 @@ def get_config_file_path():
     if mode == 'unittest':
         file_name = 'unittest'
     return os.path.join(config_dir, file_name + '.ini')
+
+
+config = Config(get_config_file_path())
+mysql_connection = ConnectionPool(config)

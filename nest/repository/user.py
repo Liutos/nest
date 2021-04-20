@@ -2,6 +2,8 @@
 from datetime import datetime
 from typing import Union
 
+from pypika import Query, Table
+
 from nest.app.entity.user import IUserRepository, User
 from nest.repository.db_operation import DatabaseOperationMixin
 
@@ -22,6 +24,19 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
         }, 't_user')
 
         return self.get_by_email(user.email)
+
+    def clear(self):
+        """
+        清空整个t_user表，用于单元测试的初始化。
+        """
+        user_table = Table('t_user')
+        query = Query\
+            .from_(user_table)\
+            .delete()
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
 
     def get_by_email(self, email: str) -> Union[User, None]:
         with self.get_connection() as connection:

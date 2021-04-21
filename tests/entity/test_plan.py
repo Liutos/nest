@@ -7,13 +7,18 @@ from nest.app.entity.plan import Plan, WeeklyRepeater
 def test_rebirth():
     trigger_time = datetime.now()
     plan = Plan.new(
+        duration=2,
         task_id=1,
         trigger_time=trigger_time,
-        repeat_type='hourly'
+        repeat_type='hourly',
+        visible_hours=[1],
+        visible_wdays=[6],
     )
     rebirth_plan = plan.rebirth()
-    assert rebirth_plan.repeat_type == 'hourly'
-    assert rebirth_plan.task_id == 1
+    for attr, value in plan.__dict__.items():
+        if attr in ['id', 'trigger_time']:
+            continue
+        assert getattr(rebirth_plan, attr) == getattr(plan, attr)
     assert rebirth_plan.trigger_time.timestamp() - trigger_time.timestamp() == 60 * 60
 
 

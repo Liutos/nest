@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import List
+from typing import List, Union
 
 from flask import request
 from webargs import fields, validate
@@ -19,16 +19,21 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
         args = {
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
+            'task_ids': fields.DelimitedList(fields.Int()),
         }
         parsed_args = parser.parse(args, request, location='querystring')
         self.count = parsed_args['per_page']
         self.start = (parsed_args['page'] - 1) * parsed_args['per_page']
+        self.task_ids = parsed_args.get('task_ids')
 
     def get_count(self) -> int:
         return self.count
 
     def get_start(self) -> int:
         return self.start
+
+    def get_task_ids(self) -> Union[None, List[int]]:
+        return self.task_ids
 
 
 class Presenter:

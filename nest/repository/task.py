@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 from datetime import datetime
-from typing import Union
+from typing import List, Union
 
-from pypika import Query, Table
+from pypika import Order, Query, Table
 
 from nest.app.entity.task import ITaskRepository, Task
 from nest.repository.db_operation import DatabaseOperationMixin
@@ -36,11 +36,23 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             with connection.cursor() as cursor:
                 cursor.execute(sql)
 
-    def find(self, *, count, start, user_id) -> [Task]:
+    def find(self, *, count, start, user_id,
+             task_ids: Union[None, List[int]] = None) -> [Task]:
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM `t_task` WHERE `user_id` = %s ORDER BY `ctime` DESC LIMIT %s OFFSET %s"
-                cursor.execute(sql, (user_id, count, start))
+                task_table = Table('t_task')
+                query = Query\
+                    .from_(task_table)\
+                    .select(task_table.star)\
+                    .where(task_table.user_id == user_id)\
+                    .orderby(task_table.ctime, order=Order.desc)\
+                    .limit(count)\
+                    .offset(start)
+                if task_ids is not None:
+                    query = query.where(task_table.id.isin(task_ids))
+
+                sql = query.get_sql(quote_char=None)
+                cursor.execute(sql)
                 rows = cursor.fetchall()
                 return [self._row_to_task(row) for row in rows]
 

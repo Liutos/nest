@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
+from typing import List, Union
 
 from ..entity.certificate import ICertificateRepository
 from ..entity.task import ITaskRepository
@@ -17,6 +18,10 @@ class IParams(ABC):
 
     @abstractmethod
     def get_start(self) -> int:
+        pass
+
+    @abstractmethod
+    def get_task_ids(self) -> Union[None, List[int]]:
         pass
 
     @abstractmethod
@@ -41,11 +46,13 @@ class ListTaskUseCase:
         params = self.params
         count = params.get_count()
         start = params.get_start()
+        task_ids = params.get_task_ids()
         user_id = params.get_user_id()
         task_repository = self.task_repository
         tasks = task_repository.find(
             count=count,
             start=start,
+            task_ids=task_ids,
             user_id=user_id,
         )
         return tasks

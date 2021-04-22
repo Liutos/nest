@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import Union
+from typing import List, Union
 
 from nest.app.entity.certificate import ICertificateRepository, Certificate
 from nest.app.entity.task import ITaskRepository, Task
@@ -35,6 +35,9 @@ class MockParams(IParams):
     def get_start(self) -> int:
         return 0
 
+    def get_task_ids(self) -> Union[None, List[int]]:
+        return None
+
     def get_user_id(self) -> int:
         return 2001
 
@@ -46,7 +49,8 @@ class MockTaskRepository(ITaskRepository):
     def clear(self):
         pass
 
-    def find(self, *, count, start, user_id):
+    def find(self, *, count, start, user_id,
+             task_ids=None):
         return [{}]
 
     def find_by_id(self, *, id_) -> Union[None, Task]:

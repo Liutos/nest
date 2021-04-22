@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import List, Union
 
 
 class Task:
@@ -27,7 +27,8 @@ class ITaskRepository(ABC):
         pass
 
     @abstractmethod
-    def find(self, *, count, start, user_id) -> [Task]:
+    def find(self, *, count, start, user_id,
+             task_ids: Union[None, List[int]] = None) -> [Task]:
         pass
 
     @abstractmethod

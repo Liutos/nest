@@ -1,7 +1,19 @@
 # -*- coding: utf8 -*-
 from datetime import datetime, timedelta
 
-from nest.app.entity.plan import Plan, WeeklyRepeater
+from nest.app.entity.plan import PeriodicallyRepeater, Plan, WeeklyRepeater
+
+
+def test_periodically_repeater():
+    """测试三天一次的重复模式。"""
+    trigger_time = datetime.now()
+    repeater = PeriodicallyRepeater(
+        last_trigger_time=trigger_time,
+        repeat_interval=timedelta(days=3),
+    )
+    next_trigger_time = repeater.compute_next_trigger_time()
+    diff = next_trigger_time - trigger_time
+    assert diff.total_seconds() == timedelta(days=3).total_seconds()
 
 
 def test_rebirth():

@@ -37,6 +37,11 @@ class HourRepeater(FixedIntervalRepeaterMixin, IRepeater):
         return timedelta(hours=1)
 
 
+class PeriodicallyRepeater(FixedIntervalRepeaterMixin, IRepeater):
+    def get_interval(self) -> timedelta:
+        return self.repeat_interval
+
+
 class WeeklyRepeater(FixedIntervalRepeaterMixin, IRepeater):
     def get_interval(self) -> timedelta:
         return timedelta(days=7)
@@ -45,6 +50,7 @@ class WeeklyRepeater(FixedIntervalRepeaterMixin, IRepeater):
 _TYPE_TO_REPEATER_CLASS = {
     'daily': DailyRepeater,
     'hourly': HourRepeater,
+    'periodically': HourRepeater,
     'weekly': WeeklyRepeater,
 }
 
@@ -63,10 +69,15 @@ class InvalidDurationError(Exception):
     pass
 
 
+class RepeatIntervalMissingError(Exception):
+    pass
+
+
 class Plan:
     def __init__(self):
         self.duration = None
         self.id = None
+        self.repeat_interval = None
         self.repeat_type = None
         self.task_id = None
         self.trigger_time = None
@@ -76,12 +87,16 @@ class Plan:
     @classmethod
     def new(cls, task_id, trigger_time, *,
             duration: Union[None, int] = None,
+            repeat_interval: Union[None, timedelta] = None,
             repeat_type=None, visible_hours=None, visible_wdays=None):
         if isinstance(duration, int) and duration < 0:
             raise InvalidDurationError()
+        if repeat_type == 'periodically' and not repeat_interval:
+            raise RepeatIntervalMissingError()
 
         instance = Plan()
         instance.duration = duration
+        instance.repeat_interval = repeat_interval
         instance.repeat_type = repeat_type
         instance.task_id = task_id
         instance.trigger_time = trigger_time

@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Set, Union
 
 from nest.app.entity.plan import (
@@ -14,6 +14,10 @@ from .authentication_plugin import IAuthenticationPlugin
 class IParams(ABC):
     @abstractmethod
     def get_duration(self) -> Union[None, int]:
+        pass
+
+    @abstractmethod
+    def get_repeat_interval(self) -> Union[None, timedelta]:
         pass
 
     @abstractmethod
@@ -64,9 +68,10 @@ class CreatePlanUseCase:
             task_id,
             trigger_time,
             duration=duration,
+            repeat_interval=params.get_repeat_interval(),
             repeat_type=repeat_type,
             visible_hours=visible_hours,
             visible_wdays=visible_wdays,
         )
         self.plan_repository.add(plan)
-        return plan
+        return self.plan_repository.find_by_id(plan.id)

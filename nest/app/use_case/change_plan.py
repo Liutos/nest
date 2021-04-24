@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Set, Tuple, Union
 
 from nest.app.entity.plan import (
@@ -18,6 +18,10 @@ class IParams(ABC):
 
     @abstractmethod
     def get_plan_id(self) -> int:
+        pass
+
+    @abstractmethod
+    def get_repeat_interval(self) -> Tuple[bool, Union[None, timedelta]]:
         pass
 
     @abstractmethod
@@ -59,10 +63,14 @@ class ChangePlanUseCase:
         if plan is None:
             raise PlanNotFoundError(plan_id=plan_id)
 
+        # TODO: 如何优化这类重复代码？引入元编程之类的写法划算吗？
         found, duration = params.get_duration()
         if found:
             # TODO: 是否应当让duration成为一个property呢？还是用setter来做检查？
             plan.duration = duration
+        found, repeat_interval = params.get_repeat_interval()
+        if found:
+            plan.repeat_interval = repeat_interval
         found, repeat_type = params.get_repeat_type()
         if found:
             if not Plan.is_valid_repeat_type(repeat_type):

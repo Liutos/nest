@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
-from typing import List
+from typing import List, Union
 
 from pypika import Order, Query, Table, Tables
 
@@ -17,10 +17,13 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         """
         将计划存储到数据库，或更新数据库已有的计划。
         """
+        # TODO: 统一一下插入和更新时两种不同风格的写法。这里统一为用pypika、而不是自己发明一种写法会更好。
         if plan.id is None:
             now = datetime.now()
+            repeat_interval: Union[None, timedelta] = plan.repeat_interval
             insert_id = self.insert_to_db({
                 'duration': plan.duration,
+                'repeat_interval': repeat_interval and repeat_interval.total_seconds(),
                 'repeat_type': plan.repeat_type,
                 'task_id': plan.task_id,
                 'trigger_time': plan.trigger_time,
@@ -33,9 +36,11 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             plan.id = insert_id
         else:
             plan_table = Table('t_plan')
+            repeat_interval: Union[None, timedelta] = plan.repeat_interval
             query = Query\
                 .update(plan_table)\
                 .set(plan_table.duration, plan.duration)\
+                .set(plan_table.repeat_interval, repeat_interval and repeat_interval.total_seconds())\
                 .set(plan_table.repeat_type, plan.repeat_type)\
                 .set(plan_table.trigger_time, plan.trigger_time)\
                 .set(plan_table.visible_hours, json.dumps(plan.visible_hours)) \
@@ -86,6 +91,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             plan = Plan()
             plan.duration = plan_dict['duration']
             plan.id = plan_dict['id']
+            if isinstance(plan_dict['repeat_interval'], int):
+                plan.repeat_interval = timedelta(seconds=plan_dict['repeat_interval'])
             plan.repeat_type = plan_dict['repeat_type']
             plan.task_id = plan_dict['task_id']
             plan.trigger_time = plan_dict['trigger_time']
@@ -111,6 +118,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 plan = Plan()
                 plan.duration = plan_dict['duration']
                 plan.id = plan_dict['id']
+                if isinstance(plan_dict['repeat_interval'], int):
+                    plan.repeat_interval = timedelta(seconds=plan_dict['repeat_interval'])
                 plan.repeat_type = plan_dict['repeat_type']
                 plan.task_id = plan_dict['task_id']
                 plan.trigger_time = plan_dict['trigger_time']

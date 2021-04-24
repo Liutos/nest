@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Set, Union
 
 from flask import request
@@ -19,6 +19,7 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
     def __init__(self):
         args = {
             'duration': fields.Int(allow_none=True),
+            'repeat_interval': fields.TimeDelta(allow_none=True),
             'repeat_type': fields.Str(allow_none=True),
             'task_id': fields.Int(required=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S', required=True),
@@ -27,6 +28,7 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
         }
         parsed_args = parser.parse(args, request)
         self.duration = parsed_args.get('duration')
+        self.repeat_interval = parsed_args.get('repeat_interval')
         self.repeat_type = parsed_args.get('repeat_type')
         self.task_id = parsed_args['task_id']
         self.trigger_time = parsed_args['trigger_time']
@@ -35,6 +37,9 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
 
     def get_duration(self) -> Union[None, int]:
         return self.duration
+
+    def get_repeat_interval(self) -> Union[None, timedelta]:
+        return self.repeat_interval
 
     def get_repeat_type(self) -> Union[None, str]:
         return self.repeat_type

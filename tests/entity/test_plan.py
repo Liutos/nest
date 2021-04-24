@@ -20,9 +20,10 @@ def test_rebirth():
     trigger_time = datetime.now()
     plan = Plan.new(
         duration=2,
+        repeat_interval=timedelta(days=3),
+        repeat_type='periodically',
         task_id=1,
         trigger_time=trigger_time,
-        repeat_type='hourly',
         visible_hours=[1],
         visible_wdays=[6],
     )

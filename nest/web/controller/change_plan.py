@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Set, Tuple, Union
 
 from flask import request
@@ -20,6 +20,7 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
         self.plan_id = plan_id
         args = {
             'duration': fields.Int(allow_none=True),
+            'repeat_interval': fields.TimeDelta(allow_none=None),
             'repeat_type': fields.Str(allow_none=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S'),
             'visible_hours': fields.List(fields.Int, allow_none=True),
@@ -36,6 +37,12 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
 
     def get_plan_id(self) -> int:
         return self.plan_id
+
+    def get_repeat_interval(self) -> Tuple[bool, Union[None, timedelta]]:
+        return (
+            'repeat_interval' in self.parsed_args,
+            self.parsed_args.get('repeat_interval'),
+        )
 
     def get_repeat_type(self) -> Tuple[bool, Union[None, str]]:
         found = 'repeat_type' in self.parsed_args

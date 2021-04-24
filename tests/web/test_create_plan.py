@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from datetime import timedelta
 import pytest
 
 from nest.repository.plan import DatabasePlanRepository
@@ -103,3 +104,18 @@ def test_list_plan(client):
     assert plans[0]['id'] == _plan_ids[1]
     assert plans[1]['id'] == _plan_ids[0]
     assert plans[1]['duration'] == 234
+
+
+def test_periodical_plan(client):
+    """测试periodically重复模式"""
+    seconds = timedelta(days=3).total_seconds()
+    rv = client.post('/plan', json={
+        'repeat_interval': seconds,
+        'repeat_type': 'periodically',
+        'task_id': _task_id,
+        'trigger_time': '2021-04-24 20:34:00',
+    })
+    json_data = rv.get_json()
+    plan = json_data['result']
+    assert plan
+    assert plan['repeat_interval'] == seconds

@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from datetime import timedelta
 from typing import List, Set, Union
 
 from nest.app.entity.plan import IPlanRepository, Plan
@@ -14,6 +15,9 @@ class MockAuthenticationPlugin(IAuthenticationPlugin):
 class MockParams(IParams):
     def get_duration(self) -> Union[None, int]:
         return 233
+
+    def get_repeat_interval(self) -> Union[None, timedelta]:
+        return None
 
     def get_repeat_type(self) -> str:
         return 'hourly'
@@ -32,8 +36,12 @@ class MockParams(IParams):
 
 
 class MockPlanRepository(IPlanRepository):
+    def __init__(self):
+        self.plan = None
+
     def add(self, plan: Plan):
         plan.id = 123
+        self.plan = plan
 
     def clear(self):
         pass
@@ -42,7 +50,7 @@ class MockPlanRepository(IPlanRepository):
         pass
 
     def find_by_id(self, id_: int) -> Plan:
-        pass
+        return self.plan
 
     def remove(self, id_: int):
         pass

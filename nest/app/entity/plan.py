@@ -136,6 +136,7 @@ class Plan:
         )
         instance = Plan()
         instance.duration = self.duration
+        instance.repeat_interval = self.repeat_interval
         instance.repeat_type = self.repeat_type
         instance.task_id = self.task_id
         instance.trigger_time = repeater.compute_next_trigger_time()

@@ -3,6 +3,7 @@ import functools
 
 from webargs.core import ValidationError
 
+from nest.app.entity.plan import RepeatIntervalMissingError
 from nest.app.use_case.authentication_plugin import InvalidCertificateError
 
 
@@ -33,6 +34,15 @@ def wrap_response(func):
                 'result': None,
                 'status': 'failure',
             }, 401
+        except RepeatIntervalMissingError:
+            return {
+                'error': {
+                    'code': 422,
+                    'message': '此时必须传入非空的repeat_interval参数',
+                },
+                'result': None,
+                'status': 'failure',
+            }, 422
         except ValidationError as e:
             message = _extract_first_error_message(e.messages)
             return {

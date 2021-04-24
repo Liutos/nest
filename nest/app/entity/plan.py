@@ -131,7 +131,7 @@ class Plan:
         """
         repeater = RepeaterFactory.get_repeater(
             last_trigger_time=self.trigger_time,
-            repeat_interval=None,
+            repeat_interval=self.repeat_interval,
             repeat_type=self.repeat_type,
         )
         instance = Plan()

@@ -17,7 +17,7 @@ from nest.web.controller import (
     login,
     pop_plan,
 )
-from nest.infra.db_connection import ConnectionPool
+from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.repository import RepositoryFactory
 
 
@@ -41,7 +41,7 @@ certificate_repository = RedisCertificateRepository(
     port=port
 )
 
-mysql_connection = ConnectionPool(config)
+mysql_connection = DBUtilsConnectionPool(config)
 repository_factory = RepositoryFactory(mysql_connection)
 
 app.add_url_rule('/plan', defaults={

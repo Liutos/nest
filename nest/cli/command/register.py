@@ -4,7 +4,7 @@ import os
 
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 from nest.infra.config import Config
-from nest.infra.db_connection import ConnectionPool
+from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.repository import RepositoryFactory
 
 
@@ -53,7 +53,7 @@ def register():
         file_name = 'unittest'
     config_file = os.path.join(config_dir, file_name + '.ini')
     config = Config(config_file)
-    mysql_connection = ConnectionPool(config)
+    mysql_connection = DBUtilsConnectionPool(config)
     params = Params()
     user_repository = RepositoryFactory(mysql_connection).user()
     use_case = RegistrationUseCase(

@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import os
 
-from nest.infra.db_connection import ConnectionPool
+from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.config import Config
 
 
@@ -17,4 +17,4 @@ def get_config_file_path():
 
 
 config = Config(get_config_file_path())
-mysql_connection = ConnectionPool(config)
+mysql_connection = DBUtilsConnectionPool(config)

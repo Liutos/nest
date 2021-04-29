@@ -5,16 +5,25 @@ from flask import request
 from webargs import fields, validate
 
 from nest.app.entity.task import Task
-from nest.app.use_case.list_task import IParams, ListTaskUseCase
-from nest.web.authentication_plugin import (
-    AuthenticationParamsMixin,
-    AuthenticationPlugin,
+from nest.app.use_case.authenticate import (
+    AuthenticateUseCase,
+    IParams as AuthenticateParams,
 )
+from nest.app.use_case.list_task import IParams, ListTaskUseCase
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
 
-class HTTPParams(AuthenticationParamsMixin, IParams):
+class CookiesParams(AuthenticateParams):
+    def get_certificate_id(self) -> Union[None, str]:
+        return request.cookies.get('certificate_id')
+
+    def get_user_id(self) -> Union[None, int]:
+        user_id = request.cookies.get('user_id')
+        return user_id and int(user_id)
+
+
+class HTTPParams(IParams):
     def __init__(self):
         args = {
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
@@ -35,6 +44,9 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
     def get_task_ids(self) -> Union[None, List[int]]:
         return self.task_ids
 
+    def get_user_id(self) -> int:
+        return int(request.cookies.get('user_id'))
+
 
 class Presenter:
     def __init__(self, *, tasks: List[Task]):
@@ -54,14 +66,14 @@ class Presenter:
 
 @wrap_response
 def list_task(certificate_repository, repository_factory):
-    params = HTTPParams()
-    authentication_plugin = AuthenticationPlugin(
+    authenticate_use_case = AuthenticateUseCase(
         certificate_repository=certificate_repository,
-        params=params,
+        params=CookiesParams(),
     )
+    authenticate_use_case.run()
+
+    params = HTTPParams()
     use_case = ListTaskUseCase(
-        authentication_plugin=authentication_plugin,
-        certificate_repository=certificate_repository,
         params=params,
         task_repository=repository_factory.task(),
     )

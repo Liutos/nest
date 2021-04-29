@@ -1,28 +1,8 @@
 # -*- coding: utf8 -*-
 from typing import List, Union
 
-from nest.app.entity.certificate import ICertificateRepository, Certificate
 from nest.app.entity.task import ITaskRepository, Task
-from nest.app.use_case.authentication_plugin import IAuthenticationPlugin
 from nest.app.use_case.list_task import IParams, ListTaskUseCase
-
-
-class MockAuthenticationPlugin(IAuthenticationPlugin):
-    def authenticate(self):
-        pass
-
-
-class MockCertificateRepository(ICertificateRepository):
-    def add(self, certificate: Certificate):
-        pass
-
-    def get_by_certificate_id(self, certificate_id: str) -> Certificate:
-        certificate = Certificate()
-        certificate.user_id = 2001
-        return certificate
-
-    def get_by_user_id(self, user_id: int) -> Certificate:
-        pass
 
 
 class MockParams(IParams):
@@ -59,8 +39,6 @@ class MockTaskRepository(ITaskRepository):
 
 def test_create():
     use_case = ListTaskUseCase(
-        authentication_plugin=MockAuthenticationPlugin(),
-        certificate_repository=MockCertificateRepository(),
         params=MockParams(),
         task_repository=MockTaskRepository()
     )

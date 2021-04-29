@@ -10,12 +10,15 @@ class PlanPresenter:
         self.plan = plan
 
     def format(self):
-        repeat_interval: Union[None, timedelta] = self.plan.repeat_interval
+        repeat_interval: Union[None, int, timedelta] = self.plan.repeat_interval
+        if repeat_interval is not None:
+            repeat_interval = int(repeat_interval.total_seconds())
+
         trigger_time: datetime = self.plan.trigger_time
         return {
             'duration': self.plan.duration,
             'id': self.plan.id,
-            'repeat_interval': repeat_interval and repeat_interval.total_seconds(),
+            'repeat_interval': repeat_interval,
             'repeat_type': self.plan.repeat_type,
             'task_id': self.plan.task_id,
             'trigger_time': trigger_time.strftime('%Y-%m-%d %H:%M:%S'),

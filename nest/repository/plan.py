@@ -20,10 +20,13 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         # TODO: 统一一下插入和更新时两种不同风格的写法。这里统一为用pypika、而不是自己发明一种写法会更好。
         if plan.id is None:
             now = datetime.now()
-            repeat_interval: Union[None, timedelta] = plan.repeat_interval
+            repeat_interval: Union[None, timedelta, int] = plan.repeat_interval
+            if repeat_interval is not None:
+                repeat_interval = int(repeat_interval.total_seconds())
+
             insert_id = self.insert_to_db({
                 'duration': plan.duration,
-                'repeat_interval': repeat_interval and repeat_interval.total_seconds(),
+                'repeat_interval': repeat_interval,
                 'repeat_type': plan.repeat_type,
                 'task_id': plan.task_id,
                 'trigger_time': plan.trigger_time,

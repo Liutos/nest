@@ -20,7 +20,7 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
         self.plan_id = plan_id
         args = {
             'duration': fields.Int(allow_none=True),
-            'repeat_interval': fields.TimeDelta(allow_none=None),
+            'repeat_interval': fields.TimeDelta(allow_none=True),
             'repeat_type': fields.Str(allow_none=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S'),
             'visible_hours': fields.List(fields.Int, allow_none=True),

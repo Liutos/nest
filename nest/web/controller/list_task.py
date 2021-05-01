@@ -5,22 +5,11 @@ from flask import request
 from webargs import fields, validate
 
 from nest.app.entity.task import Task
-from nest.app.use_case.authenticate import (
-    AuthenticateUseCase,
-    IParams as AuthenticateParams,
-)
+from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.list_task import IParams, ListTaskUseCase
+from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
-
-
-class CookiesParams(AuthenticateParams):
-    def get_certificate_id(self) -> Union[None, str]:
-        return request.cookies.get('certificate_id')
-
-    def get_user_id(self) -> Union[None, int]:
-        user_id = request.cookies.get('user_id')
-        return user_id and int(user_id)
 
 
 class HTTPParams(IParams):

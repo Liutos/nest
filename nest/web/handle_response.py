@@ -4,6 +4,12 @@ import functools
 from webargs.core import ValidationError
 
 from nest.app.entity.plan import RepeatIntervalMissingError
+from nest.app.use_case.authenticate import (
+    AuthenticateFailError,
+    CertificateIdMissingError,
+    CertificateNotFoundError,
+    UserIdMissingError,
+)
 from nest.app.use_case.authentication_plugin import InvalidCertificateError
 
 
@@ -25,7 +31,8 @@ def wrap_response(func):
     def wrapper(*args, **kw):
         try:
             return func(*args, **kw)
-        except InvalidCertificateError:
+        except (AuthenticateFailError, CertificateIdMissingError, CertificateNotFoundError, InvalidCertificateError,
+                UserIdMissingError):
             return {
                 'error': {
                     'code': 401,

@@ -29,9 +29,6 @@ class MockParams(IParams):
     def get_brief(self) -> str:
         return 'Hello'
 
-    def get_certificate_id(self) -> int:
-        return 1001
-
     def get_user_id(self) -> int:
         return 2001
 
@@ -52,8 +49,6 @@ class MockTaskRepository(ITaskRepository):
 
 def test_create():
     use_case = CreateTaskUseCase(
-        authentication_plugin=MockAuthenticationPlugin(),
-        certificate_repository=MockCertificateRepository(),
         params=MockParams(),
         task_repository=MockTaskRepository()
     )

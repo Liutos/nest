@@ -1,14 +1,12 @@
 # -*- coding: utf8 -*-
+from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.get_plan import GetPlanUseCase, IParams
-from nest.web.authentication_plugin import (
-    AuthenticationPlugin,
-    AuthenticationParamsMixin,
-)
+from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.presenter.plan import PlanPresenter
 
 
-class HTTPParams(AuthenticationParamsMixin, IParams):
+class HTTPParams(IParams):
     def __init__(self, *, plan_id):
         self.plan_id = plan_id
 
@@ -18,12 +16,14 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
 
 @wrap_response
 def get_plan(certificate_repository, id_, repository_factory):
+    authenticate_use_case = AuthenticateUseCase(
+        certificate_repository=certificate_repository,
+        params=CookiesParams(),
+    )
+
+    authenticate_use_case.run()
     params = HTTPParams(plan_id=id_)
     use_case = GetPlanUseCase(
-        authentication_plugin=AuthenticationPlugin(
-            certificate_repository=certificate_repository,
-            params=params,
-        ),
         params=params,
         plan_repository=repository_factory.plan(),
     )

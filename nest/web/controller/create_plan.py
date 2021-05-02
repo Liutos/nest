@@ -5,17 +5,15 @@ from typing import Set, Union
 from flask import request
 from webargs import fields
 
+from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.create_plan import CreatePlanUseCase, InvalidRepeatTypeError, IParams
-from nest.web.authentication_plugin import (
-    AuthenticationPlugin,
-    AuthenticationParamsMixin,
-)
+from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.plan import PlanPresenter
 
 
-class HTTPParams(AuthenticationParamsMixin, IParams):
+class HTTPParams(IParams):
     def __init__(self):
         args = {
             'duration': fields.Int(allow_none=True),
@@ -59,13 +57,14 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
 
 @wrap_response
 def create_plan(certificate_repository, repository_factory):
-    params = HTTPParams()
-    authentication_plugin = AuthenticationPlugin(
+    authenticate_use_case = AuthenticateUseCase(
         certificate_repository=certificate_repository,
-        params=params
+        params=CookiesParams(),
     )
+    authenticate_use_case.run()
+
+    params = HTTPParams()
     use_case = CreatePlanUseCase(
-        authentication_plugin=authentication_plugin,
         params=params,
         plan_repository=repository_factory.plan(),
     )

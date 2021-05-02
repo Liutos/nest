@@ -58,7 +58,6 @@ class MockPlanRepository(IPlanRepository):
 
 def test_create():
     use_case = CreatePlanUseCase(
-        authentication_plugin=MockAuthenticationPlugin(),
         params=MockParams(),
         plan_repository=MockPlanRepository()
     )

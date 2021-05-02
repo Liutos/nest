@@ -38,7 +38,6 @@ class MockPlanRepository(IPlanRepository):
 
 def test_dequeue():
     use_case = PopPlanUseCase(
-        authentication_plugin=MockAuthenticationPlugin(),
         params=MockParams(),
         plan_repository=MockPlanRepository()
     )

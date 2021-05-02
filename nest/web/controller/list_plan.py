@@ -2,17 +2,15 @@
 from flask import request
 from webargs import fields, validate
 
-from ...app.use_case.list_plan import IParams, ListPlanUseCase
-from nest.web.authentication_plugin import (
-    AuthenticationPlugin,
-    AuthenticationParamsMixin,
-)
+from nest.app.use_case.authenticate import AuthenticateUseCase
+from nest.app.use_case.list_plan import IParams, ListPlanUseCase
+from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.plan import PlanPresenter
 
 
-class HTTPParams(AuthenticationParamsMixin, IParams):
+class HTTPParams(IParams):
     def __init__(self):
         args = {
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
@@ -27,6 +25,9 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
 
     def get_per_page(self) -> int:
         return self.per_page
+
+    def get_user_id(self) -> int:
+        return int(request.cookies.get('user_id'))
 
 
 class ListPlanPresenter:
@@ -47,13 +48,14 @@ class ListPlanPresenter:
 
 @wrap_response
 def list_plan(certificate_repository, repository_factory):
-    params = HTTPParams()
-    authentication_plugin = AuthenticationPlugin(
+    authenticate_use_case = AuthenticateUseCase(
         certificate_repository=certificate_repository,
-        params=params,
+        params=CookiesParams(),
     )
+    authenticate_use_case.run()
+
+    params = HTTPParams()
     use_case = ListPlanUseCase(
-        authentication_plugin=authentication_plugin,
         params=params,
         plan_repository=repository_factory.plan(),
     )

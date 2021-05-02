@@ -2,17 +2,15 @@
 from flask import request
 from webargs import fields
 
-from ...app.use_case.pop_plan import IParams, PopPlanUseCase
-from nest.web.authentication_plugin import (
-    AuthenticationPlugin,
-    AuthenticationParamsMixin,
-)
+from nest.app.use_case.authenticate import AuthenticateUseCase
+from nest.app.use_case.pop_plan import IParams, PopPlanUseCase
+from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.plan import PlanPresenter
 
 
-class HTTPParams(AuthenticationParamsMixin, IParams):
+class HTTPParams(IParams):
     def __init__(self):
         args = {
             'size': fields.Int(required=True),
@@ -23,16 +21,20 @@ class HTTPParams(AuthenticationParamsMixin, IParams):
     def get_size(self) -> int:
         return self.size
 
+    def get_user_id(self) -> int:
+        return int(request.cookies.get('user_id'))
+
 
 @wrap_response
 def pop_plan(certificate_repository, repository_factory):
-    params = HTTPParams()
-    authentication_plugin = AuthenticationPlugin(
+    authenticate_use_case = AuthenticateUseCase(
         certificate_repository=certificate_repository,
-        params=params
+        params=CookiesParams(),
     )
+    authenticate_use_case.run()
+
+    params = HTTPParams()
     use_case = PopPlanUseCase(
-        authentication_plugin=authentication_plugin,
         params=params,
         plan_repository=repository_factory.plan(),
     )

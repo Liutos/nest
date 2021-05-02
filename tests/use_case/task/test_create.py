@@ -3,13 +3,7 @@ from typing import Union
 
 from nest.app.entity.certificate import ICertificateRepository, Certificate
 from nest.app.entity.task import ITaskRepository, Task
-from nest.app.use_case.authentication_plugin import IAuthenticationPlugin
 from nest.app.use_case.create_task import CreateTaskUseCase, IParams
-
-
-class MockAuthenticationPlugin(IAuthenticationPlugin):
-    def authenticate(self):
-        pass
 
 
 class MockCertificateRepository(ICertificateRepository):

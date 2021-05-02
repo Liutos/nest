@@ -3,13 +3,7 @@ from datetime import timedelta
 from typing import List, Set, Union
 
 from nest.app.entity.plan import IPlanRepository, Plan
-from nest.app.use_case.authentication_plugin import IAuthenticationPlugin
 from nest.app.use_case.create_plan import CreatePlanUseCase, IParams
-
-
-class MockAuthenticationPlugin(IAuthenticationPlugin):
-    def authenticate(self):
-        pass
 
 
 class MockParams(IParams):

@@ -2,13 +2,7 @@
 from typing import List
 
 from nest.app.entity.plan import IPlanRepository, Plan
-from nest.app.use_case.authentication_plugin import IAuthenticationPlugin
 from nest.app.use_case.pop_plan import IParams, PopPlanUseCase
-
-
-class MockAuthenticationPlugin(IAuthenticationPlugin):
-    def authenticate(self):
-        pass
 
 
 class MockParams(IParams):

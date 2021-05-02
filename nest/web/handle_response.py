@@ -10,7 +10,6 @@ from nest.app.use_case.authenticate import (
     CertificateNotFoundError,
     UserIdMissingError,
 )
-from nest.app.use_case.authentication_plugin import InvalidCertificateError
 
 
 def _extract_first_error_message(messages):
@@ -31,7 +30,7 @@ def wrap_response(func):
     def wrapper(*args, **kw):
         try:
             return func(*args, **kw)
-        except (AuthenticateFailError, CertificateIdMissingError, CertificateNotFoundError, InvalidCertificateError,
+        except (AuthenticateFailError, CertificateIdMissingError, CertificateNotFoundError,
                 UserIdMissingError):
             return {
                 'error': {

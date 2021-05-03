@@ -13,9 +13,10 @@ class IConnectionPool(ABC):
 
 
 class Connection:
-    def __init__(self, connection, pool):
+    def __init__(self, connection, pool, *, is_transaction=False):
         assert isinstance(pool, IConnectionPool)
         self.connection = connection
+        self.is_transaction = is_transaction
         self.pool = pool
 
     def __getattr__(self, item):
@@ -25,17 +26,30 @@ class Connection:
         return self.connection
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.pool.release_connection(self.connection)
+        # TODO: 这里让连接自己归还给连接池好像不是一个好主意？
+        if not self.is_transaction:
+            self.pool.release_connection(self.connection)
 
 
 class DatabaseOperationMixin:
     def __init__(self, pool):
         assert isinstance(pool, IConnectionPool)
+        self.cached_connection = None
+        self.is_transaction = False
         self.pool = pool
 
+    def commit(self):
+        self.cached_connection.commit()
+        self.cached_connection = None
+        self.is_transaction = False
+        print('提交数据库事务')
+
     def get_connection(self):
+        if self.cached_connection:
+            return self.cached_connection
+
         connection = self.pool.acquire_connection()
-        return Connection(connection, self.pool)
+        return Connection(connection, self.pool, is_transaction=self.is_transaction)
 
     def insert_to_db(self, kvs: dict, table_name: str) -> int:
         sql = 'INSERT INTO `{}` SET'.format(table_name)
@@ -63,3 +77,15 @@ class DatabaseOperationMixin:
                 sql = 'DELETE FROM `{}` WHERE `id` = %s'.format(table_name)
                 cursor.execute(sql, (id_,))
             connection.commit()
+
+    def rollback(self):
+        self.cached_connection.rollback()
+        self.cached_connection = None
+        self.is_transaction = False
+        print('回滚数据库事务')
+
+    def start_transaction(self):
+        self.is_transaction = True
+        self.cached_connection = self.get_connection()
+        self.cached_connection.begin()
+        print('开启数据库事务')

@@ -155,6 +155,11 @@ class IPlanRepository(ABC):
         pass
 
     @abstractmethod
+    def commit(self):
+        """提交一个事务，保证前面所有操作的持久性。"""
+        pass
+
+    @abstractmethod
     def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
         pass
 
@@ -164,6 +169,16 @@ class IPlanRepository(ABC):
 
     @abstractmethod
     def remove(self, id_: int):
+        pass
+
+    @abstractmethod
+    def rollback(self):
+        """回滚一个事务，保证事务前后数据的一致性。"""
+        pass
+
+    @abstractmethod
+    def start_transaction(self):
+        """开始一个事务，保证后续一系列操作的原子性。"""
         pass
 
 

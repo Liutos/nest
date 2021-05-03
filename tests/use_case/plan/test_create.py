@@ -40,6 +40,9 @@ class MockPlanRepository(IPlanRepository):
     def clear(self):
         pass
 
+    def commit(self):
+        pass
+
     def find_as_queue(self, *, page: int, per_page: int) -> List[Plan]:
         pass
 
@@ -47,6 +50,12 @@ class MockPlanRepository(IPlanRepository):
         return self.plan
 
     def remove(self, id_: int):
+        pass
+
+    def rollback(self):
+        pass
+
+    def start_transaction(self):
         pass
 
 

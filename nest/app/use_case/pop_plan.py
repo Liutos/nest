@@ -34,10 +34,17 @@ class PopPlanUseCase:
             user_id=user_id,
         )
         for plan in plans:
-            if plan.is_repeated():
-                next_plan = plan.rebirth()
-                plan_repository.add(next_plan)
-            plan_repository.remove(plan.id)
+            plan_repository.start_transaction()
+            try:
+                if plan.is_repeated():
+                    next_plan = plan.rebirth()
+                    plan_repository.add(next_plan)
+                plan_repository.remove(plan.id)
+                plan_repository.commit()
+            except Exception as e:
+                # TODO: 这里有办法改写为更具体的异常类型吗？
+                plan_repository.rollback()
+                raise e
 
         now = datetime.now()
         plans = [plan for plan in plans if plan.is_visible(trigger_time=now)]

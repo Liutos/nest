@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from datetime import datetime
-from typing import Union
+from typing import List, Union
 
 from pypika import Query, Table
 
@@ -38,6 +38,31 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
                 cursor.execute(sql)
+
+    def find(self, *, page: int, per_page: int) -> List[User]:
+        """分页搜索用户集合。"""
+        user_table = Table('t_user')
+        query = Query\
+            .from_(user_table)\
+            .select(user_table.star)\
+            .limit(per_page)\
+            .offset((page - 1) * per_page)
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                rows = cursor.fetchall()
+                users = []
+                for row in rows:
+                    user = User()
+                    user.email = row['email']
+                    user.id = row['id']
+                    user.nickname = row['nickname']
+                    user.password_hash = row['password_hash']
+                    user.salt = row['salt']
+                    users.append(user)
+
+                return users
 
     def get_by_email(self, email: str) -> Union[User, None]:
         with self.get_connection() as connection:

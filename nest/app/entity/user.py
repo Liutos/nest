@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 import hashlib
 import random
 import string
+from typing import List
 
 
-class User():
+class User:
     def __init__(self):
         self.email = None
         self.id = None
@@ -14,7 +15,7 @@ class User():
         self.salt = None
 
     @classmethod
-    def new(self, email, nickname, password):
+    def new(cls, email, nickname, password):
         instance = User()
         instance.email = email
         instance.nickname = nickname
@@ -54,6 +55,10 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def clear(self):
+        pass
+
+    @abstractmethod
+    def find(self, *, page: int, per_page: int) -> List[User]:
         pass
 
     @abstractmethod

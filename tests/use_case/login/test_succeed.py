@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from typing import List
+
 from nest.app.entity.certificate import Certificate, ICertificateRepository
 from nest.app.entity.user import IUserRepository, User
 from nest.app.use_case.login import IParams, \
@@ -22,10 +24,13 @@ class MockCertificateRepository(ICertificateRepository):
 
 
 class MockUserRepository(IUserRepository):
-    def add():
+    def add(self, user: User):
         pass
 
     def clear(self):
+        pass
+
+    def find(self, *, page: int, per_page: int) -> List[User]:
         pass
 
     def get_by_email(self, email):

@@ -40,10 +40,14 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         else:
             plan_table = Table('t_plan')
             repeat_interval: Union[None, timedelta] = plan.repeat_interval
+            if repeat_interval is not None:
+                repeat_interval = int(repeat_interval.total_seconds())
+
             query = Query\
                 .update(plan_table)\
                 .set(plan_table.duration, plan.duration)\
-                .set(plan_table.repeat_interval, repeat_interval and repeat_interval.total_seconds())\
+                .set(plan_table.location_id, plan.location_id)\
+                .set(plan_table.repeat_interval, repeat_interval)\
                 .set(plan_table.repeat_type, plan.repeat_type)\
                 .set(plan_table.trigger_time, plan.trigger_time)\
                 .set(plan_table.visible_hours, json.dumps(plan.visible_hours)) \

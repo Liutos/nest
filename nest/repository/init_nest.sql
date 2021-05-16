@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS `t_plan`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `t_plan` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `duration` int(11) DEFAULT '0' COMMENT '持续时长',
   `task_id` int(11) NOT NULL COMMENT '该计划所属的任务',
   `location` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '能够执行该任务的地点',
   `repeat_interval` int(11) DEFAULT NULL COMMENT '配合“重复类型”，计算出下一次的触发时间',
@@ -22,7 +23,7 @@ DROP TABLE IF EXISTS `t_task`;
 CREATE TABLE `t_task` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '创建该任务的用户的ID',
-  `brief` text COLLATE utf8mb4_bin NOT NULL COMMENT '对所要做的事情的简短描述',
+  `brief` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '对所要做的事情的简短描述',
   `ctime` datetime NOT NULL,
   `mtime` datetime NOT NULL,
   PRIMARY KEY (`id`),

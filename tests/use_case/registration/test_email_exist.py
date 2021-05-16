@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import Union
+from typing import List, Union
 
 from nest.app.entity.location import ILocationRepository, Location
 from nest.app.entity.user import IUserRepository, User
@@ -31,6 +31,9 @@ class MockUserRepository(IUserRepository):
         pass
 
     def clear(self):
+        pass
+
+    def find(self, *, page: int, per_page: int) -> List[User]:
         pass
 
     def get_by_email(self, email):

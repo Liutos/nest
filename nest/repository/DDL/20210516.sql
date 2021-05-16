@@ -4,3 +4,5 @@ CREATE TABLE `t_location` (
   `user_id` BIGINT NOT NULL COMMENT '创建者的ID',
   PRIMARY KEY (`id`)
 );
+
+ALTER TABLE `t_plan` ADD COLUMN `location_id` BIGINT COMMENT '计划生效的地点的ID' AFTER `duration`;

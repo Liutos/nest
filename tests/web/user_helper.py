@@ -27,8 +27,9 @@ def destroy_user(user_repository):
     user_repository.remove(_user_id)
 
 
-def register_user(user_repository):
+def register_user(location_repository, user_repository):
     use_case = RegistrationUseCase(
+        location_repository=location_repository,
         params=MockParams(),
         user_repository=user_repository,
     )

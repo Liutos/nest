@@ -17,6 +17,7 @@ class HTTPParams(IParams):
     def __init__(self):
         args = {
             'duration': fields.Int(allow_none=True),
+            'location_id': fields.Int(allow_none=True),
             'repeat_interval': fields.TimeDelta(allow_none=True),
             'repeat_type': fields.Str(allow_none=True),
             'task_id': fields.Int(required=True),
@@ -26,6 +27,7 @@ class HTTPParams(IParams):
         }
         parsed_args = parser.parse(args, request)
         self.duration = parsed_args.get('duration')
+        self.location_id = parsed_args.get('location_id')
         self.repeat_interval = parsed_args.get('repeat_interval')
         self.repeat_type = parsed_args.get('repeat_type')
         self.task_id = parsed_args['task_id']
@@ -35,6 +37,9 @@ class HTTPParams(IParams):
 
     def get_duration(self) -> Union[None, int]:
         return self.duration
+
+    def get_location_id(self) -> Union[None, int]:
+        return self.location_id
 
     def get_repeat_interval(self) -> Union[None, timedelta]:
         return self.repeat_interval
@@ -65,8 +70,10 @@ def create_plan(certificate_repository, repository_factory):
 
     params = HTTPParams()
     use_case = CreatePlanUseCase(
+        location_repository=repository_factory.location(),
         params=params,
         plan_repository=repository_factory.plan(),
+        task_repository=repository_factory.task(),
     )
     try:
         plan = use_case.run()

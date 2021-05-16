@@ -2,6 +2,7 @@
 # 测试创建任务接口
 import pytest
 
+from nest.repository.location import DatabaseLocationRepository
 from nest.repository.task import DatabaseTaskRepository
 from nest.repository.user import DatabaseUserRepository
 from nest.web import main
@@ -9,6 +10,9 @@ from .user_helper import register_user
 from tests.web.helper import mysql_connection
 
 _task_id = None
+location_repository = DatabaseLocationRepository(
+    connection=mysql_connection,
+)
 task_repository = DatabaseTaskRepository(
     connection=mysql_connection,
 )
@@ -25,7 +29,7 @@ def clear_database():
 # 写法来自这里：https://docs.pytest.org/en/stable/xunit_setup.html
 def setup_module():
     clear_database()
-    register_user(user_repository)
+    register_user(location_repository, user_repository)
     print('初始化完毕')
 
 

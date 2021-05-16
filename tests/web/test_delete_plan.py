@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 import pytest
 
+from nest.repository.location import DatabaseLocationRepository
 from nest.repository.plan import DatabasePlanRepository
 from nest.repository.task import DatabaseTaskRepository
 from nest.repository.user import DatabaseUserRepository
@@ -10,6 +11,9 @@ from tests.web.helper import mysql_connection
 
 _plan_ids = []
 _task_id = None
+location_repository = DatabaseLocationRepository(
+    connection=mysql_connection,
+)
 plan_repository = DatabasePlanRepository(
     connection=mysql_connection,
 )
@@ -30,7 +34,7 @@ def clear_database():
 # 写法来自这里：https://docs.pytest.org/en/stable/xunit_setup.html
 def setup_module():
     clear_database()
-    register_user(user_repository)
+    register_user(location_repository, user_repository)
     print('初始化完毕')
 
 

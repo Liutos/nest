@@ -1,9 +1,18 @@
 # -*- coding: utf8 -*-
-import pytest
+from typing import Union
 
-from nest.app.entity.user import IUserRepository
+from nest.app.entity.location import ILocationRepository, Location
+from nest.app.entity.user import IUserRepository, User
 from nest.app.use_case.registration import EmailOccupyError, IParams, \
     RegistrationUseCase
+
+
+class MockLocationRepository(ILocationRepository):
+    def add(self, *, location: Location):
+        pass
+
+    def get_default(self, *, user_id: int) -> Union[None, Location]:
+        pass
 
 
 class MockParams(IParams):
@@ -18,7 +27,7 @@ class MockParams(IParams):
 
 
 class MockUserRepository(IUserRepository):
-    def add(self):
+    def add(self, user: User):
         pass
 
     def clear(self):
@@ -33,6 +42,7 @@ class MockUserRepository(IUserRepository):
 
 def test_email_exist():
     use_case = RegistrationUseCase(
+        location_repository=MockLocationRepository(),
         params=MockParams(),
         user_repository=MockUserRepository(),
     )

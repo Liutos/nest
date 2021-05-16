@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from typing import Union
+
 from nest.app.entity.location import ILocationRepository, Location
 from nest.app.entity.user import IUserRepository, User
 from nest.app.use_case.registration import IParams, \
@@ -23,6 +25,9 @@ class MockLocationRepository(ILocationRepository):
     def add(self, *, location: Location):
         location.id = 634
         self.location = location
+
+    def get_default(self, *, user_id: int) -> Union[None, Location]:
+        pass
 
 
 class MockUserRepository(IUserRepository):

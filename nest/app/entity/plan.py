@@ -77,6 +77,7 @@ class Plan:
     def __init__(self):
         self.duration = None
         self.id = None
+        self.location_id = None
         self.repeat_interval = None
         self.repeat_type = None
         self.task_id = None
@@ -87,6 +88,7 @@ class Plan:
     @classmethod
     def new(cls, task_id, trigger_time, *,
             duration: Union[None, int] = None,
+            location_id: Union[None, int] = None,
             repeat_interval: Union[None, timedelta] = None,
             repeat_type=None, visible_hours=None, visible_wdays=None):
         if isinstance(duration, int) and duration < 0:
@@ -96,6 +98,7 @@ class Plan:
 
         instance = Plan()
         instance.duration = duration
+        instance.location_id = location_id
         instance.repeat_interval = repeat_interval
         instance.repeat_type = repeat_type
         instance.task_id = task_id

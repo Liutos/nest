@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
+from typing import Union
 
 
 class Location:
@@ -9,8 +10,9 @@ class Location:
         self.user_id = None
 
     @classmethod
-    def new(cls, *, name: str, user_id: int):
+    def new(cls, *, id_=None, name: str, user_id: int):
         instance = Location()
+        instance.id = id_
         instance.name = name
         instance.user_id = user_id
         return instance
@@ -19,4 +21,8 @@ class Location:
 class ILocationRepository(ABC):
     @abstractmethod
     def add(self, *, location: Location):
+        pass
+
+    @abstractmethod
+    def get_default(self, *, user_id: int) -> Union[None, Location]:
         pass

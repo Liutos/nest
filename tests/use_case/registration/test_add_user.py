@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
-import pytest
-
+from nest.app.entity.location import ILocationRepository, Location
 from nest.app.entity.user import IUserRepository, User
 from nest.app.use_case.registration import IParams, \
     RegistrationUseCase
@@ -15,6 +14,15 @@ class MockRegistrationIO(IParams):
 
     def get_password(self) -> str:
         return '123456'
+
+
+class MockLocationRepository(ILocationRepository):
+    def __init__(self):
+        self.location = None
+
+    def add(self, *, location: Location):
+        location.id = 634
+        self.location = location
 
 
 class MockUserRepository(IUserRepository):
@@ -35,10 +43,13 @@ class MockUserRepository(IUserRepository):
 
 
 def test_add_user():
+    location_repository = MockLocationRepository()
     use_case = RegistrationUseCase(
+        location_repository=location_repository,
         params=MockRegistrationIO(),
         user_repository=MockUserRepository(),
     )
     user = use_case.run()
     assert user
     assert isinstance(user, User)
+    assert location_repository.location.id == 634

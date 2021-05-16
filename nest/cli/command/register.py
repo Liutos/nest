@@ -55,8 +55,11 @@ def register():
     config = Config(config_file)
     mysql_connection = DBUtilsConnectionPool(config)
     params = Params()
-    user_repository = RepositoryFactory(mysql_connection).user()
+    repository_factory = RepositoryFactory(mysql_connection)
+    location_repository = repository_factory.location()
+    user_repository = repository_factory.user()
     use_case = RegistrationUseCase(
+        location_repository=location_repository,
         params=params,
         user_repository=user_repository,
     )

@@ -14,7 +14,7 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
 
     def add(self, user: User):
         now = datetime.now()
-        self.insert_to_db({
+        id_ = self.insert_to_db({
             'email': user.email,
             'nickname': user.nickname,
             'password_hash': user.password_hash,
@@ -22,6 +22,7 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
             'ctime': now,
             'mtime': now,
         }, 't_user')
+        user.id = id_
 
         return self.get_by_email(user.email)
 

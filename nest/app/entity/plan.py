@@ -139,6 +139,7 @@ class Plan:
         )
         instance = Plan()
         instance.duration = self.duration
+        instance.location_id = self.location_id
         instance.repeat_interval = self.repeat_interval
         instance.repeat_type = self.repeat_type
         instance.task_id = self.task_id

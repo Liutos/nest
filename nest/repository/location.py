@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import Union
+from typing import List, Union
 
 from pypika import Query, Table
 
@@ -29,13 +29,16 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
             with connection.cursor() as cursor:
                 cursor.execute(sql)
 
-    def find(self, *, name: Union[None, str] = None, page: int, per_page: int, user_id: int):
+    def find(self, *, ids: Union[None, List[int]] = None,
+             name: Union[None, str] = None, page: int, per_page: int, user_id: int):
         """列出属于特定用户的地点。"""
         location_table = Table('t_location')
         query = Query\
             .from_(location_table)\
             .select(location_table.star)\
             .where(location_table.user_id == user_id)
+        if ids is not None:
+            query = query.where(location_table.id.isin(ids))
         if name is not None:
             query = query.where(location_table.name == name)
 

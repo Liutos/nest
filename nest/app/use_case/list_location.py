@@ -1,11 +1,15 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import List, Union
 
 from nest.app.entity.location import ILocationRepository
 
 
 class IParams(ABC):
+    @abstractmethod
+    def get_ids(self) -> Union[None, List[int]]:
+        pass
+
     @abstractmethod
     def get_name(self) -> Union[None, str]:
         pass
@@ -38,6 +42,7 @@ class ListLocationUseCase:
         user_id = params.get_user_id()
         location_repository = self.location_repository
         return location_repository.find(
+            ids=params.get_ids(),
             name=name,
             page=page,
             per_page=per_page,

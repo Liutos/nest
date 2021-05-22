@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from typing import Union
+
 from flask import request
 from webargs import fields
 
@@ -13,10 +15,15 @@ from nest.web.presenter.plan import PlanPresenter
 class HTTPParams(IParams):
     def __init__(self):
         args = {
+            'location_id': fields.Int(allow_none=True),
             'size': fields.Int(required=True),
         }
         parsed_args = parser.parse(args, request)
+        self.location_id = parsed_args.get('location_id')
         self.size = parsed_args['size']
+
+    def get_location_id(self) -> Union[None, int]:
+        return self.location_id
 
     def get_size(self) -> int:
         return self.size
@@ -35,6 +42,7 @@ def pop_plan(certificate_repository, repository_factory):
 
     params = HTTPParams()
     use_case = PopPlanUseCase(
+        location_repository=repository_factory.location(),
         params=params,
         plan_repository=repository_factory.plan(),
     )

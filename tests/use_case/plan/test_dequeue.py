@@ -1,11 +1,34 @@
 # -*- coding: utf8 -*-
-from typing import List
+from typing import List, Union
 
+from nest.app.entity.location import ILocationRepository, Location
 from nest.app.entity.plan import IPlanRepository, Plan
 from nest.app.use_case.pop_plan import IParams, PopPlanUseCase
 
 
+class MockLocationRepository(ILocationRepository):
+    def add(self, *, location: Location):
+        pass
+
+    def clear(self):
+        pass
+
+    def get(self, *, id_: int) -> Union[None, Location]:
+        pass
+
+    def get_default(self, *, user_id: int) -> Union[None, Location]:
+        location = Location()
+        location.id = 233
+        return location
+
+    def find(self, *, page: int, per_page: int, user_id: int):
+        pass
+
+
 class MockParams(IParams):
+    def get_location_id(self) -> Union[None, int]:
+        pass
+
     def get_size(self) -> int:
         return 1
 
@@ -23,7 +46,9 @@ class MockPlanRepository(IPlanRepository):
     def commit(self):
         pass
 
-    def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
+    def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
+                      max_trigger_time=None,
+                      page: int, per_page: int, user_id=None) -> List[Plan]:
         return [Plan()]
 
     def find_by_id(self, id_: int) -> Plan:
@@ -41,6 +66,7 @@ class MockPlanRepository(IPlanRepository):
 
 def test_dequeue():
     use_case = PopPlanUseCase(
+        location_repository=MockLocationRepository(),
         params=MockParams(),
         plan_repository=MockPlanRepository()
     )

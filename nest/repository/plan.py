@@ -72,7 +72,9 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             with connection.cursor() as cursor:
                 cursor.execute(sql)
 
-    def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
+    def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
+                      max_trigger_time=None,
+                      page: int, per_page: int, user_id: int) -> List[Plan]:
         plan_table, task_table = Tables('t_plan', 't_task')
         query = Query\
             .from_(plan_table)\
@@ -84,11 +86,13 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             .limit(per_page)\
             .offset((page - 1) * per_page)
 
+        if location_ids:
+            query = query.where(plan_table.location_id.isin(location_ids))
+
         if isinstance(max_trigger_time, datetime):
             query = query.where(plan_table.trigger_time < max_trigger_time)
 
         print('sql', query.get_sql(quote_char=None))
-        plans = []
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
                 cursor.execute(query.get_sql(quote_char=None))

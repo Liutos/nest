@@ -65,7 +65,9 @@ class MockPlanRepository(IPlanRepository):
     def commit(self):
         pass
 
-    def find_as_queue(self, *, page: int, per_page: int, user_id: int, max_trigger_time=None) -> List[Plan]:
+    def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
+                      max_trigger_time=None,
+                      page: int, per_page: int, user_id=None) -> List[Plan]:
         pass
 
     def find_by_id(self, id_: int) -> Plan:

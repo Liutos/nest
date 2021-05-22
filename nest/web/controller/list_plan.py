@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from typing import Union
+
 from flask import request
 from webargs import fields, validate
 
@@ -13,12 +15,17 @@ from nest.web.presenter.plan import PlanPresenter
 class HTTPParams(IParams):
     def __init__(self):
         args = {
+            'location_id': fields.Int(allow_none=True),
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
         }
         parsed_args = parser.parse(args, request, location='querystring')
+        self.location_id = parsed_args.get('location_id')
         self.page = parsed_args['page']
         self.per_page = parsed_args['per_page']
+
+    def get_location_id(self) -> Union[None, int]:
+        return self.location_id
 
     def get_page(self) -> int:
         return self.page
@@ -56,6 +63,7 @@ def list_plan(certificate_repository, repository_factory):
 
     params = HTTPParams()
     use_case = ListPlanUseCase(
+        location_repository=repository_factory.location(),
         params=params,
         plan_repository=repository_factory.plan(),
     )

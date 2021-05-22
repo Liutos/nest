@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from typing import Union
+
 from flask import request
 from webargs import fields, validate
 
@@ -13,12 +15,17 @@ from nest.web.presenter.location import LocationPresenter
 class HTTPParams(IParams):
     def __init__(self):
         args = {
+            'name': fields.Str(allow_none=True),
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
         }
         parsed_args = parser.parse(args, request, location='querystring')
+        self.name = parsed_args.get('name')
         self.page = parsed_args['page']
         self.per_page = parsed_args['per_page']
+
+    def get_name(self) -> Union[None, str]:
+        return self.name
 
     def get_page(self) -> int:
         return self.page

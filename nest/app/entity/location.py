@@ -28,7 +28,7 @@ class ILocationRepository(ABC):
         pass
 
     @abstractmethod
-    def find(self, *, page: int, per_page: int, user_id: int):
+    def find(self, *, name: Union[None, str] = None, page: int, per_page: int, user_id: int):
         pass
 
     @abstractmethod

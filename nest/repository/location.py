@@ -29,13 +29,16 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
             with connection.cursor() as cursor:
                 cursor.execute(sql)
 
-    def find(self, *, page: int, per_page: int, user_id: int):
+    def find(self, *, name: Union[None, str] = None, page: int, per_page: int, user_id: int):
         """列出属于特定用户的地点。"""
         location_table = Table('t_location')
         query = Query\
             .from_(location_table)\
             .select(location_table.star)\
             .where(location_table.user_id == user_id)
+        if name is not None:
+            query = query.where(location_table.name == name)
+
         sql = query.get_sql(quote_char=None)
         with self.get_connection() as connection:
             with connection.cursor() as cursor:

@@ -29,6 +29,20 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
             with connection.cursor() as cursor:
                 cursor.execute(sql)
 
+    def find(self, *, page: int, per_page: int, user_id: int):
+        """列出属于特定用户的地点。"""
+        location_table = Table('t_location')
+        query = Query\
+            .from_(location_table)\
+            .select(location_table.star)\
+            .where(location_table.user_id == user_id)
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                rows = cursor.fetchall()
+                return [self._row2entity(row) for row in rows]
+
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         """找出属于特定用户的默认地点。"""
         location_table = Table('t_location')
@@ -45,9 +59,11 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
                 if location_dict is None:
                     return None
 
-                location = Location.new(
-                    id_=location_dict['id'],
-                    name=location_dict['name'],
-                    user_id=location_dict['user_id'],
-                )
-                return location
+                return self._row2entity(location_dict)
+
+    def _row2entity(self, row: dict):
+        return Location.new(
+            id_=row['id'],
+            name=row['name'],
+            user_id=row['user_id'],
+        )

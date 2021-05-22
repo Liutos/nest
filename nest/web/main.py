@@ -13,6 +13,7 @@ from nest.web.controller import (
     delete_plan,
     get_plan,
     get_task,
+    list_location,
     list_plan,
     list_task,
     login,
@@ -45,6 +46,10 @@ certificate_repository = RedisCertificateRepository(
 mysql_connection = DBUtilsConnectionPool(config)
 repository_factory = RepositoryFactory(mysql_connection)
 
+app.add_url_rule('/location', defaults={
+    'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
+}, view_func=list_location.list_location, methods=['GET'])
 app.add_url_rule('/location', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,

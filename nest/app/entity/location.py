@@ -28,5 +28,9 @@ class ILocationRepository(ABC):
         pass
 
     @abstractmethod
+    def find(self, *, page: int, per_page: int, user_id: int):
+        pass
+
+    @abstractmethod
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         pass

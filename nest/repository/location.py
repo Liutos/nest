@@ -43,6 +43,23 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
                 rows = cursor.fetchall()
                 return [self._row2entity(row) for row in rows]
 
+    def get(self, *, id_: int) -> Union[None, Location]:
+        """找出指定地点。"""
+        location_table = Table('t_location')
+        query = Query\
+            .from_(location_table)\
+            .select(location_table.star)\
+            .where(location_table.id == id_)
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                row = cursor.fetchone()
+                if row is None:
+                    return None
+
+                return self._row2entity(row)
+
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         """找出属于特定用户的默认地点。"""
         location_table = Table('t_location')

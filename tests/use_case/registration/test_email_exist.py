@@ -17,6 +17,9 @@ class MockLocationRepository(ILocationRepository):
     def find(self, *, page: int, per_page: int, user_id: int):
         pass
 
+    def get(self, *, id_: int) -> Union[None, Location]:
+        pass
+
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         pass
 

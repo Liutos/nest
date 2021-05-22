@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Set, Tuple, Union
 
+from nest.app.entity.location import ILocationRepository
 from nest.app.entity.plan import (
     InvalidRepeatTypeError,
     IPlanRepository,
@@ -13,6 +14,10 @@ from nest.app.entity.plan import (
 class IParams(ABC):
     @abstractmethod
     def get_duration(self) -> Tuple[bool, Union[None, int]]:
+        pass
+
+    @abstractmethod
+    def get_location_id(self) -> Tuple[bool, Union[None, int]]:
         pass
 
     @abstractmethod
@@ -40,15 +45,22 @@ class IParams(ABC):
         pass
 
 
+class LocationNotFoundError(Exception):
+    def __init__(self, *, location_id):
+        self.location_id = location_id
+
+
 class PlanNotFoundError(Exception):
     def __init__(self, *, plan_id):
         self.plan_id = plan_id
 
 
 class ChangePlanUseCase:
-    def __init__(self, *, params, plan_repository):
+    def __init__(self, *, location_repository: ILocationRepository,
+                 params, plan_repository):
         assert isinstance(params, IParams)
         assert isinstance(plan_repository, IPlanRepository)
+        self.location_repository = location_repository
         self.params = params
         self.plan_repository = plan_repository
 
@@ -64,6 +76,13 @@ class ChangePlanUseCase:
         if found:
             # TODO: 是否应当让duration成为一个property呢？还是用setter来做检查？
             plan.duration = duration
+        found, location_id = params.get_location_id()
+        if found:
+            if location_id:
+                location = self.location_repository.get(id_=location_id)
+                if not location:
+                    raise LocationNotFoundError(location_id=location_id)
+            plan.location_id = location_id
         found, repeat_interval = params.get_repeat_interval()
         if found:
             plan.repeat_interval = repeat_interval

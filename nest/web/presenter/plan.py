@@ -18,6 +18,7 @@ class PlanPresenter:
         return {
             'duration': self.plan.duration,
             'id': self.plan.id,
+            'location_id': self.plan.location_id,
             'repeat_interval': repeat_interval,
             'repeat_type': self.plan.repeat_type,
             'task_id': self.plan.task_id,

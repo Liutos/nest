@@ -26,6 +26,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
             insert_id = self.insert_to_db({
                 'duration': plan.duration,
+                'location_id': plan.location_id,
                 'repeat_interval': repeat_interval,
                 'repeat_type': plan.repeat_type,
                 'task_id': plan.task_id,
@@ -93,22 +94,9 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 cursor.execute(query.get_sql(quote_char=None))
                 plan_dicts = cursor.fetchall()
 
-        # TODO: 这里的代码需要与find_by_id中的统一起来。
-        for plan_dict in plan_dicts:
-            plan = Plan()
-            plan.duration = plan_dict['duration']
-            plan.id = plan_dict['id']
-            if isinstance(plan_dict['repeat_interval'], int):
-                plan.repeat_interval = timedelta(seconds=plan_dict['repeat_interval'])
-            plan.repeat_type = plan_dict['repeat_type']
-            plan.task_id = plan_dict['task_id']
-            plan.trigger_time = plan_dict['trigger_time']
-            plan.visible_hours = json.loads(plan_dict.get('visible_hours') or '[]')
-            plan.visible_wdays = json.loads(plan_dict.get('visible_wdays') or '[]')
-            plans.append(plan)
-        return plans
+        return [self._row2entity(row) for row in plan_dicts]
 
-    def find_by_id(self, id_: int) -> Plan:
+    def find_by_id(self, id_: int) -> Union[None, Plan]:
         plan_table = Table('t_plan')
         query = Query\
             .from_(plan_table)\
@@ -122,17 +110,21 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 plan_dict = cursor.fetchone()
                 if plan_dict is None:
                     return None
-                plan = Plan()
-                plan.duration = plan_dict['duration']
-                plan.id = plan_dict['id']
-                if isinstance(plan_dict['repeat_interval'], int):
-                    plan.repeat_interval = timedelta(seconds=plan_dict['repeat_interval'])
-                plan.repeat_type = plan_dict['repeat_type']
-                plan.task_id = plan_dict['task_id']
-                plan.trigger_time = plan_dict['trigger_time']
-                plan.visible_hours = json.loads(plan_dict.get('visible_hours') or '[]')
-                plan.visible_wdays = json.loads(plan_dict.get('visible_wdays') or '[]')
-                return plan
+                return self._row2entity(plan_dict)
 
     def remove(self, id_: int):
         self.remove_from_db(id_, 't_plan')
+
+    def _row2entity(self, row: dict):
+        plan = Plan()
+        plan.duration = row['duration']
+        plan.id = row['id']
+        plan.location_id = row['location_id']
+        if isinstance(row['repeat_interval'], int):
+            plan.repeat_interval = timedelta(seconds=row['repeat_interval'])
+        plan.repeat_type = row['repeat_type']
+        plan.task_id = row['task_id']
+        plan.trigger_time = row['trigger_time']
+        plan.visible_hours = json.loads(row.get('visible_hours') or '[]')
+        plan.visible_wdays = json.loads(row.get('visible_wdays') or '[]')
+        return plan

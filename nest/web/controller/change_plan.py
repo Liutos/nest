@@ -18,6 +18,7 @@ class HTTPParams(IParams):
         self.plan_id = plan_id
         args = {
             'duration': fields.Int(allow_none=True),
+            'location_id': fields.Int(allow_none=True),
             'repeat_interval': fields.TimeDelta(allow_none=True),
             'repeat_type': fields.Str(allow_none=True),
             'trigger_time': fields.DateTime('%Y-%m-%d %H:%M:%S'),
@@ -31,6 +32,12 @@ class HTTPParams(IParams):
         return (
             'duration' in self.parsed_args,
             self.parsed_args.get('duration'),
+        )
+
+    def get_location_id(self) -> Tuple[bool, Union[None, int]]:
+        return (
+            'location_id' in self.parsed_args,
+            self.parsed_args.get('location_id'),
         )
 
     def get_plan_id(self) -> int:
@@ -69,6 +76,7 @@ def change_plan(certificate_repository, repository_factory, plan_id):
 
     params = HTTPParams(plan_id=plan_id)
     use_case = ChangePlanUseCase(
+        location_repository=repository_factory.location(),
         params=params,
         plan_repository=repository_factory.plan(),
     )

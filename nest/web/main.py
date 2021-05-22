@@ -7,6 +7,7 @@ from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
 from nest.web.controller import (
     change_plan,
+    create_location,
     create_plan,
     create_task,
     delete_plan,
@@ -44,6 +45,10 @@ certificate_repository = RedisCertificateRepository(
 mysql_connection = DBUtilsConnectionPool(config)
 repository_factory = RepositoryFactory(mysql_connection)
 
+app.add_url_rule('/location', defaults={
+    'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
+}, view_func=create_location.create_location, methods=['POST'])
 app.add_url_rule('/plan', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,

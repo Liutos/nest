@@ -24,5 +24,9 @@ class ILocationRepository(ABC):
         pass
 
     @abstractmethod
+    def clear(self):
+        pass
+
+    @abstractmethod
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         pass

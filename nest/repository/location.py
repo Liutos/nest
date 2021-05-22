@@ -19,6 +19,16 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
         }, 't_location')
         location.id = id_
 
+    def clear(self):
+        location_table = Table('t_location')
+        query = Query\
+            .from_(location_table)\
+            .delete()
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         """找出属于特定用户的默认地点。"""
         location_table = Table('t_location')

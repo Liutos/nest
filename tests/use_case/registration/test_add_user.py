@@ -26,6 +26,9 @@ class MockLocationRepository(ILocationRepository):
         location.id = 634
         self.location = location
 
+    def clear(self):
+        pass
+
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         pass
 

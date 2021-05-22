@@ -11,6 +11,7 @@ from nest.web.controller import (
     create_plan,
     create_task,
     delete_plan,
+    get_location,
     get_plan,
     get_task,
     list_location,
@@ -54,6 +55,10 @@ app.add_url_rule('/location', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,
 }, view_func=create_location.create_location, methods=['POST'])
+app.add_url_rule('/location/<id_>', defaults={
+    'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
+}, view_func=get_location.get_location, methods=['GET'])
 app.add_url_rule('/plan', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,

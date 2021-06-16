@@ -37,6 +37,63 @@ class HourRepeater(FixedIntervalRepeaterMixin, IRepeater):
         return timedelta(hours=1)
 
 
+class MonthlyRepeater(IRepeater):
+    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
+        self.last_trigger_time = last_trigger_time
+        self.repeat_interval = repeat_interval
+
+    def compute_next_trigger_time(self) -> datetime:
+        next_trigger_time = self.last_trigger_time
+        now = datetime.now()
+        # TODO: 循环的流程应当剥离到IRepeater的使用者中。
+        while next_trigger_time.timestamp() < now.timestamp():
+            next_trigger_time = self._compute_once(next_trigger_time)
+        return next_trigger_time
+
+    def _compute_once(self, last_trigger_time: datetime) -> datetime:
+        # 去到下一个月的同一天。如果下个月没有这一天，就继续增加一个月。
+        current_month = datetime.now().month
+        if current_month in [3, 5, 7, 8, 10]:
+            next_month_days = 30
+        elif current_month in [2, 4, 6, 9, 11, 12]:
+            next_month_days = 31
+        elif self._is_leap_year():
+            next_month_days = 29
+        else:
+            next_month_days = 27
+
+        current_day = datetime.now().day
+        if current_day <= next_month_days:
+            if last_trigger_time.month == 12:
+                return last_trigger_time.replace(
+                    month=1,
+                    year=last_trigger_time.year + 1,
+                )
+            else:
+                return last_trigger_time.replace(
+                    month=last_trigger_time.month + 1,
+                )
+        else:
+            if last_trigger_time.month in [11, 12]:
+                return last_trigger_time.replace(
+                    month=(last_trigger_time.month + 2) % 12,
+                    year=last_trigger_time.year + 1,
+                )
+            else:
+                return last_trigger_time.replace(
+                    month=last_trigger_time.month + 2,
+                )
+
+    def _is_leap_year(self) -> bool:
+        """如果当前年份为闰年，就返回True。"""
+        current_year = datetime.now().year
+        if current_year % 4 != 0:
+            return False
+        if current_year % 100 == 0:
+            return False
+        return current_year % 400 == 0
+
+
 class PeriodicallyRepeater(FixedIntervalRepeaterMixin, IRepeater):
     def get_interval(self) -> timedelta:
         return self.repeat_interval
@@ -50,6 +107,7 @@ class WeeklyRepeater(FixedIntervalRepeaterMixin, IRepeater):
 _TYPE_TO_REPEATER_CLASS = {
     'daily': DailyRepeater,
     'hourly': HourRepeater,
+    'monthly': MonthlyRepeater,
     'periodically': HourRepeater,
     'weekly': WeeklyRepeater,
 }

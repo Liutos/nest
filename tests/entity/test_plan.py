@@ -1,7 +1,26 @@
 # -*- coding: utf8 -*-
 from datetime import datetime, timedelta
 
-from nest.app.entity.plan import PeriodicallyRepeater, Plan, WeeklyRepeater
+from nest.app.entity.plan import (
+    MonthlyRepeater,
+    PeriodicallyRepeater,
+    Plan,
+    WeeklyRepeater,
+)
+
+
+def test_monthly_repeater():
+    """测试按月重复的模式。"""
+    trigger_time = datetime(2021, 6, 16, 22, 36)
+    repeater = MonthlyRepeater(
+        last_trigger_time=trigger_time,
+        repeat_interval='monthly',
+    )
+    next_trigger_time = repeater.compute_next_trigger_time()
+    assert next_trigger_time.year == 2021
+    # FIXME: 这个单元测试仅在7月16日前有效。
+    assert next_trigger_time.month == 7
+    assert next_trigger_time.day == 16
 
 
 def test_periodically_repeater():

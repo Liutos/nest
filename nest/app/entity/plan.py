@@ -32,6 +32,32 @@ class DailyRepeater(FixedIntervalRepeaterMixin, IRepeater):
         return timedelta(days=1)
 
 
+class EndOfMonthRepeater(IRepeater):
+    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
+        self.last_trigger_time = last_trigger_time
+        self.repeat_interval = repeat_interval
+
+    def compute_next_trigger_time(self) -> datetime:
+        # 月份加二，再设置为当月第一天，再往前退一天。
+        next_trigger_time = self.last_trigger_time
+        now = datetime.now()
+        while next_trigger_time.timestamp() < now.timestamp():
+            month = next_trigger_time.month
+            year = next_trigger_time.year
+            if month >= 11:
+                month = (month + 2) % 12
+                year += 1
+            else:
+                month += 2
+            next_trigger_time = next_trigger_time.replace(
+                day=1,
+                month=month,
+                year=year,
+            )
+            next_trigger_time = next_trigger_time - timedelta(days=1)
+        return next_trigger_time
+
+
 class HourRepeater(FixedIntervalRepeaterMixin, IRepeater):
     def get_interval(self) -> timedelta:
         return timedelta(hours=1)
@@ -106,6 +132,7 @@ class WeeklyRepeater(FixedIntervalRepeaterMixin, IRepeater):
 
 _TYPE_TO_REPEATER_CLASS = {
     'daily': DailyRepeater,
+    'end_of_month': EndOfMonthRepeater,
     'hourly': HourRepeater,
     'monthly': MonthlyRepeater,
     'periodically': HourRepeater,

@@ -2,11 +2,25 @@
 from datetime import datetime, timedelta
 
 from nest.app.entity.plan import (
+    EndOfMonthRepeater,
     MonthlyRepeater,
     PeriodicallyRepeater,
     Plan,
     WeeklyRepeater,
 )
+
+
+def test_end_of_month_repeater():
+    """测试月末重复的模式。"""
+    trigger_time = datetime(2021, 6, 17, 22, 38)
+    repeater = EndOfMonthRepeater(
+        last_trigger_time=trigger_time,
+        repeat_interval='end_of_monthly',
+    )
+    next_trigger_time = repeater.compute_next_trigger_time()
+    assert next_trigger_time.year == 2021
+    assert next_trigger_time.month == 7
+    assert next_trigger_time.day == 31
 
 
 def test_monthly_repeater():

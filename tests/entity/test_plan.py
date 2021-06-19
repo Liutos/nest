@@ -68,6 +68,17 @@ def test_rebirth():
     assert rebirth_plan.trigger_time.timestamp() - trigger_time.timestamp() == 60 * 60
 
 
+def test_repeating_description():
+    plan = Plan.new(
+        task_id=0,
+        trigger_time=datetime.now(),
+        repeat_interval=timedelta(days=13),
+        repeat_type='periodically',
+    )
+    description = plan.get_repeating_description()
+    assert description == '每13天'
+
+
 def test_visible_hours():
     """
     测试可见小时的判断逻辑。

@@ -163,12 +163,36 @@ class Plan:
         self.duration = None
         self.id = None
         self.location_id = None
-        self.repeat_interval = None
+        self.repeat_interval: Union[None, timedelta] = None
         self.repeat_type = None
         self.task_id = None
         self.trigger_time = None
         self.visible_hours = set([])
         self.visible_wdays = set([])
+
+    def get_repeating_description(self) -> str:
+        """生成可读的、重复模式的描述。"""
+        if self.repeat_type is None:
+            return '不重复'
+        simple_repeat_types = {
+            'daily': '每天',
+            'end_of_month': '每月末',
+            'hourly': '每小时',
+            'monthly': '每月',
+            'weekly': '每周',
+        }
+        if self.repeat_type in simple_repeat_types:
+            return simple_repeat_types[self.repeat_type]
+        radixes = [60, 60, 24]
+        units = ['分', '时', '天']
+        amount = round(self.repeat_interval.total_seconds())
+        unit = '秒'
+        for i in range(len(radixes)):
+            if amount < radixes[i]:
+                break
+            amount = amount // radixes[i]
+            unit = units[i]
+        return '每{}{}'.format(amount, unit)
 
     @classmethod
     def new(cls, task_id, trigger_time, *,

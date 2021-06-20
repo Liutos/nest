@@ -51,10 +51,16 @@ def client():
 def test_create_task(client):
     rv = client.post('/task', json={
         'brief': 'Hello, nest!',
+        'keywords': [
+            'hello',
+            'nest',
+        ],
     })
     print('rv', rv)
     json_data = rv.get_json()
     assert json_data['result']['id']
     assert isinstance(json_data['result']['id'], int)
+    assert 'hello' in json_data['result']['keywords']
+    assert 'nest' in json_data['result']['keywords']
     global _task_id
     _task_id = json_data['result']['id']

@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
+from typing import List
 
 from nest.app.entity.task import ITaskRepository, Task
 
@@ -7,6 +8,10 @@ from nest.app.entity.task import ITaskRepository, Task
 class IParams(ABC):
     @abstractmethod
     def get_brief(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_keywords(self) -> List[str]:
         pass
 
     @abstractmethod
@@ -26,8 +31,13 @@ class CreateTaskUseCase:
         # 从这里开始才是正式的创建任务的逻辑
         params = self.params
         brief = params.get_brief()
+        keywords = params.get_keywords()
         user_id = params.get_user_id()
-        task = Task.new(brief, user_id)
+        task = Task.new(
+            brief,
+            user_id,
+            keywords=keywords,
+        )
         task_repository = self.task_repository
         task_repository.add(task)
         return task

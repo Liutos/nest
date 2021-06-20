@@ -7,12 +7,14 @@ class Task:
     def __init__(self):
         self.brief = None
         self.id = None
+        self.keywords: List[str] = []
         self.user_id = None
 
     @classmethod
-    def new(cls, brief, user_id):
+    def new(cls, brief, user_id, *, keywords: List[str] = None):
         instance = Task()
         instance.brief = brief
+        instance.keywords = keywords or []
         instance.user_id = user_id
         return instance
 

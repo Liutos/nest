@@ -45,6 +45,7 @@ class Presenter:
         tasks = [{
             'brief': task.brief,
             'id': task.id,
+            'keywords': task.keywords,
         } for task in self.tasks]
         return {
             'error': None,

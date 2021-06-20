@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from typing import List
+
 from flask import request
 from webargs import fields
 
@@ -13,12 +15,17 @@ class HTTPParams(IParams):
     def __init__(self):
         args = {
             'brief': fields.Str(required=True),
+            'keywords': fields.List(fields.Str(), missing=[]),
         }
         parsed_args = parser.parse(args, request)
         self.brief = parsed_args['brief']
+        self.keywords = parsed_args['keywords']
 
     def get_brief(self):
         return self.brief
+
+    def get_keywords(self) -> List[str]:
+        return self.keywords
 
     def get_user_id(self) -> int:
         return int(request.cookies.get('user_id'))
@@ -42,6 +49,7 @@ def create_task(certificate_repository, repository_factory):
         'error': None,
         'result': {
             'id': task.id,
+            'keywords': task.keywords,
         },
         'status': 'success',
     }, 201

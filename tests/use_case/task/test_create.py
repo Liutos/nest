@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import Union
+from typing import List, Union
 
 from nest.app.entity.certificate import ICertificateRepository, Certificate
 from nest.app.entity.task import ITaskRepository, Task
@@ -22,6 +22,9 @@ class MockCertificateRepository(ICertificateRepository):
 class MockParams(IParams):
     def get_brief(self) -> str:
         return 'Hello'
+
+    def get_keywords(self) -> List[str]:
+        return []
 
     def get_user_id(self) -> int:
         return 2001

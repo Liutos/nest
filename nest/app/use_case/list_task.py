@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Optional, Union
 
 from ..entity.task import ITaskRepository
 
@@ -8,6 +8,10 @@ from ..entity.task import ITaskRepository
 class IParams(ABC):
     @abstractmethod
     def get_count(self) -> int:
+        pass
+
+    @abstractmethod
+    def get_keyword(self) -> Optional[str]:
         pass
 
     @abstractmethod
@@ -40,6 +44,7 @@ class ListTaskUseCase:
         task_repository = self.task_repository
         tasks = task_repository.find(
             count=count,
+            keyword=params.get_keyword(),
             start=start,
             task_ids=task_ids,
             user_id=user_id,

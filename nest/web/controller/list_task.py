@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import List, Union
+from typing import List, Optional, Union
 
 from flask import request
 from webargs import fields, validate
@@ -15,17 +15,22 @@ from nest.web.parser import parser
 class HTTPParams(IParams):
     def __init__(self):
         args = {
+            'keyword': fields.Str(),
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
             'task_ids': fields.DelimitedList(fields.Int()),
         }
         parsed_args = parser.parse(args, request, location='querystring')
         self.count = parsed_args['per_page']
+        self.keyword = parsed_args.get('keyword')
         self.start = (parsed_args['page'] - 1) * parsed_args['per_page']
         self.task_ids = parsed_args.get('task_ids')
 
     def get_count(self) -> int:
         return self.count
+
+    def get_keyword(self) -> Optional[str]:
+        return self.keyword
 
     def get_start(self) -> int:
         return self.start

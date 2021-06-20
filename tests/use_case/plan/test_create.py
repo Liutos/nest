@@ -90,7 +90,7 @@ class MockTaskRepository(ITaskRepository):
     def clear(self):
         pass
 
-    def find(self, *, count, start, user_id,
+    def find(self, *, count, keyword, start, user_id,
              task_ids: Union[None, List[int]] = None) -> [Task]:
         pass
 

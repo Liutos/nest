@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import List, Union
+from typing import List, Optional, Union
 
 from nest.app.entity.task import ITaskRepository, Task
 from nest.app.use_case.list_task import IParams, ListTaskUseCase
@@ -11,6 +11,9 @@ class MockParams(IParams):
 
     def get_count(self) -> int:
         return 1
+
+    def get_keyword(self) -> Optional[str]:
+        return None
 
     def get_start(self) -> int:
         return 0
@@ -29,7 +32,7 @@ class MockTaskRepository(ITaskRepository):
     def clear(self):
         pass
 
-    def find(self, *, count, start, user_id,
+    def find(self, *, count, keyword, start, user_id,
              task_ids=None):
         return [{}]
 

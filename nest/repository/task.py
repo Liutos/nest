@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from datetime import datetime
-from typing import List, Union
+from typing import List, Optional, Union
 
 from pypika import Order, Query, Table, Tables
 
@@ -71,7 +71,8 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             with connection.cursor() as cursor:
                 cursor.execute(sql)
 
-    def find(self, *, count, start, user_id,
+    def find(self, *, count, keyword: Optional[str] = None,
+             start, user_id,
              task_ids: Union[None, List[int]] = None) -> [Task]:
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
@@ -83,6 +84,14 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                     .orderby(task_table.ctime, order=Order.desc)\
                     .limit(count)\
                     .offset(start)
+                if keyword is not None:
+                    keyword_id = self._find_keyword(keyword)
+                    task_keyword_table = Table('t_task_keyword')
+                    subquery = Query\
+                        .from_(task_keyword_table)\
+                        .select(task_keyword_table.task_id)\
+                        .where(task_keyword_table.keyword_id == keyword_id)
+                    query = query.where(task_table.id.isin(subquery))
                 if task_ids is not None:
                     query = query.where(task_table.id.isin(task_ids))
 
@@ -113,21 +122,23 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
 
     def _ensure_keyword_exist(self, keyword: str) -> int:
         """找出关键字的ID，或写入该关键字。"""
-        with self.get_connection() as connection:
-            with connection.cursor() as cursor:
-                keyword_table = Table('t_keyword')
-                query = Query\
-                    .from_(keyword_table)\
-                    .select(keyword_table.star)\
-                    .where(keyword_table.content == keyword)
-                sql = query.get_sql(quote_char=None)
-                cursor.execute(sql)
-                row = cursor.fetchone()
-                if row:
-                    return row['id']
-                return self.insert_to_db({
-                    'content': keyword,
-                }, 't_keyword')
+        keyword_id = self._find_keyword(keyword)
+        if keyword_id is not None:
+            return keyword_id
+        return self.insert_to_db({
+            'content': keyword,
+        }, 't_keyword')
+
+    def _find_keyword(self, keyword: str) -> Optional[int]:
+        keyword_table = Table('t_keyword')
+        query = Query \
+            .from_(keyword_table) \
+            .select(keyword_table.star) \
+            .where(keyword_table.content == keyword)
+        sql = query.get_sql(quote_char=None)
+        cursor = self.execute_sql(sql)
+        row = cursor.fetchone()
+        return row and row.get('id')
 
     def _row_to_task(self, row):
         task = Task()

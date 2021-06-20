@@ -13,23 +13,50 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
         super(DatabaseTaskRepository, self).__init__(connection)
 
     def add(self, task: Task):
-        # 依次插入t_keyword、t_task，以及t_task_keyword表。
-        keywords = task.keywords
-        keyword_ids = [self._ensure_keyword_exist(keyword) for keyword in keywords]
-        now = datetime.now()
-        insert_id = self.insert_to_db({
-            'brief': task.brief,
-            'user_id': task.user_id,
-            'ctime': now,
-            'mtime': now,
-        }, 't_task')
-        for keyword_id in keyword_ids:
-            self.insert_to_db({
-                'keyword_id': keyword_id,
-                'task_id': insert_id,
-            }, 't_task_keyword')
+        if task.id is None:
+            # 依次插入t_keyword、t_task，以及t_task_keyword表。
+            keywords = task.keywords
+            keyword_ids = [self._ensure_keyword_exist(keyword) for keyword in keywords]
+            now = datetime.now()
+            insert_id = self.insert_to_db({
+                'brief': task.brief,
+                'user_id': task.user_id,
+                'ctime': now,
+                'mtime': now,
+            }, 't_task')
+            for keyword_id in keyword_ids:
+                self.insert_to_db({
+                    'keyword_id': keyword_id,
+                    'task_id': insert_id,
+                }, 't_task_keyword')
 
-        task.id = insert_id
+            task.id = insert_id
+        else:
+            # t_keyword表只增不减，先更新t_task表，再删除t_task_keyword表不再存在的记录。
+            task_table, task_keyword_table = Tables('t_task', 't_task_keyword')
+            query = Query\
+                .update(task_table)\
+                .set(task_table.brief, task.brief)\
+                .where(task_table.id == task.id)
+            sql = query.get_sql(quote_char=None)
+            self.execute_sql(sql)
+
+            sql = Query\
+                .from_(task_keyword_table)\
+                .where(task_keyword_table.task_id == task.id)\
+                .delete()\
+                .get_sql(quote_char=None)
+            self.execute_sql(sql)
+
+            query = Query\
+                .into(task_keyword_table)\
+                .columns('keyword_id', 'task_id')
+            for keyword in task.keywords:
+                keyword_id = self._ensure_keyword_exist(keyword)
+                query = query.insert(keyword_id, task.id)
+            sql = query.get_sql(quote_char=None)
+            print('sql', sql)
+            self.execute_sql(sql)
 
     def clear(self):
         """

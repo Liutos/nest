@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.get_task import IParams, GetTaskUseCase
-from nest.app.entity.task import Task
 from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
+from nest.web.presenter.task import Presenter
 
 
 class HTTPParams(IParams):
@@ -12,21 +12,6 @@ class HTTPParams(IParams):
 
     def get_task_id(self) -> int:
         return self.task_id
-
-
-class Presenter:
-    def __init__(self, *, task: Task):
-        self.task = task
-
-    def build(self):
-        return {
-            'error': None,
-            'result': {
-                'brief': self.task.brief,
-                'id': self.task.id,
-            },
-            'status': 'success',
-        }
 
 
 @wrap_response

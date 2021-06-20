@@ -44,6 +44,12 @@ class DatabaseOperationMixin:
         self.is_transaction = False
         print('提交数据库事务')
 
+    def execute_sql(self, sql: str):
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                return cursor
+
     def get_connection(self):
         if self.cached_connection:
             return self.cached_connection

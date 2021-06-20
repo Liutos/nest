@@ -1,9 +1,30 @@
+DROP TABLE IF EXISTS `t_keyword`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `t_keyword` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `content` varchar(1000) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ix__content` (`content`(100))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `t_location`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `t_location` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(10) NOT NULL COMMENT '地点名',
+  `user_id` bigint(20) NOT NULL COMMENT '创建者的ID',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `t_plan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `t_plan` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `duration` int(11) DEFAULT '0' COMMENT '持续时长',
+  `location_id` bigint(20) DEFAULT NULL COMMENT '计划生效的地点的ID',
   `task_id` int(11) NOT NULL COMMENT '该计划所属的任务',
   `location` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '能够执行该任务的地点',
   `repeat_interval` int(11) DEFAULT NULL COMMENT '配合“重复类型”，计算出下一次的触发时间',
@@ -29,6 +50,17 @@ CREATE TABLE `t_task` (
   PRIMARY KEY (`id`),
   KEY `ix_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `t_task_keyword`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `t_task_keyword` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `keyword_id` bigint(20) NOT NULL,
+  `task_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ix__keyword_id` (`keyword_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `t_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

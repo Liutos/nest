@@ -91,6 +91,18 @@ def test_visible_hours():
     assert not plan.is_visible(trigger_time=trigger_time2)
 
 
+def test_visible_hours_description():
+    plan = Plan.new(
+        task_id=0,
+        trigger_time=datetime.now(),
+        repeat_interval=timedelta(days=13),
+        repeat_type='periodically',
+        visible_hours={1, 2, 3, 5, 8, 13, 21},
+    )
+    description = plan.get_visible_hours_description()
+    assert description == '1/2/3/5/8/13/21点可见'
+
+
 def test_visible_wdays():
     """
     测试星期几可见的判断逻辑。
@@ -101,6 +113,18 @@ def test_visible_wdays():
     trigger_time2 = datetime(2021, 4, 13)
     assert plan.is_visible(trigger_time=trigger_time1)
     assert not plan.is_visible(trigger_time=trigger_time2)
+
+
+def test_visible_wdays_description():
+    plan = Plan.new(
+        task_id=0,
+        trigger_time=datetime.now(),
+        repeat_interval=timedelta(days=13),
+        repeat_type='periodically',
+        visible_wdays={1, 2, 3, 5},
+    )
+    description = plan.get_visible_wdays_description()
+    assert description == '星期1/2/3/5可见'
 
 
 def test_weekly_repeater():

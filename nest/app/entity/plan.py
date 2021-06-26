@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Union
+from typing import List, Optional, Set, Union
 
 
 class IRepeater(ABC):
@@ -194,12 +194,27 @@ class Plan:
             unit = units[i]
         return '每{}{}'.format(amount, unit)
 
+    def get_visible_hours_description(self) -> str:
+        """生成可读的、哪些小时可见的描述。"""
+        if len(self.visible_hours) == 0:
+            return '每小时可见'
+        sorted_hours = sorted(list(self.visible_hours))
+        return '/'.join(map(str, sorted_hours)) + '点可见'
+
+    def get_visible_wdays_description(self) -> str:
+        """生成可读的、星期几可见的描述。"""
+        if len(self.visible_wdays) == 0:
+            return '每天可见'
+        sorted_wdays = sorted(list(self.visible_wdays))
+        return '星期' + '/'.join(map(str, sorted_wdays)) + '可见'
+
     @classmethod
     def new(cls, task_id, trigger_time, *,
             duration: Union[None, int] = None,
             location_id: Union[None, int] = None,
             repeat_interval: Union[None, timedelta] = None,
-            repeat_type=None, visible_hours=None, visible_wdays=None):
+            repeat_type=None, visible_hours: Optional[Set] = None,
+            visible_wdays: Optional[Set] = None):
         if isinstance(duration, int) and duration < 0:
             raise InvalidDurationError()
         if repeat_type == 'periodically' and not repeat_interval:

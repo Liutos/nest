@@ -25,5 +25,7 @@ class PlanPresenter:
             'task_id': self.plan.task_id,
             'trigger_time': trigger_time.strftime('%Y-%m-%d %H:%M:%S'),
             'visible_hours': list(self.plan.visible_hours),
+            'visible_hours_description': self.plan.get_visible_hours_description(),
             'visible_wdays': list(self.plan.visible_wdays),
+            'visible_wdays_description': self.plan.get_visible_wdays_description(),
         }

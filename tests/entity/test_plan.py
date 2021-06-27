@@ -32,7 +32,6 @@ def test_monthly_repeater():
     )
     next_trigger_time = repeater.compute_next_trigger_time()
     assert next_trigger_time.year == 2021
-    # FIXME: 这个单元测试仅在7月16日前有效。
     assert next_trigger_time.month == 7
     assert next_trigger_time.day == 16
 
@@ -57,8 +56,8 @@ def test_rebirth():
         repeat_type='periodically',
         task_id=1,
         trigger_time=trigger_time,
-        visible_hours=[1],
-        visible_wdays=[6],
+        visible_hours={1},
+        visible_wdays={6},
     )
     rebirth_plan = plan.rebirth()
     for attr, value in plan.__dict__.items():

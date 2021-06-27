@@ -16,11 +16,7 @@ class FixedIntervalRepeaterMixin(ABC):
         self.repeat_interval = repeat_interval
 
     def compute_next_trigger_time(self) -> datetime:
-        next_trigger_time = self.last_trigger_time
-        now = datetime.now()
-        while next_trigger_time.timestamp() < now.timestamp():
-            next_trigger_time += self.get_interval()
-        return next_trigger_time
+        return self.last_trigger_time + self.get_interval()
 
     @abstractmethod
     def get_interval(self) -> timedelta:
@@ -40,22 +36,19 @@ class EndOfMonthRepeater(IRepeater):
     def compute_next_trigger_time(self) -> datetime:
         # 月份加二，再设置为当月第一天，再往前退一天。
         next_trigger_time = self.last_trigger_time
-        now = datetime.now()
-        while next_trigger_time.timestamp() < now.timestamp():
-            month = next_trigger_time.month
-            year = next_trigger_time.year
-            if month >= 11:
-                month = (month + 2) % 12
-                year += 1
-            else:
-                month += 2
-            next_trigger_time = next_trigger_time.replace(
-                day=1,
-                month=month,
-                year=year,
-            )
-            next_trigger_time = next_trigger_time - timedelta(days=1)
-        return next_trigger_time
+        month = next_trigger_time.month
+        year = next_trigger_time.year
+        if month >= 11:
+            month = (month + 2) % 12
+            year += 1
+        else:
+            month += 2
+        next_trigger_time = next_trigger_time.replace(
+            day=1,
+            month=month,
+            year=year,
+        )
+        return next_trigger_time - timedelta(days=1)
 
 
 class HourRepeater(FixedIntervalRepeaterMixin, IRepeater):
@@ -69,12 +62,7 @@ class MonthlyRepeater(IRepeater):
         self.repeat_interval = repeat_interval
 
     def compute_next_trigger_time(self) -> datetime:
-        next_trigger_time = self.last_trigger_time
-        now = datetime.now()
-        # TODO: 循环的流程应当剥离到IRepeater的使用者中。
-        while next_trigger_time.timestamp() < now.timestamp():
-            next_trigger_time = self._compute_once(next_trigger_time)
-        return next_trigger_time
+        return self._compute_once(self.last_trigger_time)
 
     def _compute_once(self, last_trigger_time: datetime) -> datetime:
         # 去到下一个月的同一天。如果下个月没有这一天，就继续增加一个月。
@@ -256,18 +244,23 @@ class Plan:
         """
         生成下一个触发时间的计划。
         """
-        repeater = RepeaterFactory.get_repeater(
-            last_trigger_time=self.trigger_time,
-            repeat_interval=self.repeat_interval,
-            repeat_type=self.repeat_type,
-        )
+        next_trigger_time: datetime = self.trigger_time
+        now = datetime.now()
+        while next_trigger_time.timestamp() < now.timestamp():
+            repeater = RepeaterFactory.get_repeater(
+                last_trigger_time=next_trigger_time,
+                repeat_interval=self.repeat_interval,
+                repeat_type=self.repeat_type,
+            )
+            next_trigger_time = repeater.compute_next_trigger_time()
+
         instance = Plan()
         instance.duration = self.duration
         instance.location_id = self.location_id
         instance.repeat_interval = self.repeat_interval
         instance.repeat_type = self.repeat_type
         instance.task_id = self.task_id
-        instance.trigger_time = repeater.compute_next_trigger_time()
+        instance.trigger_time = next_trigger_time
         instance.visible_hours = self.visible_hours
         instance.visible_wdays = self.visible_wdays
         return instance

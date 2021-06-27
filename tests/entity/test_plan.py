@@ -64,7 +64,7 @@ def test_rebirth():
         if attr in ['id', 'trigger_time']:
             continue
         assert getattr(rebirth_plan, attr) == getattr(plan, attr)
-    assert rebirth_plan.trigger_time.timestamp() - trigger_time.timestamp() == 60 * 60
+    assert rebirth_plan.trigger_time.timestamp() - trigger_time.timestamp() == 3 * 24 * 60 * 60
 
 
 def test_repeating_description():

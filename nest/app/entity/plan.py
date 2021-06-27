@@ -123,7 +123,7 @@ _TYPE_TO_REPEATER_CLASS = {
     'end_of_month': EndOfMonthRepeater,
     'hourly': HourRepeater,
     'monthly': MonthlyRepeater,
-    'periodically': HourRepeater,
+    'periodically': PeriodicallyRepeater,
     'weekly': WeeklyRepeater,
 }
 

@@ -73,6 +73,9 @@ class MockPlanRepository(IPlanRepository):
     def find_by_id(self, id_: int) -> Plan:
         return self.plan
 
+    def find_by_task_id(self, *, task_id: int) -> List[Plan]:
+        pass
+
     def remove(self, id_: int):
         pass
 
@@ -90,11 +93,23 @@ class MockTaskRepository(ITaskRepository):
     def clear(self):
         pass
 
+    def commit(self):
+        pass
+
     def find(self, *, count, keyword, start, user_id,
              task_ids: Union[None, List[int]] = None) -> [Task]:
         pass
 
     def find_by_id(self, *, id_) -> Union[None, Task]:
+        pass
+
+    def remove(self, *, id_: int):
+        pass
+
+    def rollback(self):
+        pass
+
+    def start_transaction(self, *, with_repository=None):
         pass
 
 

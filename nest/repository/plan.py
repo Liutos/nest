@@ -116,6 +116,17 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                     return None
                 return self._row2entity(plan_dict)
 
+    def find_by_task_id(self, *, task_id: int) -> List[Plan]:
+        plan_table = Table('t_plan')
+        query = Query \
+            .from_(plan_table) \
+            .select(plan_table.star) \
+            .where(plan_table.task_id == task_id)
+        sql = query.get_sql(quote_char=None)
+        cursor = self.execute_sql(sql)
+        rows = cursor.fetchall()
+        return list(map(self._row2entity, rows))
+
     def remove(self, id_: int):
         self.remove_from_db(id_, 't_plan')
 

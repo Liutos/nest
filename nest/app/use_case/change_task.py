@@ -2,12 +2,12 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
-from nest.app.entity.task import ITaskRepository, Task
-
-
-class AccessDeniedError(Exception):
-    """用户无权访问给定任务的错误。"""
-    pass
+from nest.app.entity.task import (
+    AccessDeniedError,
+    ITaskRepository,
+    Task,
+    TaskNotFoundError,
+)
 
 
 class IParams(ABC):
@@ -26,11 +26,6 @@ class IParams(ABC):
     @abstractmethod
     def get_user_id(self) -> int:
         pass
-
-
-class TaskNotFoundError(Exception):
-    def __init__(self, *, task_id: int):
-        self.task_id = task_id
 
 
 class ChangeTaskUseCase:

@@ -12,6 +12,7 @@ from nest.web.controller import (
     create_plan,
     create_task,
     delete_plan,
+    delete_task,
     get_location,
     get_plan,
     get_task,
@@ -84,6 +85,10 @@ app.add_url_rule('/plan/<int:plan_id>', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,
 }, view_func=change_plan.change_plan, methods=['PATCH'])
+app.add_url_rule('/task/<int:id_>', defaults={
+    'certificate_repository': certificate_repository,
+    'repository_factory': repository_factory,
+}, view_func=delete_task.delete_task, methods=['DELETE'])
 app.add_url_rule('/task/<id_>', defaults={
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,

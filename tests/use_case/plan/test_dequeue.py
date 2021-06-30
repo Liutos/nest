@@ -54,6 +54,9 @@ class MockPlanRepository(IPlanRepository):
     def find_by_id(self, id_: int) -> Plan:
         pass
 
+    def find_by_task_id(self, *, task_id: int) -> List[Plan]:
+        pass
+
     def remove(self, id_: int):
         pass
 

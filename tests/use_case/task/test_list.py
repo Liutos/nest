@@ -32,11 +32,23 @@ class MockTaskRepository(ITaskRepository):
     def clear(self):
         pass
 
+    def commit(self):
+        pass
+
     def find(self, *, count, keyword, start, user_id,
              task_ids=None):
         return [{}]
 
     def find_by_id(self, *, id_) -> Union[None, Task]:
+        pass
+
+    def remove(self, *, id_: int):
+        pass
+
+    def rollback(self):
+        pass
+
+    def start_transaction(self, *, with_repository=None):
         pass
 
 

@@ -111,14 +111,8 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
 
                 return self._row_to_task(row)
 
-    def remove(self, task: Union[Task, int]):
-        if isinstance(task, Task):
-            task_id = task.id
-        else:
-            assert isinstance(task, int)
-            task_id = task
-
-        self.remove_from_db(task_id, 't_task')
+    def remove(self, id_: int):
+        self.remove_from_db(id_, 't_task')
 
     def _ensure_keyword_exist(self, keyword: str) -> int:
         """找出关键字的ID，或写入该关键字。"""

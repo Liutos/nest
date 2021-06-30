@@ -291,6 +291,10 @@ class IPlanRepository(ABC):
         pass
 
     @abstractmethod
+    def find_by_task_id(self, *, task_id: int) -> List[Plan]:
+        pass
+
+    @abstractmethod
     def remove(self, id_: int):
         pass
 

@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
+from typing import List
 
 
 class IConnectionPool(ABC):
@@ -37,8 +38,14 @@ class DatabaseOperationMixin:
         self.cached_connection = None
         self.is_transaction = False
         self.pool = pool
+        self.transaction_participants: List[DatabaseOperationMixin] = []
 
     def commit(self):
+        for repository in self.transaction_participants:
+            r: DatabaseOperationMixin = repository
+            r.cached_connection = None
+            r.is_transaction = False
+
         self.cached_connection.commit()
         self.cached_connection = None
         self.is_transaction = False
@@ -85,13 +92,25 @@ class DatabaseOperationMixin:
             connection.commit()
 
     def rollback(self):
+        for repository in self.transaction_participants:
+            r: DatabaseOperationMixin = repository
+            r.cached_connection = None
+            r.is_transaction = False
+
         self.cached_connection.rollback()
         self.cached_connection = None
         self.is_transaction = False
         print('回滚数据库事务')
 
-    def start_transaction(self):
+    def start_transaction(self, *, with_repository=None):
         self.is_transaction = True
         self.cached_connection = self.get_connection()
+        if with_repository is not None:
+            self.transaction_participants = with_repository
+            for repository in with_repository:
+                r: DatabaseOperationMixin = repository
+                r.cached_connection = self.cached_connection
+                r.is_transaction = True
+
         self.cached_connection.begin()
         print('开启数据库事务')

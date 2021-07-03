@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import os
 
-from flask import Flask
+from flask import Blueprint, Flask
 
 from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
@@ -49,63 +49,35 @@ certificate_repository = RedisCertificateRepository(
 mysql_connection = DBUtilsConnectionPool(config)
 repository_factory = RepositoryFactory(mysql_connection)
 
-app.add_url_rule('/location', defaults={
+defaults = {
     'certificate_repository': certificate_repository,
     'repository_factory': repository_factory,
-}, view_func=list_location.list_location, methods=['GET'])
-app.add_url_rule('/location', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=create_location.create_location, methods=['POST'])
-app.add_url_rule('/location/<id_>', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=get_location.get_location, methods=['GET'])
-app.add_url_rule('/plan', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=list_plan.list_plan, methods=['GET'])
-app.add_url_rule('/plan', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=create_plan.create_plan, methods=['POST'])
-app.add_url_rule('/plan/pop', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=pop_plan.pop_plan, methods=['POST'])
-app.add_url_rule('/plan/<id_>', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=get_plan.get_plan, methods=['GET'])
-app.add_url_rule('/plan/<id_>', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=delete_plan.delete_plan, methods=['DELETE'])
-app.add_url_rule('/plan/<int:plan_id>', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=change_plan.change_plan, methods=['PATCH'])
-app.add_url_rule('/task/<int:id_>', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=delete_task.delete_task, methods=['DELETE'])
-app.add_url_rule('/task/<id_>', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=change_task.change_task, methods=['PATCH'])
-app.add_url_rule('/task', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=create_task.create_task, methods=['POST'])
-app.add_url_rule('/task', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=list_task.list_task, methods=['GET'])
-app.add_url_rule('/task/<id_>', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=get_task.get_task, methods=['GET'])
-app.add_url_rule('/user/login', defaults={
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}, view_func=login.login, methods=['POST'])
+}
+
+location_blueprint = Blueprint('location', __name__, url_defaults=defaults, url_prefix='/location')
+location_blueprint.add_url_rule('', view_func=list_location.list_location, methods=['GET'])
+location_blueprint.add_url_rule('', view_func=create_location.create_location, methods=['POST'])
+location_blueprint.add_url_rule('/<id_>', view_func=get_location.get_location, methods=['GET'])
+
+app.register_blueprint(location_blueprint)
+
+plan_blueprint = Blueprint('plan', __name__, url_defaults=defaults, url_prefix='/plan')
+plan_blueprint.add_url_rule('', view_func=list_plan.list_plan, methods=['GET'])
+plan_blueprint.add_url_rule('', view_func=create_plan.create_plan, methods=['POST'])
+plan_blueprint.add_url_rule('/pop', view_func=pop_plan.pop_plan, methods=['POST'])
+plan_blueprint.add_url_rule('/<id_>', view_func=get_plan.get_plan, methods=['GET'])
+plan_blueprint.add_url_rule('/<id_>', view_func=delete_plan.delete_plan, methods=['DELETE'])
+plan_blueprint.add_url_rule('/<int:plan_id>', view_func=change_plan.change_plan, methods=['PATCH'])
+
+app.register_blueprint(plan_blueprint)
+
+task_blueprint = Blueprint('task', __name__, url_defaults=defaults, url_prefix='/task')
+task_blueprint.add_url_rule('/<int:id_>', view_func=delete_task.delete_task, methods=['DELETE'])
+task_blueprint.add_url_rule('/<id_>', view_func=change_task.change_task, methods=['PATCH'])
+task_blueprint.add_url_rule('', view_func=create_task.create_task, methods=['POST'])
+task_blueprint.add_url_rule('', view_func=list_task.list_task, methods=['GET'])
+task_blueprint.add_url_rule('/<id_>', view_func=get_task.get_task, methods=['GET'])
+
+app.register_blueprint(task_blueprint)
+
+app.add_url_rule('/user/login', defaults=defaults, view_func=login.login, methods=['POST'])

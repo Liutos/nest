@@ -26,33 +26,39 @@ from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.repository import RepositoryFactory
 
 
+def _load_config():
+    current_dir = os.path.dirname(__file__)
+    config_dir = os.path.join(current_dir, './config')
+    file_name = 'default'
+    mode = os.environ.get('MODE')
+    if mode == 'unittest':
+        file_name = 'unittest'
+    config_file = os.path.join(config_dir, file_name + '.ini')
+    return Config(config_file)
+
+
+def _make_url_defaults(config: Config):
+    redis_section = config['redis']
+    db = int(redis_section['db'])
+    host = redis_section['host']
+    port = int(redis_section['port'])
+    certificate_repository = RedisCertificateRepository(
+        db=db,
+        host=host,
+        port=port
+    )
+
+    mysql_connection = DBUtilsConnectionPool(config)
+    repository_factory = RepositoryFactory(mysql_connection)
+
+    return {
+        'certificate_repository': certificate_repository,
+        'repository_factory': repository_factory,
+    }
+
+
 app = Flask(__name__)
-
-current_dir = os.path.dirname(__file__)
-config_dir = os.path.join(current_dir, './config')
-file_name = 'default'
-mode = os.environ.get('MODE')
-if mode == 'unittest':
-    file_name = 'unittest'
-config_file = os.path.join(config_dir, file_name + '.ini')
-config = Config(config_file)
-redis_section = config['redis']
-db = int(redis_section['db'])
-host = redis_section['host']
-port = int(redis_section['port'])
-certificate_repository = RedisCertificateRepository(
-    db=db,
-    host=host,
-    port=port
-)
-
-mysql_connection = DBUtilsConnectionPool(config)
-repository_factory = RepositoryFactory(mysql_connection)
-
-defaults = {
-    'certificate_repository': certificate_repository,
-    'repository_factory': repository_factory,
-}
+defaults = _make_url_defaults(_load_config())
 
 location_blueprint = Blueprint('location', __name__, url_defaults=defaults, url_prefix='/location')
 location_blueprint.add_url_rule('', view_func=list_location.list_location, methods=['GET'])

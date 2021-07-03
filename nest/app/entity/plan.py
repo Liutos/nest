@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Optional, Set, Union
+from typing import List, Optional, Set, Tuple, Union
 
 
 class IRepeater(ABC):
@@ -283,7 +283,7 @@ class IPlanRepository(ABC):
     @abstractmethod
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
-                      page: int, per_page: int, user_id: int) -> List[Plan]:
+                      page: int, per_page: int, user_id: int) -> Tuple[List[Plan], int]:
         pass
 
     @abstractmethod

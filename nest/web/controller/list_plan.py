@@ -38,7 +38,8 @@ class HTTPParams(IParams):
 
 
 class ListPlanPresenter:
-    def __init__(self, plans):
+    def __init__(self, plans, count: int):
+        self.count = count
         self.plans = plans
 
     def format(self):
@@ -48,7 +49,10 @@ class ListPlanPresenter:
             plans.append(presenter.format())
         return {
             'error': None,
-            'result': plans,
+            'result': {
+                'count': self.count,
+                'plans': plans,
+            },
             'status': 'success',
         }
 
@@ -67,6 +71,6 @@ def list_plan(certificate_repository, repository_factory):
         params=params,
         plan_repository=repository_factory.plan(),
     )
-    plans = use_case.run()
-    presenter = ListPlanPresenter(plans)
+    plans, count = use_case.run()
+    presenter = ListPlanPresenter(plans, count)
     return presenter.format(), 200

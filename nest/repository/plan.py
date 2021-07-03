@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 from datetime import datetime, timedelta
 import json
-from typing import List, Union
+from typing import List, Tuple, Union
 
-from pypika import Order, Query, Table, Tables
+from pypika import Order, Query, Table, Tables, functions
 
 from nest.app.entity.plan import IPlanRepository, Plan
 from nest.repository.db_operation import DatabaseOperationMixin
@@ -74,31 +74,40 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
-                      page: int, per_page: int, user_id: int) -> List[Plan]:
+                      page: int, per_page: int, user_id: int) -> Tuple[List[Plan], int]:
         plan_table, task_table = Tables('t_plan', 't_task')
-        query = Query\
-            .from_(plan_table)\
-            .left_join(task_table)\
-            .on(plan_table.task_id == task_table.id)\
+        base_query = Query \
+            .from_(plan_table) \
+            .left_join(task_table) \
+            .on(plan_table.task_id == task_table.id) \
+            .where(task_table.user_id == user_id)
+
+        if location_ids:
+            base_query = base_query.where(plan_table.location_id.isin(location_ids))
+
+        if isinstance(max_trigger_time, datetime):
+            base_query = base_query.where(plan_table.trigger_time < max_trigger_time)
+
+        counting_query = base_query \
+            .select(functions.Count(0).as_('COUNT'))
+
+        query = base_query \
             .select(plan_table.star)\
-            .where(task_table.user_id == user_id)\
             .orderby(plan_table.trigger_time, order=Order.asc)\
             .limit(per_page)\
             .offset((page - 1) * per_page)
 
-        if location_ids:
-            query = query.where(plan_table.location_id.isin(location_ids))
-
-        if isinstance(max_trigger_time, datetime):
-            query = query.where(plan_table.trigger_time < max_trigger_time)
-
+        print('counting sql', counting_query.get_sql(quote_char=None))
         print('sql', query.get_sql(quote_char=None))
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
                 cursor.execute(query.get_sql(quote_char=None))
                 plan_dicts = cursor.fetchall()
 
-        return [self._row2entity(row) for row in plan_dicts]
+        cursor = self.execute_sql(counting_query.get_sql(quote_char=None))
+        row = cursor.fetchone()
+
+        return [self._row2entity(row) for row in plan_dicts], row['COUNT']
 
     def find_by_id(self, id_: int) -> Union[None, Plan]:
         plan_table = Table('t_plan')

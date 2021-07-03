@@ -104,11 +104,13 @@ def test_list_plan(client):
         'per_page': 10,
     })
     json_data = rv.get_json()
-    plans = json_data['result']
+    plans = json_data['result']['plans']
+    count = json_data['result']['count']
     assert len(plans) == 2
     assert plans[0]['id'] == _plan_ids[1]
     assert plans[1]['id'] == _plan_ids[0]
     assert plans[1]['duration'] == 234
+    assert count == 2
 
 
 def test_periodical_plan(client):

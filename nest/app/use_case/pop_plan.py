@@ -43,7 +43,7 @@ class PopPlanUseCase:
                 default_location.id,
                 location_id,
             ]
-        plans = plan_repository.find_as_queue(
+        plans, _ = plan_repository.find_as_queue(
             location_ids=location_ids,
             max_trigger_time=datetime.now(),
             page=1,

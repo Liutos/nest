@@ -75,7 +75,9 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                 cursor.execute(sql)
 
     def find(self, *, count, keyword: Optional[str] = None,
-             start, user_id,
+             start,
+             status: Optional[TaskStatus] = None,
+             user_id,
              task_ids: Union[None, List[int]] = None) -> [Task]:
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
@@ -95,6 +97,8 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                         .select(task_keyword_table.task_id)\
                         .where(task_keyword_table.keyword_id == keyword_id)
                     query = query.where(task_table.id.isin(subquery))
+                if status:
+                    query = query.where(task_table.status == status)
                 if task_ids is not None:
                     query = query.where(task_table.id.isin(task_ids))
 

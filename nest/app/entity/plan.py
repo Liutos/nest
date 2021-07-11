@@ -297,7 +297,7 @@ class IPlanRepository(ABC):
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
                       min_trigger_time: datetime = None,
-                      page: int, per_page: int,
+                      page: Optional[int] = None, per_page: Optional[int] = None,
                       status: PlanStatus = None,
                       user_id: int) -> Tuple[List[Plan], int]:
         pass

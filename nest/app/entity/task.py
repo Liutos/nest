@@ -45,7 +45,7 @@ class ITaskRepository(ABC):
     @abstractmethod
     def find(self, *, count,
              keyword: Optional[str] = None,
-             start, user_id,
+             start, status: Optional[TaskStatus] = None, user_id,
              task_ids: Union[None, List[int]] = None) -> [Task]:
         pass
 

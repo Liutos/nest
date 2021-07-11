@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from datetime import datetime, timedelta
 import json
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from pypika import Order, Query, Table, Tables, functions
 
@@ -77,7 +77,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
                       min_trigger_time: datetime = None,
-                      page: int, per_page: int,
+                      page: Optional[int] = None, per_page: Optional[int] = None,
                       status: PlanStatus = None,
                       user_id: int) -> Tuple[List[Plan], int]:
         plan_table, task_table = Tables('t_plan', 't_task')
@@ -104,9 +104,12 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
         query = base_query \
             .select(plan_table.star)\
-            .orderby(plan_table.trigger_time, order=Order.asc)\
-            .limit(per_page)\
-            .offset((page - 1) * per_page)
+            .orderby(plan_table.trigger_time, order=Order.asc)
+
+        if page and per_page:
+            query = query\
+                .limit(per_page)\
+                .offset((page - 1) * per_page)
 
         print('counting sql', counting_query.get_sql(quote_char=None))
         print('sql', query.get_sql(quote_char=None))

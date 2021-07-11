@@ -62,5 +62,6 @@ def test_create_task(client):
     assert isinstance(json_data['result']['id'], int)
     assert 'hello' in json_data['result']['keywords']
     assert 'nest' in json_data['result']['keywords']
+    assert json_data['result']['status'] == 1
     global _task_id
     _task_id = json_data['result']['id']

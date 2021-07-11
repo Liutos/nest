@@ -9,6 +9,7 @@ from nest.app.use_case.create_task import CreateTaskUseCase, IParams
 from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
+from nest.web.presenter.task import Presenter
 
 
 class HTTPParams(IParams):
@@ -47,9 +48,6 @@ def create_task(certificate_repository, repository_factory):
     task = use_case.run()
     return {
         'error': None,
-        'result': {
-            'id': task.id,
-            'keywords': task.keywords,
-        },
+        'result': Presenter(task=task).build(),
         'status': 'success',
     }, 201

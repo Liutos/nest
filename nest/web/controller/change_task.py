@@ -62,4 +62,8 @@ def change_task(
     presenter = Presenter(
         task=task,
     )
-    return presenter.build(), 200
+    return {
+        'error': None,
+        'result': presenter.build(),
+        'status': 'success',
+    }, 200

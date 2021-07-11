@@ -31,4 +31,8 @@ def get_task(certificate_repository, id_, repository_factory):
     presenter = Presenter(
         task=task,
     )
-    return presenter.build(), 200
+    return {
+        'error': None,
+        'result': presenter.build(),
+        'status': 'success',
+    }, 200

@@ -12,6 +12,7 @@ from nest.infra.repository import RepositoryFactory
 from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
+from nest.web.presenter.task import Presenter
 
 
 class HTTPParams(IParams):
@@ -56,16 +57,12 @@ class HTTPParams(IParams):
         return int(request.cookies.get('user_id'))
 
 
-class Presenter:
+class ListPresenter:
     def __init__(self, *, tasks: List[Task]):
         self.tasks = tasks
 
     def build(self):
-        tasks = [{
-            'brief': task.brief,
-            'id': task.id,
-            'keywords': task.keywords,
-        } for task in self.tasks]
+        tasks = [Presenter(task=task).build() for task in self.tasks]
         return {
             'error': None,
             'result': tasks,
@@ -88,4 +85,4 @@ def list_task(certificate_repository, repository_factory: RepositoryFactory):
         task_repository=repository_factory.task(),
     )
     tasks = use_case.run()
-    return Presenter(tasks=tasks).build(), 200
+    return ListPresenter(tasks=tasks).build(), 200

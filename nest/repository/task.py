@@ -99,10 +99,13 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                     query = query.where(task_table.id.isin(subquery))
                 if status:
                     query = query.where(task_table.status == status)
+                if task_ids and len(task_ids) == 0:
+                    return []
                 if task_ids is not None:
                     query = query.where(task_table.id.isin(task_ids))
 
                 sql = query.get_sql(quote_char=None)
+                print('sql', sql)
                 cursor.execute(sql)
                 rows = cursor.fetchall()
                 return [self._row_to_task(row) for row in rows]

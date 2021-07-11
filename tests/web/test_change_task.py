@@ -64,11 +64,13 @@ def test_change_task(client):
             'goodbye',
             'nest',
         ],
+        'status': 2,
     })
     json_data = rv.get_json()
     assert 'result' in json_data
     task = json_data['result']
     assert task['brief'] == 'Goodbye, nest!'
     assert task['id'] == _task_id
+    assert task['status'] == 2
     assert 'goodbye' in task['keywords']
     assert 'nest' in task['keywords']

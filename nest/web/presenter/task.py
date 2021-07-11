@@ -13,6 +13,7 @@ class Presenter:
                 'brief': self.task.brief,
                 'id': self.task.id,
                 'keywords': self.task.keywords,
+                'status': self.task.status.value,
             },
             'status': 'success',
         }

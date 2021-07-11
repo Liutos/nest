@@ -21,6 +21,7 @@ class HTTPParams(IParams):
         args = {
             'brief': fields.Str(),
             'keywords': fields.List(fields.Str()),
+            'status': fields.Int(),
         }
         self.parsed_args = parser.parse(args, request)
         self.task_id = int(task_id)
@@ -30,6 +31,9 @@ class HTTPParams(IParams):
 
     def get_keywords(self) -> Tuple[bool, str]:
         return 'keywords' in self.parsed_args, self.parsed_args.get('keywords')
+
+    def get_status(self) -> Tuple[bool, int]:
+        return 'status' in self.parsed_args, self.parsed_args.get('status')
 
     def get_task_id(self) -> int:
         return self.task_id

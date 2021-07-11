@@ -296,6 +296,7 @@ class IPlanRepository(ABC):
     @abstractmethod
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
+                      min_trigger_time: datetime = None,
                       page: int, per_page: int,
                       status: PlanStatus = None,
                       user_id: int) -> Tuple[List[Plan], int]:

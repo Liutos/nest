@@ -4,7 +4,7 @@ from typing import List, Optional, Union
 
 from pypika import Order, Query, Table, Tables
 
-from nest.app.entity.task import ITaskRepository, Task
+from nest.app.entity.task import ITaskRepository, Task, TaskStatus
 from nest.repository.db_operation import DatabaseOperationMixin
 
 
@@ -20,6 +20,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             now = datetime.now()
             insert_id = self.insert_to_db({
                 'brief': task.brief,
+                'status': task.status and task.status.value,
                 'user_id': task.user_id,
                 'ctime': now,
                 'mtime': now,
@@ -38,6 +39,8 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                 .update(task_table)\
                 .set(task_table.brief, task.brief)\
                 .where(task_table.id == task.id)
+            if task.status:
+                query = query.set(task_table.status, task.status.value)
             sql = query.get_sql(quote_char=None)
             self.execute_sql(sql)
 
@@ -138,6 +141,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
         task = Task()
         task.brief = row['brief']
         task.id = row['id']
+        task.status = row['status'] and TaskStatus(row['status'])
         task.user_id = row['user_id']
         # 取出任务的所有关键字
         keyword_table, task_keyword_table = Tables('t_keyword', 't_task_keyword')

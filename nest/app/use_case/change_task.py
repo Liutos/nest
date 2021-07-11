@@ -7,6 +7,7 @@ from nest.app.entity.task import (
     ITaskRepository,
     Task,
     TaskNotFoundError,
+    TaskStatus,
 )
 
 
@@ -18,6 +19,9 @@ class IParams(ABC):
     @abstractmethod
     def get_keywords(self) -> Tuple[bool, List[str]]:
         pass
+
+    def get_status(self) -> Tuple[bool, int]:
+        raise NotImplementedError
 
     @abstractmethod
     def get_task_id(self) -> int:
@@ -49,5 +53,8 @@ class ChangeTaskUseCase:
         found, keywords = params.get_keywords()
         if found:
             task.keywords = keywords
+        found, status = params.get_status()
+        if found:
+            task.status = TaskStatus(status)
         self.task_repository.add(task)
         return self.task_repository.find_by_id(id_=task_id)

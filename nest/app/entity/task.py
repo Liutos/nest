@@ -1,6 +1,12 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import List, Optional, Union
+
+
+class TaskStatus(Enum):
+    CREATED = 1
+    FINISHED = 2
 
 
 class Task:
@@ -8,13 +14,16 @@ class Task:
         self.brief = None
         self.id = None
         self.keywords: List[str] = []
+        self.status: Optional[TaskStatus] = None
         self.user_id = None
 
     @classmethod
-    def new(cls, brief, user_id, *, keywords: List[str] = None):
+    def new(cls, brief, user_id, *, keywords: List[str] = None,
+            status: Optional[TaskStatus] = None):
         instance = Task()
         instance.brief = brief
         instance.keywords = keywords or []
+        instance.status = status or TaskStatus.CREATED
         instance.user_id = user_id
         return instance
 

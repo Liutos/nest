@@ -76,6 +76,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
+                      min_trigger_time: datetime = None,
                       page: int, per_page: int,
                       status: PlanStatus = None,
                       user_id: int) -> Tuple[List[Plan], int]:
@@ -91,6 +92,9 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
         if isinstance(max_trigger_time, datetime):
             base_query = base_query.where(plan_table.trigger_time < max_trigger_time)
+
+        if min_trigger_time:
+            base_query = base_query.where(plan_table.trigger_time >= min_trigger_time)
 
         if status:
             base_query = base_query.where(plan_table.status == status.value)

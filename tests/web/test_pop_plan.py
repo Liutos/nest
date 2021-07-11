@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 import time
 
+from nest.app.entity.plan import PlanStatus
 from nest.repository.location import DatabaseLocationRepository
 from nest.repository.plan import DatabasePlanRepository
 from nest.repository.task import DatabaseTaskRepository
@@ -82,6 +83,7 @@ def test_create_plan(client):
     assert isinstance(json_data['result']['id'], int)
     global _plan_id
     _plan_id = json_data['result']['id']
+    assert json_data['result']['status'] == PlanStatus.READY.value
 
 
 def test_pop_plan(client):
@@ -97,3 +99,11 @@ def test_pop_plan(client):
     assert len(plans) == 1
     plan = plans[0]
     assert plan['id'] == _plan_id
+
+
+def test_previous_plan(client):
+    """测试被弹出的计划的状态。"""
+    rv = client.get('/plan/{}'.format(_plan_id))
+    json_data = rv.get_json()
+    plan = json_data['result']
+    assert plan['status'] == PlanStatus.TERMINATED.value

@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 import functools
+import traceback
 
 from webargs.core import ValidationError
 
@@ -64,6 +65,7 @@ def wrap_response(func):
                 'error': {
                     'code': 503,
                     'message': str(e),
+                    'traceback': traceback.format_exc(),
                 },
                 'result': None,
                 'status': 'failure',

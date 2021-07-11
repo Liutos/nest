@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Union
 
 from nest.app.entity.location import ILocationRepository
-from nest.app.entity.plan import IPlanRepository
+from nest.app.entity.plan import IPlanRepository, PlanStatus
 
 
 class IParams(ABC):
@@ -48,6 +48,7 @@ class PopPlanUseCase:
             max_trigger_time=datetime.now(),
             page=1,
             per_page=size,
+            status=PlanStatus.READY,
             user_id=user_id,
         )
         for plan in plans:
@@ -56,7 +57,9 @@ class PopPlanUseCase:
                 if plan.is_repeated():
                     next_plan = plan.rebirth()
                     plan_repository.add(next_plan)
-                plan_repository.remove(plan.id)
+
+                plan.terminate()
+                plan_repository.add(plan)
                 plan_repository.commit()
             except Exception as e:
                 # TODO: 这里有办法改写为更具体的异常类型吗？

@@ -22,6 +22,7 @@ class PlanPresenter:
             'repeat_interval': repeat_interval,
             'repeat_type': self.plan.repeat_type,
             'repeating_description': self.plan.get_repeating_description(),
+            'status': self.plan.status.value,
             'task_id': self.plan.task_id,
             'trigger_time': trigger_time.strftime('%Y-%m-%d %H:%M:%S'),
             'visible_hours': list(self.plan.visible_hours),

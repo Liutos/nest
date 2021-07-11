@@ -48,7 +48,9 @@ class MockPlanRepository(IPlanRepository):
 
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
-                      page: int, per_page: int, user_id=None) -> Tuple[List[Plan], int]:
+                      page: int, per_page: int,
+                      status=None,
+                      user_id=None) -> Tuple[List[Plan], int]:
         return [Plan()], 1
 
     def find_by_id(self, id_: int) -> Plan:

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Union
 
 from nest.app.entity.location import ILocationRepository
-from nest.app.entity.plan import IPlanRepository
+from nest.app.entity.plan import IPlanRepository, PlanStatus
 
 
 class IParams(ABC):
@@ -51,5 +51,6 @@ class ListPlanUseCase:
             location_ids=location_ids,
             page=page,
             per_page=per_page,
+            status=PlanStatus.READY,
             user_id=user_id,
         )

@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 
 from pypika import Order, Query, Table, Tables, functions
 
-from nest.app.entity.plan import IPlanRepository, Plan
+from nest.app.entity.plan import IPlanRepository, Plan, PlanStatus
 from nest.repository.db_operation import DatabaseOperationMixin
 
 
@@ -29,6 +29,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 'location_id': plan.location_id,
                 'repeat_interval': repeat_interval,
                 'repeat_type': plan.repeat_type,
+                'status': plan.status.value,
                 'task_id': plan.task_id,
                 'trigger_time': plan.trigger_time,
                 'visible_hours': json.dumps(list(plan.visible_hours)),
@@ -50,6 +51,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 .set(plan_table.location_id, plan.location_id)\
                 .set(plan_table.repeat_interval, repeat_interval)\
                 .set(plan_table.repeat_type, plan.repeat_type)\
+                .set(plan_table.status, plan.status.value)\
                 .set(plan_table.trigger_time, plan.trigger_time)\
                 .set(plan_table.visible_hours, json.dumps(plan.visible_hours)) \
                 .set(plan_table.visible_wdays, json.dumps(plan.visible_wdays))\
@@ -74,7 +76,9 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
-                      page: int, per_page: int, user_id: int) -> Tuple[List[Plan], int]:
+                      page: int, per_page: int,
+                      status: PlanStatus = None,
+                      user_id: int) -> Tuple[List[Plan], int]:
         plan_table, task_table = Tables('t_plan', 't_task')
         base_query = Query \
             .from_(plan_table) \
@@ -87,6 +91,9 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
         if isinstance(max_trigger_time, datetime):
             base_query = base_query.where(plan_table.trigger_time < max_trigger_time)
+
+        if status:
+            base_query = base_query.where(plan_table.status == status.value)
 
         counting_query = base_query \
             .select(functions.Count(0).as_('COUNT'))
@@ -147,6 +154,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
         if isinstance(row['repeat_interval'], int):
             plan.repeat_interval = timedelta(seconds=row['repeat_interval'])
         plan.repeat_type = row['repeat_type']
+        plan.status = row['status'] and PlanStatus(row['status'])
         plan.task_id = row['task_id']
         plan.trigger_time = row['trigger_time']
         plan.visible_hours = json.loads(row.get('visible_hours') or '[]')

@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from enum import Enum
 from typing import List, Optional, Set, Tuple, Union
 
 
@@ -146,6 +147,11 @@ class RepeatIntervalMissingError(Exception):
     pass
 
 
+class PlanStatus(Enum):
+    READY = 1
+    TERMINATED = 2
+
+
 class Plan:
     def __init__(self):
         self.duration = None
@@ -153,6 +159,7 @@ class Plan:
         self.location_id = None
         self.repeat_interval: Union[None, timedelta] = None
         self.repeat_type = None
+        self.status: Optional[PlanStatus] = None
         self.task_id = None
         self.trigger_time = None
         self.visible_hours = set([])
@@ -202,6 +209,7 @@ class Plan:
             location_id: Union[None, int] = None,
             repeat_interval: Union[None, timedelta] = None,
             repeat_type=None, visible_hours: Optional[Set] = None,
+            status: Optional[PlanStatus] = None,
             visible_wdays: Optional[Set] = None):
         if isinstance(duration, int) and duration < 0:
             raise InvalidDurationError()
@@ -213,6 +221,7 @@ class Plan:
         instance.location_id = location_id
         instance.repeat_interval = repeat_interval
         instance.repeat_type = repeat_type
+        instance.status = status or PlanStatus.READY
         instance.task_id = task_id
         instance.trigger_time = trigger_time
         instance.visible_hours = visible_hours
@@ -259,11 +268,15 @@ class Plan:
         instance.location_id = self.location_id
         instance.repeat_interval = self.repeat_interval
         instance.repeat_type = self.repeat_type
+        instance.status = self.status
         instance.task_id = self.task_id
         instance.trigger_time = next_trigger_time
         instance.visible_hours = self.visible_hours
         instance.visible_wdays = self.visible_wdays
         return instance
+
+    def terminate(self):
+        self.status = PlanStatus.TERMINATED
 
 
 class IPlanRepository(ABC):
@@ -283,7 +296,9 @@ class IPlanRepository(ABC):
     @abstractmethod
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
-                      page: int, per_page: int, user_id: int) -> Tuple[List[Plan], int]:
+                      page: int, per_page: int,
+                      status: PlanStatus = None,
+                      user_id: int) -> Tuple[List[Plan], int]:
         pass
 
     @abstractmethod

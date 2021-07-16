@@ -130,6 +130,5 @@ dmypy.json
 
 .idea/
 nest/cli/config/
-nest/web/config/
 nest.tar.gz
 launch.json

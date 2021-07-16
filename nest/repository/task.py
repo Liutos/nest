@@ -123,6 +123,13 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
 
     def remove(self, id_: int):
         self.remove_from_db(id_, 't_task')
+        task_keyword_table = Table('t_task_keyword')
+        query = Query\
+            .from_(task_keyword_table)\
+            .where(task_keyword_table.task_id == id_)\
+            .delete()
+        sql = query.get_sql(quote_char=None)
+        self.execute_sql(sql)
 
     def _ensure_keyword_exist(self, keyword: str) -> int:
         """找出关键字的ID，或写入该关键字。"""

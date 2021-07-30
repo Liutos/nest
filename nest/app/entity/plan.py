@@ -154,7 +154,7 @@ class PlanStatus(Enum):
 
 class Plan:
     def __init__(self):
-        self.duration = None
+        self._duration: Optional[int] = None
         self.id = None
         self.location_id = None
         self.repeat_interval: Union[None, timedelta] = None
@@ -164,6 +164,16 @@ class Plan:
         self.trigger_time = None
         self.visible_hours = set([])
         self.visible_wdays = set([])
+
+    @property
+    def duration(self):
+        return self._duration
+
+    @duration.setter
+    def duration(self, value):
+        if isinstance(value, int) and value < 0:
+            raise InvalidDurationError()
+        self._duration = value
 
     def get_repeating_description(self) -> str:
         """生成可读的、重复模式的描述。"""
@@ -211,8 +221,6 @@ class Plan:
             repeat_type=None, visible_hours: Optional[Set] = None,
             status: Optional[PlanStatus] = None,
             visible_wdays: Optional[Set] = None):
-        if isinstance(duration, int) and duration < 0:
-            raise InvalidDurationError()
         if repeat_type == 'periodically' and not repeat_interval:
             raise RepeatIntervalMissingError()
 

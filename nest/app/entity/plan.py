@@ -147,6 +147,10 @@ class RepeatIntervalMissingError(Exception):
     pass
 
 
+class UnchangeableError(Exception):
+    pass
+
+
 class PlanStatus(Enum):
     READY = 1
     TERMINATED = 2
@@ -235,6 +239,10 @@ class Plan:
         instance.visible_hours = visible_hours
         instance.visible_wdays = visible_wdays
         return instance
+
+    def is_changeable(self) -> bool:
+        """该计划能否被修改。"""
+        return self.status != PlanStatus.TERMINATED
 
     def is_repeated(self):
         return not not self.repeat_type

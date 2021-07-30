@@ -8,6 +8,7 @@ from nest.app.entity.plan import (
     InvalidRepeatTypeError,
     IPlanRepository,
     Plan,
+    UnchangeableError,
 )
 
 
@@ -70,11 +71,12 @@ class ChangePlanUseCase:
         plan = self.plan_repository.find_by_id(plan_id)
         if plan is None:
             raise PlanNotFoundError(plan_id=plan_id)
+        if not plan.is_changeable():
+            raise UnchangeableError()
 
         # TODO: 如何优化这类重复代码？引入元编程之类的写法划算吗？
         found, duration = params.get_duration()
         if found:
-            # TODO: 是否应当让duration成为一个property呢？还是用setter来做检查？
             plan.duration = duration
         found, location_id = params.get_location_id()
         if found:

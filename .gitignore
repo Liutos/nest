@@ -131,6 +131,7 @@ dmypy.json
 .idea/
 nest/cli/config/
 nest/web/config/default.ini
+nest/web/config/local_unittest.ini
 nest/web/config/production.ini
 nest.tar.gz
 launch.json

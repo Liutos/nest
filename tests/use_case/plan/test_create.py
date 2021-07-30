@@ -1,9 +1,10 @@
 # -*- coding: utf8 -*-
 from datetime import timedelta
 from typing import List, Set, Union
+import unittest
 
 from nest.app.entity.location import ILocationRepository, Location
-from nest.app.entity.plan import IPlanRepository, Plan
+from nest.app.entity.plan import IPlanRepository, InvalidDurationError, Plan
 from nest.app.entity.task import ITaskRepository, Task
 from nest.app.use_case.create_plan import CreatePlanUseCase, IParams
 
@@ -26,8 +27,11 @@ class MockLocationRepository(ILocationRepository):
 
 
 class MockParams(IParams):
+    def __init__(self, *, duration: int):
+        self.duration = duration
+
     def get_duration(self) -> Union[None, int]:
-        return 233
+        return self.duration
 
     def get_location_id(self) -> Union[None, int]:
         return 344
@@ -116,7 +120,7 @@ class MockTaskRepository(ITaskRepository):
 def test_create():
     use_case = CreatePlanUseCase(
         location_repository=MockLocationRepository(),
-        params=MockParams(),
+        params=MockParams(duration=233),
         plan_repository=MockPlanRepository(),
         task_repository=MockTaskRepository(),
     )
@@ -128,3 +132,15 @@ def test_create():
     assert plan.repeat_type == 'hourly'
     assert plan.task_id == 1
     assert plan.trigger_time == 1234567890
+
+
+class CreatePlanTestCase(unittest.TestCase):
+    def test_create_with_negative_duration(self):
+        use_case = CreatePlanUseCase(
+            location_repository=MockLocationRepository(),
+            params=MockParams(duration=-1),
+            plan_repository=MockPlanRepository(),
+            task_repository=MockTaskRepository(),
+        )
+        with self.assertRaises(InvalidDurationError):
+            use_case.run()

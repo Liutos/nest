@@ -1,26 +1,39 @@
-# 约定
+# nest
 
-- 需要适配器实现的、表示参数的抽象类一般名为`IParams`；
-- 提供增、删、查，以及改实体对象的抽象类一般叫做`IXXXRepository`，其中`XXX`为实体的类名；
-- 用例有一个统一的入口`run`方法；
-- 通过`run`的返回值和异常来告知外界一个用例的执行结果；
+管理用户、任务，以及计划等数据的服务端程序。
 
-## Entity
+# 构建和启动
 
-- 每一个实体类的构造方法都是无参的；
-- 每一个实体类都可以提供一个`new`方法，用于通过基本的要素构造出这个类的实例对象；
-- 每一个实体类都有一个`id`属性。
+`nest`仓库中包含了构建 Docker 镜像所需的`Dockerfile`文件，直接运行如下命令即可
 
-## HTTP
+```shell
+sudo docker build -t nest .
+```
 
-- 凡是表示创建资源的含义的HTTP API，都应当返回201状态码，并在payload中返回所创建的资源的唯一标识。
+构建成功后，准备一份配置文件，内容如下
 
-## Interface
+```ini
+[mysql]
+database = 数据库名称
+host = MySQL 实例的主机名
+password = 连接 MySQL 的帐号的密码
+user = 连接 MySQL 的帐号的用户名
 
-- 每一个接口的实现类都要在所实现的方法中添加type hints；
-- 不同用例的输入参数不完全相同，因此建议在它们的类名中添加用例名作为前缀，例如`IRegistrationParams`和`ILoginParams`；
-- Repository应当是对应于某一个Entity的，不随着用例的变化而变化，因此不需要区分`ILoginUserRepository`和`IRegistrationUserRepository`，统一为`IUserRepository`即可。
+[redis]
+db = Redis 中逻辑数据库的编号
+host = Redis 实例的主机名
+port = Redis 实例监听的端口号
+```
 
-## 目录`nest/cli`
+假设将上述内容保存到文件`${confi_dir}/default.ini`中，那么启动容器的命令为
 
-对应于整洁架构中的infrastructure层。
+```shell
+sudo docker run -d -i -p 9090:9090 -t -v "${config_dir}":/app/nest/web/config/ nest
+```
+
+启动成功后，可以用如下命令验证其正在监听宿主机的 9090 端口号
+
+```shell
+lsof -i:9090
+```
+

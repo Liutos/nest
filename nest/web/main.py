@@ -21,6 +21,7 @@ from nest.web.controller import (
     list_task,
     login,
     pop_plan,
+    registration,
 )
 from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.repository import RepositoryFactory
@@ -86,4 +87,5 @@ task_blueprint.add_url_rule('/<id_>', view_func=get_task.get_task, methods=['GET
 
 app.register_blueprint(task_blueprint)
 
+app.add_url_rule('/user', defaults=defaults, view_func=registration.register, methods=['POST'])
 app.add_url_rule('/user/login', defaults=defaults, view_func=login.login, methods=['POST'])

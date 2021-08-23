@@ -23,14 +23,18 @@ class RegistrationTestCase(unittest.TestCase):
 
     def test_registration_succeed(self):
         with main.app.test_client() as client:
+            email = 'abcdefgh'
             rv = client.post('/user', json={
-                'email': 'abcdefgh',
+                'email': email,
                 'nickname': '昵称',
                 'password': '111111',
             })
             json_data = rv.get_json()
             self.assertIn('id', json_data)
             self.assertIsInstance(json_data['id'], int)
+            user_repository = DatabaseUserRepository(mysql_connection)
+            user = user_repository.get_by_email(email)
+            self.assertFalse(user.is_active())
 
 
 if __name__ == '__main__':

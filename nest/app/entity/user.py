@@ -10,6 +10,7 @@ class User:
     def __init__(self):
         self.email = None
         self.id = None
+        self._is_active = False
         self.nickname = None
         self.password_hash = None
         self.salt = None
@@ -23,6 +24,9 @@ class User:
         instance.password_hash = instance._hash_password(password, salt)
         instance.salt = salt
         return instance
+
+    def is_active(self) -> bool:
+        return self._is_active
 
     def test_password(self, password):
         """

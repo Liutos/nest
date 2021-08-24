@@ -1,19 +1,26 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
+from enum import Enum
 import hashlib
 import random
 import string
-from typing import List
+from typing import List, Optional
+
+
+class UserStatus(Enum):
+    CREATED = 1
+    ACTIVATED = 2
 
 
 class User:
     def __init__(self):
+        self.activate_code = self._make_activate_code()
         self.email = None
         self.id = None
-        self._is_active = False
         self.nickname = None
         self.password_hash = None
         self.salt = None
+        self.status = UserStatus.CREATED
 
     @classmethod
     def new(cls, email, nickname, password):
@@ -26,7 +33,7 @@ class User:
         return instance
 
     def is_active(self) -> bool:
-        return self._is_active
+        return self.status == UserStatus.ACTIVATED
 
     def test_password(self, password):
         """
@@ -34,6 +41,10 @@ class User:
         """
         password_hash = self._hash_password(password, self.salt)
         return password_hash == self.password_hash
+
+    def _make_activate_code(self) -> str:
+        chars = string.ascii_uppercase + string.digits
+        return ''.join(random.choices(chars, k=16))
 
     def _make_salt(self):
         """
@@ -66,5 +77,5 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_email(self, email: str) -> User:
+    def get_by_email(self, email: str) -> Optional[User]:
         pass

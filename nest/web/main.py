@@ -6,6 +6,7 @@ from flask import Blueprint, Flask
 from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
 from nest.web.controller import (
+    activate_user,
     change_plan,
     change_task,
     create_location,
@@ -88,4 +89,5 @@ task_blueprint.add_url_rule('/<id_>', view_func=get_task.get_task, methods=['GET
 app.register_blueprint(task_blueprint)
 
 app.add_url_rule('/user', defaults=defaults, view_func=registration.register, methods=['POST'])
+app.add_url_rule('/user/activation', defaults=defaults, view_func=activate_user.activate_user, methods=['POST'])
 app.add_url_rule('/user/login', defaults=defaults, view_func=login.login, methods=['POST'])

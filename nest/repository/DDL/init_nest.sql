@@ -69,10 +69,12 @@ DROP TABLE IF EXISTS `t_user`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `t_user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `activate_code` char(16) COLLATE utf8mb4 NOT NULL,
   `email` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用于登录的邮箱',
   `nickname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '昵称',
   `password_hash` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '原始密码和“盐”一起用哈希算法计算出的哈希值',
   `salt` char(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '参与密码哈希计算的随机值',
+  `status` int(11) NOT NULL,
   `ctime` datetime NOT NULL,
   `mtime` datetime NOT NULL,
   PRIMARY KEY (`id`),

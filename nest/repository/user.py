@@ -4,7 +4,7 @@ from typing import List, Union
 
 from pypika import Query, Table
 
-from nest.app.entity.user import IUserRepository, User
+from nest.app.entity.user import IUserRepository, User, UserStatus
 from nest.repository.db_operation import DatabaseOperationMixin
 
 
@@ -14,15 +14,32 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
 
     def add(self, user: User):
         now = datetime.now()
-        id_ = self.insert_to_db({
-            'email': user.email,
-            'nickname': user.nickname,
-            'password_hash': user.password_hash,
-            'salt': user.salt,
-            'ctime': now,
-            'mtime': now,
-        }, 't_user')
-        user.id = id_
+        if user.id is None:
+            id_ = self.insert_to_db({
+                'activate_code': user.activate_code,
+                'email': user.email,
+                'nickname': user.nickname,
+                'password_hash': user.password_hash,
+                'salt': user.salt,
+                'status': user.status.value,
+                'ctime': now,
+                'mtime': now,
+            }, 't_user')
+            user.id = id_
+        else:
+            user_table = Table('t_user')
+            query = Query\
+                .update(user_table)\
+                .set(user_table.activate_code, user.activate_code)\
+                .set(user_table.email, user.email)\
+                .set(user_table.nickname, user.nickname)\
+                .set(user_table.password_hash, user.password_hash) \
+                .set(user_table.salt, user.salt) \
+                .set(user_table.status, user.status.value)\
+                .set(user_table.mtime, now)\
+                .where(user_table.id == user.id)
+            sql = query.get_sql(quote_char=None)
+            self.execute_sql(sql)
 
         return self.get_by_email(user.email)
 
@@ -55,11 +72,13 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
                 users = []
                 for row in rows:
                     user = User()
+                    user.activate_code = row['activate_code']
                     user.email = row['email']
                     user.id = row['id']
                     user.nickname = row['nickname']
                     user.password_hash = row['password_hash']
                     user.salt = row['salt']
+                    user.status = UserStatus(row['status'])
                     users.append(user)
 
                 return users
@@ -74,11 +93,13 @@ class DatabaseUserRepository(DatabaseOperationMixin, IUserRepository):
                     return None
 
                 user = User()
+                user.activate_code = row['activate_code']
                 user.email = row['email']
                 user.id = row['id']
                 user.nickname = row['nickname']
                 user.password_hash = row['password_hash']
                 user.salt = row['salt']
+                user.status = UserStatus(row['status'])
                 return user
 
     def remove(self, user: Union[User, int]):

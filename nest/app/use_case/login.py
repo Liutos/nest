@@ -9,6 +9,11 @@ class PasswordError(Exception):
     pass
 
 
+class UserNotActive(Exception):
+    """表示所要登录的用户尚未激活的异常。"""
+    pass
+
+
 class IParams(ABC):
     @abstractmethod
     def get_email(self) -> str:
@@ -19,7 +24,7 @@ class IParams(ABC):
         pass
 
 
-class LoginUseCase():
+class LoginUseCase:
     def __init__(self, *, params,
                  certificate_repository, user_repository):
         assert isinstance(params, IParams)
@@ -36,6 +41,8 @@ class LoginUseCase():
         user = user_repository.get_by_email(email)
         if not user:
             raise PasswordError()
+        if not user.is_active():
+            raise UserNotActive()
 
         password = login_io.get_password()
         is_match = user.test_password(password)

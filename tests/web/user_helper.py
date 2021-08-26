@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from typing import Union
 
+from nest.app.entity.user import IUserRepository, UserStatus
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 from nest.infra.config import Config
 from nest.infra.db_connection import DBUtilsConnectionPool
@@ -27,7 +28,7 @@ def destroy_user(user_repository):
     user_repository.remove(_user_id)
 
 
-def register_user(location_repository, user_repository):
+def register_user(location_repository, user_repository: IUserRepository):
     use_case = RegistrationUseCase(
         location_repository=location_repository,
         params=MockParams(),
@@ -36,4 +37,6 @@ def register_user(location_repository, user_repository):
     user = use_case.run()
     global _user_id
     _user_id = user.id
+    user.status = UserStatus.ACTIVATED
+    user_repository.add(user)
 

@@ -2,7 +2,7 @@
 from typing import List
 
 from nest.app.entity.certificate import Certificate, ICertificateRepository
-from nest.app.entity.user import IUserRepository, User
+from nest.app.entity.user import IUserRepository, User, UserStatus
 from nest.app.use_case.login import IParams, \
     LoginUseCase, PasswordError
 
@@ -34,11 +34,13 @@ class MockUserRepository(IUserRepository):
         pass
 
     def get_by_email(self, email):
-        return User.new(
+        user = User.new(
             'mat.liutos@gmail.com',
             'Liutos',
             '12345678',
         )
+        user.status = UserStatus.ACTIVATED
+        return user
 
 
 def test_succeed():

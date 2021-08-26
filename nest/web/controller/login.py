@@ -2,7 +2,7 @@
 from flask import make_response, request
 from webargs import fields
 
-from ...app.use_case.login import IParams, LoginUseCase, PasswordError
+from nest.app.use_case.login import IParams, LoginUseCase, PasswordError, UserNotActive
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -45,6 +45,15 @@ def login(certificate_repository, repository_factory):
             'error': {
                 'code': 422,
                 'message': '用户名或密码错误。',
+            },
+            'result': None,
+            'status': 'failure',
+        }, 422
+    except UserNotActive:
+        return {
+            'error': {
+                'code': 422,
+                'message': '用户未激活。',
             },
             'result': None,
             'status': 'failure',

@@ -35,6 +35,12 @@ class RegistrationTestCase(unittest.TestCase):
             user_repository = DatabaseUserRepository(mysql_connection)
             user = user_repository.get_by_email(email)
             self.assertFalse(user.is_active())
+            # 此时是无法登录的
+            rv = client.post('/user/login', json={
+                'email': email,
+                'password': '111111',
+            })
+            self.assertEqual(rv.status_code, 422)
 
     def test_activation_succeed(self):
         """测试注册后激活用户的场景。"""
@@ -62,6 +68,12 @@ class RegistrationTestCase(unittest.TestCase):
             self.assertEqual(json_data['status'], 'success')
             user = user_repository.get_by_email(email)
             self.assertTrue(user.is_active())
+            # 激活后可以登录
+            rv = client.post('/user/login', json={
+                'email': email,
+                'password': '111111',
+            })
+            self.assertEqual(rv.status_code, 200)
 
 
 if __name__ == '__main__':

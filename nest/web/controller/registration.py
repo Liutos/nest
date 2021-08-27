@@ -42,9 +42,18 @@ def register(repository_factory: RepositoryFactory, **kwargs):
         user = use_case.run()
         print('user', user)
         return {
-            'id': user.id,
+            'error': None,
+            'result': {
+                'id': user.id,
+            },
+            'status': 'success',
         }, 201
     except EmailOccupyError:
         return {
-            'message': '邮箱已被使用，请换一个邮箱注册。'
+            'error': {
+                'code': 422,
+                'message': '邮箱已被使用，请换一个邮箱注册。'
+            },
+            'result': None,
+            'status': 'failure',
         }, 422

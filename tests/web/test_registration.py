@@ -30,8 +30,9 @@ class RegistrationTestCase(unittest.TestCase):
                 'password': '111111',
             })
             json_data = rv.get_json()
-            self.assertIn('id', json_data)
-            self.assertIsInstance(json_data['id'], int)
+            self.assertEqual(json_data['status'], 'success')
+            self.assertIn('id', json_data['result'])
+            self.assertIsInstance(json_data['result']['id'], int)
             user_repository = DatabaseUserRepository(mysql_connection)
             user = user_repository.get_by_email(email)
             self.assertFalse(user.is_active())
@@ -52,8 +53,8 @@ class RegistrationTestCase(unittest.TestCase):
                 'password': '111111',
             })
             json_data = rv.get_json()
-            self.assertIn('id', json_data)
-            self.assertIsInstance(json_data['id'], int)
+            self.assertIn('id', json_data['result'])
+            self.assertIsInstance(json_data['result']['id'], int)
             user_repository = DatabaseUserRepository(mysql_connection)
             user = user_repository.get_by_email(email)
             self.assertFalse(user.is_active())

@@ -2,8 +2,9 @@
 from flask import request
 from webargs import fields
 
-from ...app.use_case.registration import EmailOccupyError, IParams, RegistrationUseCase
+from nest.app.use_case.registration import EmailOccupyError, IParams, RegistrationUseCase
 from nest.infra.repository import RepositoryFactory
+from nest.infra.service_factory import ServiceFactory
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -31,11 +32,12 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def register(repository_factory: RepositoryFactory, **kwargs):
+def register(repository_factory: RepositoryFactory, service_factory: ServiceFactory, **kwargs):
     try:
         params = HTTPParams()
         use_case = RegistrationUseCase(
             location_repository=repository_factory.location(),
+            mail_service=service_factory.mail(),
             params=params,
             user_repository=repository_factory.user(),
         )

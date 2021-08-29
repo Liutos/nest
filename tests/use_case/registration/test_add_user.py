@@ -3,8 +3,11 @@ from typing import List, Union
 
 from nest.app.entity.location import ILocationRepository, Location
 from nest.app.entity.user import IUserRepository, User
-from nest.app.use_case.registration import IParams, \
-    RegistrationUseCase
+from nest.app.use_case.registration import (
+    IParams,
+    RegistrationUseCase,
+)
+from tests.use_case.registration.mock_mail_service import MockMailService
 
 
 class MockRegistrationIO(IParams):
@@ -63,6 +66,7 @@ def test_add_user():
     location_repository = MockLocationRepository()
     use_case = RegistrationUseCase(
         location_repository=location_repository,
+        mail_service=MockMailService(),
         params=MockRegistrationIO(),
         user_repository=MockUserRepository(),
     )

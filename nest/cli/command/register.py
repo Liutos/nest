@@ -6,6 +6,7 @@ from nest.app.use_case.registration import IParams, RegistrationUseCase
 from nest.infra.config import Config
 from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.repository import RepositoryFactory
+from nest.infra.service_factory import ServiceFactory
 
 
 class Params(IParams):
@@ -56,10 +57,12 @@ def register():
     mysql_connection = DBUtilsConnectionPool(config)
     params = Params()
     repository_factory = RepositoryFactory(mysql_connection)
+    service_factory = ServiceFactory(config=config)
     location_repository = repository_factory.location()
     user_repository = repository_factory.user()
     use_case = RegistrationUseCase(
         location_repository=location_repository,
+        mail_service=service_factory.mail(),
         params=params,
         user_repository=user_repository,
     )

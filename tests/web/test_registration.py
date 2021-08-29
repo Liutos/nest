@@ -1,12 +1,19 @@
 # -*- coding: utf8 -*-
 # 测试注册接口
+from unittest.mock import patch
 import unittest
 
 from nest.repository.user import DatabaseUserRepository
+from nest.service.mail import SinaMailService
 from nest.web import main
 from tests.web.helper import mysql_connection
 
 
+def _mock_send_activate_code(*args, email: str, **kwargs):
+    print('并不会真的往{}发送邮件'.format(email))
+
+
+@patch.object(SinaMailService, 'send_activate_code', _mock_send_activate_code)
 class RegistrationTestCase(unittest.TestCase):
     def setUp(self) -> None:
         DatabaseUserRepository(mysql_connection).clear()

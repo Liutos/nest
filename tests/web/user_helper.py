@@ -5,6 +5,7 @@ from nest.app.entity.user import IUserRepository, UserStatus
 from nest.app.use_case.registration import IParams, RegistrationUseCase
 from nest.infra.config import Config
 from nest.infra.db_connection import DBUtilsConnectionPool
+from tests.use_case.registration.mock_mail_service import MockMailService
 from tests.web.helper import get_config_file_path
 
 
@@ -31,6 +32,7 @@ def destroy_user(user_repository):
 def register_user(location_repository, user_repository: IUserRepository):
     use_case = RegistrationUseCase(
         location_repository=location_repository,
+        mail_service=MockMailService(),
         params=MockParams(),
         user_repository=user_repository,
     )

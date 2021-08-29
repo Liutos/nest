@@ -23,11 +23,20 @@ class IParams(ABC):
         pass
 
 
+class IMailService(ABC):
+    """提供发送邮件的功能。"""
+    @abstractmethod
+    def send_activate_code(self, *, activate_code: str, email: str):
+        """将激活码发送给注册的邮箱。"""
+        pass
+
+
 class RegistrationUseCase:
-    def __init__(self, *, location_repository, params, user_repository):
+    def __init__(self, *, location_repository, mail_service: IMailService, params, user_repository):
         assert isinstance(location_repository, ILocationRepository)
         self.params = params
         self.location_repository = location_repository
+        self.mail_service = mail_service
         self.user_repository = user_repository
 
     def run(self):
@@ -47,4 +56,8 @@ class RegistrationUseCase:
             user_id=user.id,
         )
         self.location_repository.add(location=location)
+        self.mail_service.send_activate_code(
+            activate_code=user.activate_code,
+            email=email,
+        )
         return user_repository.get_by_email(email)

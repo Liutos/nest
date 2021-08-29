@@ -3,8 +3,12 @@ from typing import List, Union
 
 from nest.app.entity.location import ILocationRepository, Location
 from nest.app.entity.user import IUserRepository, User
-from nest.app.use_case.registration import EmailOccupyError, IParams, \
-    RegistrationUseCase
+from nest.app.use_case.registration import (
+    EmailOccupyError,
+    IParams,
+    RegistrationUseCase,
+)
+from tests.use_case.registration.mock_mail_service import MockMailService
 
 
 class MockLocationRepository(ILocationRepository):
@@ -55,6 +59,7 @@ class MockUserRepository(IUserRepository):
 def test_email_exist():
     use_case = RegistrationUseCase(
         location_repository=MockLocationRepository(),
+        mail_service=MockMailService(),
         params=MockParams(),
         user_repository=MockUserRepository(),
     )

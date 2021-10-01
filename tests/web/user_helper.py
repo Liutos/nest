@@ -9,6 +9,8 @@ from tests.use_case.registration.mock_mail_service import MockMailService
 from tests.web.helper import get_config_file_path
 
 
+EMAIL = 'foobar.bef@gmail.com'
+PASSWORD = 'def'
 _user_id: Union[None, int] = None
 config = Config(get_config_file_path())
 mysql_connection = DBUtilsConnectionPool(config)
@@ -16,13 +18,13 @@ mysql_connection = DBUtilsConnectionPool(config)
 
 class MockParams(IParams):
     def get_email(self) -> str:
-        return 'foobar.bef@gmail.com'
+        return EMAIL
 
     def get_nickname(self):
         return 'foobaz'
 
     def get_password(self):
-        return 'def'
+        return PASSWORD
 
 
 def destroy_user(user_repository):

@@ -51,15 +51,16 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                 .get_sql(quote_char=None)
             self.execute_sql(sql)
 
-            query = Query\
-                .into(task_keyword_table)\
-                .columns('keyword_id', 'task_id')
-            for keyword in task.keywords:
-                keyword_id = self._ensure_keyword_exist(keyword)
-                query = query.insert(keyword_id, task.id)
-            sql = query.get_sql(quote_char=None)
-            print('sql', sql)
-            self.execute_sql(sql)
+            if len(task.keywords) > 0:
+                query = Query\
+                    .into(task_keyword_table)\
+                    .columns('keyword_id', 'task_id')
+                for keyword in task.keywords:
+                    keyword_id = self._ensure_keyword_exist(keyword)
+                    query = query.insert(keyword_id, task.id)
+                sql = query.get_sql(quote_char=None)
+                print('sql', sql)
+                self.execute_sql(sql)
 
     def clear(self):
         """

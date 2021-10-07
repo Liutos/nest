@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from typing import Union
+from typing import List, Optional, Union
 
 from flask import request
 from webargs import fields, validate
@@ -18,11 +18,13 @@ class HTTPParams(IParams):
             'location_id': fields.Int(allow_none=True),
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
+            'plan_ids': fields.DelimitedList(fields.Int, allow_none=True, missing=None),
         }
         parsed_args = parser.parse(args, request, location='querystring')
         self.location_id = parsed_args.get('location_id')
         self.page = parsed_args['page']
         self.per_page = parsed_args['per_page']
+        self.plan_ids = parsed_args['plan_ids']
 
     def get_location_id(self) -> Union[None, int]:
         return self.location_id
@@ -32,6 +34,9 @@ class HTTPParams(IParams):
 
     def get_per_page(self) -> int:
         return self.per_page
+
+    def get_plan_ids(self) -> Optional[List[int]]:
+        return self.plan_ids
 
     def get_user_id(self) -> int:
         return int(request.cookies.get('user_id'))

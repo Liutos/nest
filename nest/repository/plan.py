@@ -78,6 +78,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                       max_trigger_time=None,
                       min_trigger_time: datetime = None,
                       page: Optional[int] = None, per_page: Optional[int] = None,
+                      plan_ids: Optional[List[int]] = None,  # TODO: 这里有必要套上一层Optional么？
                       status: PlanStatus = None,
                       user_id: int) -> Tuple[List[Plan], int]:
         plan_table, task_table = Tables('t_plan', 't_task')
@@ -95,6 +96,9 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
         if min_trigger_time:
             base_query = base_query.where(plan_table.trigger_time >= min_trigger_time)
+
+        if plan_ids is not None:
+            base_query = base_query.where(plan_table.id.isin(plan_ids))
 
         if status:
             base_query = base_query.where(plan_table.status == status.value)

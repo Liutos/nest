@@ -314,6 +314,7 @@ class IPlanRepository(ABC):
                       max_trigger_time=None,
                       min_trigger_time: datetime = None,
                       page: Optional[int] = None, per_page: Optional[int] = None,
+                      plan_ids: Optional[List[int]] = None,
                       status: PlanStatus = None,
                       user_id: int) -> Tuple[List[Plan], int]:
         pass

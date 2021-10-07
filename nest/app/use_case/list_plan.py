@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import List, Optional, Union
 
 from nest.app.entity.location import ILocationRepository
 from nest.app.entity.plan import IPlanRepository, PlanStatus
@@ -8,7 +8,7 @@ from nest.app.entity.plan import IPlanRepository, PlanStatus
 
 class IParams(ABC):
     @abstractmethod
-    def get_location_id(self) -> Union[None, int]:
+    def get_location_id(self) -> Union[None, int]:  # TODO: 将这种Union的用法替换为Optional。
         pass
 
     @abstractmethod
@@ -17,6 +17,10 @@ class IParams(ABC):
 
     @abstractmethod
     def get_per_page(self) -> int:
+        pass
+
+    @abstractmethod
+    def get_plan_ids(self) -> Optional[List[int]]:
         pass
 
     @abstractmethod
@@ -38,6 +42,7 @@ class ListPlanUseCase:
         location_id = params.get_location_id()
         page = params.get_page()
         per_page = params.get_per_page()
+        plan_ids = params.get_plan_ids()
         user_id = params.get_user_id()
         plan_repository = self.plan_repository
         location_ids = None
@@ -51,6 +56,7 @@ class ListPlanUseCase:
             location_ids=location_ids,
             page=page,
             per_page=per_page,
+            plan_ids=plan_ids,
             status=PlanStatus.READY,
             user_id=user_id,
         )

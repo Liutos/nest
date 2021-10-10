@@ -84,6 +84,17 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
 
                 return self._row2entity(location_dict)
 
+    def remove(self, *, id_: int):
+        location_table = Table('t_location')
+        query = Query\
+            .from_(location_table)\
+            .where(location_table.id == id_)\
+            .delete()
+        sql = query.get_sql(quote_char=None)
+        with self.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+
     def _row2entity(self, row: dict):
         return Location.new(
             id_=row['id'],

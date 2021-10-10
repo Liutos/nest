@@ -1,12 +1,13 @@
 # -*- coding: utf8 -*-
 from typing import List, Union
 
-from nest.app.entity.location import ILocationRepository, Location
+from nest.app.entity.location import Location
 from nest.app.entity.user import IUserRepository, User
 from nest.app.use_case.registration import (
     IParams,
     RegistrationUseCase,
 )
+from tests.use_case import EmptyLocationRepository
 from tests.use_case.registration.mock_mail_service import MockMailService
 
 
@@ -21,7 +22,7 @@ class MockRegistrationIO(IParams):
         return '123456'
 
 
-class MockLocationRepository(ILocationRepository):
+class MockLocationRepository(EmptyLocationRepository):
     def __init__(self):
         self.location = None
 

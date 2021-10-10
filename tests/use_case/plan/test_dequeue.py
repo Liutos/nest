@@ -1,12 +1,13 @@
 # -*- coding: utf8 -*-
 from typing import List, Tuple, Union
 
-from nest.app.entity.location import ILocationRepository, Location
+from nest.app.entity.location import Location
 from nest.app.entity.plan import IPlanRepository, Plan
 from nest.app.use_case.pop_plan import IParams, PopPlanUseCase
+from tests.use_case import EmptyLocationRepository
 
 
-class MockLocationRepository(ILocationRepository):
+class MockLocationRepository(EmptyLocationRepository):
     def add(self, *, location: Location):
         pass
 

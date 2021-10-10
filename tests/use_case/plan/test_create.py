@@ -3,13 +3,14 @@ from datetime import timedelta
 from typing import List, Set, Union
 import unittest
 
-from nest.app.entity.location import ILocationRepository, Location
+from nest.app.entity.location import Location
 from nest.app.entity.plan import IPlanRepository, InvalidDurationError, Plan
 from nest.app.entity.task import ITaskRepository, Task
 from nest.app.use_case.create_plan import CreatePlanUseCase, IParams
+from tests.use_case import EmptyLocationRepository
 
 
-class MockLocationRepository(ILocationRepository):
+class MockLocationRepository(EmptyLocationRepository):
     def add(self, *, location: Location):
         pass
 

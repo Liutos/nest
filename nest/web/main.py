@@ -13,6 +13,7 @@ from nest.web.controller import (
     create_location,
     create_plan,
     create_task,
+    delete_location,
     delete_plan,
     delete_task,
     get_location,
@@ -73,6 +74,7 @@ location_blueprint = Blueprint('location', __name__, url_defaults=defaults, url_
 location_blueprint.add_url_rule('', view_func=list_location.list_location, methods=['GET'])
 location_blueprint.add_url_rule('', view_func=create_location.create_location, methods=['POST'])
 location_blueprint.add_url_rule('/<id_>', view_func=get_location.get_location, methods=['GET'])
+location_blueprint.add_url_rule('/<id_>', view_func=delete_location.delete_location, methods=['DELETE'])
 
 app.register_blueprint(location_blueprint)
 

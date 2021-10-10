@@ -39,3 +39,8 @@ class ILocationRepository(ABC):
     @abstractmethod
     def get_default(self, *, user_id: int) -> Union[None, Location]:
         pass
+
+    @abstractmethod
+    def remove(self, *, id_: int):
+        """从存储中删除指定的地点。"""
+        pass

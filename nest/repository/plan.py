@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple, Union
 from pypika import Order, Query, Table, Tables, functions
 
 from nest.app.entity.plan import IPlanRepository, Plan, PlanStatus
+from nest.app.entity.task import TaskStatus
 from nest.repository.db_operation import DatabaseOperationMixin
 
 
@@ -86,7 +87,8 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
             .from_(plan_table) \
             .left_join(task_table) \
             .on(plan_table.task_id == task_table.id) \
-            .where(task_table.user_id == user_id)
+            .where(task_table.user_id == user_id) \
+            .where(task_table.status == TaskStatus.CREATED.value)
 
         if location_ids:
             base_query = base_query.where(plan_table.location_id.isin(location_ids))

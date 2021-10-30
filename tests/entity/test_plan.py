@@ -107,9 +107,9 @@ def test_visible_wdays():
     测试星期几可见的判断逻辑。
     """
     plan = Plan()
-    plan.visible_wdays = {0, 4}
-    trigger_time1 = datetime(2021, 4, 12)
-    trigger_time2 = datetime(2021, 4, 13)
+    plan.visible_wdays = {1, 5}
+    trigger_time1 = datetime(2021, 4, 12)  # 周一
+    trigger_time2 = datetime(2021, 4, 13)  # 周二
     assert plan.is_visible(trigger_time=trigger_time1)
     assert not plan.is_visible(trigger_time=trigger_time2)
 

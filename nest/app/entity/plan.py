@@ -261,7 +261,7 @@ class Plan:
                 return False
         if len(self.visible_wdays) > 0:
             weekday = trigger_time.weekday()
-            if weekday not in self.visible_wdays:
+            if (weekday + 1) not in self.visible_wdays:
                 return False
         return True
 

@@ -3,6 +3,11 @@ from abc import ABC, abstractmethod
 from typing import List, Union
 
 
+class AccessDeniedError(Exception):
+    """用户无权访问给定地点的错误。"""
+    pass
+
+
 class Location:
     def __init__(self):
         self.id = None
@@ -20,7 +25,7 @@ class Location:
 
 class ILocationRepository(ABC):
     @abstractmethod
-    def add(self, *, location: Location):
+    def add(self, *, location: Location):  # TODO: 重命名为save。
         pass
 
     @abstractmethod

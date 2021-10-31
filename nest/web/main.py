@@ -8,6 +8,7 @@ from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
 from nest.web.controller import (
     activate_user,
+    change_location,
     change_plan,
     change_task,
     create_location,
@@ -75,6 +76,7 @@ location_blueprint.add_url_rule('', view_func=list_location.list_location, metho
 location_blueprint.add_url_rule('', view_func=create_location.create_location, methods=['POST'])
 location_blueprint.add_url_rule('/<id_>', view_func=get_location.get_location, methods=['GET'])
 location_blueprint.add_url_rule('/<id_>', view_func=delete_location.delete_location, methods=['DELETE'])
+location_blueprint.add_url_rule('/<id_>', view_func=change_location.change_location, methods=['PATCH'])
 
 app.register_blueprint(location_blueprint)
 

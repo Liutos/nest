@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 
-from nest.app.entity.location import ILocationRepository
+from nest.app.entity.location import ILocationRepository, AccessDeniedError
 
 
 class IParams(ABC):
@@ -12,11 +12,6 @@ class IParams(ABC):
     @abstractmethod
     def get_user_id(self) -> int:
         pass
-
-
-class AccessDeniedError(Exception):
-    """用户无权访问给定地点的错误。"""
-    pass
 
 
 class GetLocationUseCase:

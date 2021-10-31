@@ -13,11 +13,23 @@ class DatabaseLocationRepository(DatabaseOperationMixin, ILocationRepository):
 
     def add(self, *, location: Location):
         """将地点存储到数据库中。"""
-        id_ = self.insert_to_db({
-            'name': location.name,
-            'user_id': location.user_id,
-        }, 't_location')
-        location.id = id_
+        if location.id is None:
+            id_ = self.insert_to_db({
+                'name': location.name,
+                'user_id': location.user_id,
+            }, 't_location')
+            location.id = id_
+        else:
+            location_table = Table('t_location')
+            query = Query\
+                .update(location_table)\
+                .set(location_table.name, location.name)\
+                .where(location_table.id == location.id)
+            sql = query.get_sql(quote_char=None)
+            print('sql', sql)
+            with self.get_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(sql)
 
     def clear(self):
         location_table = Table('t_location')

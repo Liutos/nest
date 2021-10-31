@@ -67,7 +67,7 @@ class MonthlyRepeater(IRepeater):
 
     def _compute_once(self, last_trigger_time: datetime) -> datetime:
         # 去到下一个月的同一天。如果下个月没有这一天，就继续增加一个月。
-        current_month = datetime.now().month
+        current_month = last_trigger_time.month
         if current_month in [3, 5, 7, 8, 10]:
             next_month_days = 30
         elif current_month in [2, 4, 6, 9, 11, 12]:
@@ -77,7 +77,7 @@ class MonthlyRepeater(IRepeater):
         else:
             next_month_days = 27
 
-        current_day = datetime.now().day
+        current_day = last_trigger_time.day
         if current_day <= next_month_days:
             if last_trigger_time.month == 12:
                 return last_trigger_time.replace(

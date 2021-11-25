@@ -81,6 +81,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                       page: Optional[int] = None, per_page: Optional[int] = None,
                       plan_ids: Optional[List[int]] = None,  # TODO: 这里有必要套上一层Optional么？
                       status: PlanStatus = None,
+                      task_ids: List[int] = [],
                       user_id: int) -> Tuple[List[Plan], int]:
         plan_table, task_table = Tables('t_plan', 't_task')
         base_query = Query \
@@ -104,6 +105,9 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
         if status:
             base_query = base_query.where(plan_table.status == status.value)
+
+        if len(task_ids) > 0:
+            base_query = base_query.where(plan_table.task_id.isin(task_ids))
 
         counting_query = base_query \
             .select(functions.Count(0).as_('COUNT'))

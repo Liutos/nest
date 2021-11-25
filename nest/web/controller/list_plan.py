@@ -19,12 +19,14 @@ class HTTPParams(IParams):
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
             'plan_ids': fields.DelimitedList(fields.Int, allow_none=True, missing=None),
+            'task_ids': fields.DelimitedList(fields.Int, allow_none=True, missing=[]),
         }
         parsed_args = parser.parse(args, request, location='querystring')
         self.location_id = parsed_args.get('location_id')
         self.page = parsed_args['page']
         self.per_page = parsed_args['per_page']
         self.plan_ids = parsed_args['plan_ids']
+        self.task_ids = parsed_args['task_ids']
 
     def get_location_id(self) -> Union[None, int]:
         return self.location_id
@@ -37,6 +39,9 @@ class HTTPParams(IParams):
 
     def get_plan_ids(self) -> Optional[List[int]]:
         return self.plan_ids
+
+    def get_task_ids(self) -> List[int]:
+        return self.task_ids
 
     def get_user_id(self) -> int:
         return int(request.cookies.get('user_id'))

@@ -8,7 +8,7 @@ from nest.app.entity.plan import IPlanRepository, PlanStatus
 
 class IParams(ABC):
     @abstractmethod
-    def get_location_id(self) -> Union[None, int]:  # TODO: 将这种Union的用法替换为Optional。
+    def get_location_id(self) -> Optional[int]:
         pass
 
     @abstractmethod
@@ -21,6 +21,11 @@ class IParams(ABC):
 
     @abstractmethod
     def get_plan_ids(self) -> Optional[List[int]]:
+        pass
+
+    @abstractmethod
+    def get_task_ids(self) -> List[int]:
+        """期望筛选结果中的计划来自于这些任务。"""
         pass
 
     @abstractmethod
@@ -58,5 +63,6 @@ class ListPlanUseCase:
             per_page=per_page,
             plan_ids=plan_ids,
             status=PlanStatus.READY,
+            task_ids=params.get_task_ids(),
             user_id=user_id,
         )

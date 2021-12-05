@@ -7,6 +7,7 @@ from typing import List, Optional, Union
 class TaskStatus(Enum):
     CREATED = 1
     FINISHED = 2
+    CANCELLED = 3
 
 
 class Task:

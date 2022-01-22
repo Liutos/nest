@@ -1,0 +1,30 @@
+version: "3.3"  # 在我的系统中需要指定这个版本号。
+services:
+  web:
+    build:
+      context: ./  # 表示构建镜像时所处的目录，即当前目录。
+      dockerfile: ./unittest.dockerfile  # 表示构建镜像所用的 Dockerfile。
+    ports:
+      - "9090:9090"
+    links:
+      - mysql
+      - redis
+    volumes:  # volumes 选项的文档：https://github.com/compose-spec/compose-spec/blob/master/spec.md#volumes
+      - type: bind
+        source: .  # 在 bind 类型下，source 是宿主机的路径。
+        target: /app  # 挂载进容器内的路径。将宿主机中最新的源码挂载到容器内测试，避免每次修改后都要重新构建镜像。
+        read_only: true
+  mysql:
+    image: mysql:5.7
+    ports:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    expose:
+      - 3306  # 暴露3306端口以便在 web 服务的容器中访问。
+  redis:  # 依赖 Redis 存储登录的会话。
+    image: redis
+    ports:
+      - 6379/tcp
+    expose:
+      - 6379

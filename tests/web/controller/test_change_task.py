@@ -33,7 +33,7 @@ class ChangeTaskTestCase(unittest.TestCase):
         print('清理数据库')
 
     def test_change_task(self):
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             client.post('/user/login', json={
                 'email': EMAIL,
                 'password': PASSWORD,

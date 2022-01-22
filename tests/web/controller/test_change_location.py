@@ -22,7 +22,7 @@ class ChangeLocationTestCase(unittest.TestCase):
         self.clear_database()
 
     def test_change_location(self):
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             client.post('/user/login', json={
                 'email': EMAIL,
                 'password': PASSWORD,

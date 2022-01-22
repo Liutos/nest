@@ -47,7 +47,7 @@ class PopPlanTestCase(unittest.TestCase):
         print('清理数据库')
 
     def test_create_task(self):
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             client.post('/user/login', json={
                 'email': 'foobar.bef@gmail.com',
                 'password': 'def',
@@ -107,7 +107,7 @@ class PopFinishedTaskPlanTestCase(unittest.TestCase):
         self.clear_database()
 
     def test_it(self):
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             client.post('/user/login', json={
                 'email': EMAIL,
                 'password': PASSWORD,

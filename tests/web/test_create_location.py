@@ -27,7 +27,7 @@ class CreateLocationTestCase(unittest.TestCase):
 
     def test_create_location(self):
         """测试创建一个地点。"""
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             client.post('/user/login', json={
                 'email': 'foobar.bef@gmail.com',
                 'password': 'def',

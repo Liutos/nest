@@ -35,7 +35,7 @@ class ListPlanTestCase(unittest.TestCase):
 
     def test_list_plan(self):
         """测试列出一个指定计划的场景。"""
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             client.post('/user/login', json={
                 'email': EMAIL,
                 'password': PASSWORD,

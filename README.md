@@ -37,3 +37,8 @@ sudo docker run -d -i -p 9090:9090 -t -v "${config_dir}":/app/nest/web/config/ n
 lsof -i:9090
 ```
 
+# 运行单元测试
+
+```shell
+MODE=local_unittest pytest -ra -s -x ./
+```

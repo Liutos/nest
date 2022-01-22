@@ -40,7 +40,7 @@ def teardown_module():
 
 @pytest.fixture
 def client():
-    with main.app.test_client() as client:
+    with main.create_app().test_client() as client:
         client.post('/user/login', json={
             'email': 'foobar.bef@gmail.com',
             'password': 'def',

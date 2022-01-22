@@ -22,14 +22,14 @@ class RegistrationTestCase(unittest.TestCase):
         DatabaseUserRepository(mysql_connection).clear()
 
     def test_param_missing(self):
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             rv = client.post('/user', json={})
             self.assertEqual(rv.status_code, 422)
             json_data = rv.get_json()
             self.assertIsInstance(json_data['error']['message'], str)
 
     def test_registration_succeed(self):
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             email = 'abcdefgh'
             rv = client.post('/user', json={
                 'email': email,
@@ -52,7 +52,7 @@ class RegistrationTestCase(unittest.TestCase):
 
     def test_activation_succeed(self):
         """测试注册后激活用户的场景。"""
-        with main.app.test_client() as client:
+        with main.create_app().test_client() as client:
             email = 'abcdefgh'
             rv = client.post('/user', json={
                 'email': email,

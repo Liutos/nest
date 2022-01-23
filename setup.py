@@ -29,7 +29,6 @@ setuptools.setup(
         "DBUtils",
         "Flask",
         "PyMySQL==1.0.2",
-        "pymysql-pooling",
         "PyPika",
         "redis",
         "webargs",

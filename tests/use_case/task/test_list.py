@@ -45,8 +45,9 @@ class MockPlanRepository(IPlanRepository):
 
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None, max_trigger_time=None,
                       min_trigger_time: datetime = None, page: Optional[int] = None, per_page: Optional[int] = None,
-                      status: PlanStatus = None, user_id: int) -> Tuple[List[Plan], int]:
-        pass
+                      status: PlanStatus = None,
+                      user_id: int, **kwargs) -> Tuple[List[Plan], int]:
+        return [], 0
 
     def find_by_id(self, id_: int) -> Plan:
         pass
@@ -76,7 +77,9 @@ class MockTaskRepository(ITaskRepository):
 
     def find(self, *, count, keyword=None, start, status=None, user_id,
              task_ids=None):
-        return [{}]
+        task = Task()
+        task.id = 233
+        return [task]
 
     def find_by_id(self, *, id_) -> Union[None, Task]:
         pass

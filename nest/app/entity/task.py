@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Optional, Union
 
+from nest.app.entity.plan import Plan
+
 
 class TaskStatus(Enum):
     CREATED = 1
@@ -15,15 +17,20 @@ class Task:
         self.brief = None
         self.id = None
         self.keywords: List[str] = []
+        self.plans: List[Plan] = []
         self.status: Optional[TaskStatus] = None
         self.user_id = None
 
+    # TODO: 方法名 new 是否需要调整为更具体的变体。
     @classmethod
     def new(cls, brief, user_id, *, keywords: List[str] = None,
+            plans: List[Plan] = None,
             status: Optional[TaskStatus] = None):
+        """参数 keywords 和 plans 的实际默认值为空列表。为了避免 PyCharm 的警告只好写成 None。"""
         instance = Task()
         instance.brief = brief
         instance.keywords = keywords or []
+        instance.plans = plans or []
         instance.status = status or TaskStatus.CREATED
         instance.user_id = user_id
         return instance

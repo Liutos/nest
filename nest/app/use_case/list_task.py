@@ -65,6 +65,10 @@ class ListTaskUseCase:
             task_ids=task_ids,
             user_id=user_id,
         )
+        for task in tasks:
+            plans, _ = self.plan_repository.find_as_queue(task_ids=[task.id], user_id=user_id)
+            task.plans = plans
+
         return tasks
 
     def _find_plans(self) -> Optional[List[Plan]]:

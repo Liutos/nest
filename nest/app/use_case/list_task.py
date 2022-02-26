@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional, Tuple, Union
 
-from nest.app.entity.plan import IPlanRepository, Plan
+from nest.app.entity.plan import IPlanRepository, Plan, PlanStatus
 from nest.app.entity.task import ITaskRepository, TaskStatus
 
 
@@ -66,7 +66,11 @@ class ListTaskUseCase:
             user_id=user_id,
         )
         for task in tasks:
-            plans, _ = self.plan_repository.find_as_queue(task_ids=[task.id], user_id=user_id)
+            plans, _ = self.plan_repository.find_as_queue(
+                status=PlanStatus.READY,
+                task_ids=[task.id],
+                user_id=user_id,
+            )
             task.plans = plans
 
         return tasks

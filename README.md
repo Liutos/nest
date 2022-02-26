@@ -42,3 +42,13 @@ lsof -i:9090
 ```shell
 MODE=local_unittest pytest -ra -s -x ./
 ```
+
+# 启动一个开发 fledgling 用的测试环境
+
+运行下列命令
+
+```shell
+honcho start web
+```
+
+便可以在本地机器上启动 nest，监听 9090 端口。

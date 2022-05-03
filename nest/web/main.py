@@ -3,8 +3,8 @@ from typing import Optional
 
 from flask import Blueprint, Flask
 
-from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
+from nest.web import certificate
 from nest.web import config
 from nest.web.controller import (
     activate_user,
@@ -36,15 +36,7 @@ service_factory: Optional[ServiceFactory] = None
 
 
 def _make_url_defaults(config: Config):
-    redis_section = config['redis']
-    db = int(redis_section['db'])
-    host = redis_section['host']
-    port = int(redis_section['port'])
-    certificate_repository = RedisCertificateRepository(
-        db=db,
-        host=host,
-        port=port
-    )
+    certificate_repository = certificate.get_repository()
 
     mysql_connection = DBUtilsConnectionPool(config)
     repository_factory = RepositoryFactory(mysql_connection)

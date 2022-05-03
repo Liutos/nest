@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from typing import Optional
-import os
 
 from flask import Blueprint, Flask
 
 from nest.repository.certificate import RedisCertificateRepository
 from nest.infra.config import Config
+from nest.web import config
 from nest.web.controller import (
     activate_user,
     change_location,
@@ -30,17 +30,6 @@ from nest.web.controller import (
 from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.repository import RepositoryFactory
 from nest.infra.service_factory import ServiceFactory
-
-
-def _load_config():
-    current_dir = os.path.dirname(__file__)
-    config_dir = os.path.join(current_dir, './config')
-    file_name = 'default'
-    mode = os.environ.get('MODE')
-    if mode == 'unittest':
-        file_name = 'unittest'
-    config_file = os.path.join(config_dir, file_name + '.ini')
-    return Config(config_file)
 
 
 service_factory: Optional[ServiceFactory] = None
@@ -70,7 +59,7 @@ def _make_url_defaults(config: Config):
 
 def create_app():
     app = Flask(__name__)
-    defaults = _make_url_defaults(_load_config())
+    defaults = _make_url_defaults(config.get_config())
 
     location_blueprint = Blueprint('location', __name__, url_defaults=defaults, url_prefix='/location')
     location_blueprint.add_url_rule('', view_func=list_location.list_location, methods=['GET'])

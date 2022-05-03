@@ -4,14 +4,12 @@ from typing import Tuple
 from flask import request
 from webargs import fields
 
-from nest.app.entity.certificate import ICertificateRepository
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.change_location import (
     ChangeLocationUseCase,
     IParams,
 )
 from nest.infra.repository import RepositoryFactory
-from nest.web.cookies_params import CookiesParams
+from nest.web.authenticate import authenticate
 from nest.web.parser import parser
 from nest.web.presenter.location import LocationPresenter
 
@@ -34,17 +32,12 @@ class HTTPParams(IParams):
         return int(request.cookies.get('user_id'))
 
 
+@authenticate
 def change_location(
-        certificate_repository: ICertificateRepository,
         id_: str,
         repository_factory: RepositoryFactory,
+        **kwargs,  # 用来容纳来自 Blueprint 的 url_defaults 中的多余参数。
 ):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
     params = HTTPParams(location_id=id_)
     use_case = ChangeLocationUseCase(
         location_repository=repository_factory.location(),

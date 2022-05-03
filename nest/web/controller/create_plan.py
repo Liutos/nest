@@ -7,6 +7,7 @@ from webargs import fields
 
 from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.create_plan import CreatePlanUseCase, InvalidRepeatTypeError, IParams
+from nest.web.authenticate import authenticate
 from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
@@ -61,13 +62,8 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def create_plan(certificate_repository, repository_factory):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
+@authenticate
+def create_plan(repository_factory, **kwargs):
     params = HTTPParams()
     use_case = CreatePlanUseCase(
         location_repository=repository_factory.location(),

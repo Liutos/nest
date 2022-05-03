@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.get_task import IParams, GetTaskUseCase
-from nest.web.cookies_params import CookiesParams
+from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 from nest.web.presenter.task import Presenter
 
@@ -15,13 +14,8 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def get_task(certificate_repository, id_, repository_factory):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
+@authenticate
+def get_task(id_, repository_factory, **kwargs):
     params = HTTPParams(task_id=id_)
     use_case = GetTaskUseCase(
         params=params,

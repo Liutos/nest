@@ -1,10 +1,9 @@
 # -*- coding: utf8 -*-
 from flask import request
 
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.delete_task import DeleteTaskUseCase, IParams
 from nest.infra.repository import RepositoryFactory
-from nest.web.cookies_params import CookiesParams
+from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 
 
@@ -20,13 +19,8 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def delete_task(certificate_repository, id_, repository_factory: RepositoryFactory):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
+@authenticate
+def delete_task(id_, repository_factory: RepositoryFactory, **kwargs):
     use_case = DeleteTaskUseCase(
         params=HTTPParams(task_id=id_),
         plan_repository=repository_factory.plan(),

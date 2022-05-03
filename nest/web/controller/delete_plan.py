@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.delete_plan import DeletePlanUseCase, IParams
-from nest.web.cookies_params import CookiesParams
+from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 
 
@@ -14,13 +13,8 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def delete_plan(certificate_repository, id_, repository_factory):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
+@authenticate
+def delete_plan(id_, repository_factory, **kwargs):
     params = HTTPParams(
         plan_id=id_,
     )

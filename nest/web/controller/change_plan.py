@@ -6,9 +6,8 @@ from flask import request
 from webargs import fields
 
 from nest.app.entity.plan import InvalidRepeatTypeError
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.change_plan import ChangePlanUseCase, PlanNotFoundError, IParams
-from nest.web.cookies_params import CookiesParams
+from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -67,13 +66,8 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def change_plan(certificate_repository, repository_factory, plan_id):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
+@authenticate
+def change_plan(repository_factory, plan_id, **kwargs):
     params = HTTPParams(plan_id=plan_id)
     use_case = ChangePlanUseCase(
         location_repository=repository_factory.location(),

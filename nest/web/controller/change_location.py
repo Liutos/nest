@@ -10,6 +10,7 @@ from nest.app.use_case.change_location import (
 )
 from nest.infra.repository import RepositoryFactory
 from nest.web.authenticate import authenticate
+from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.location import LocationPresenter
 
@@ -32,6 +33,7 @@ class HTTPParams(IParams):
         return int(request.cookies.get('user_id'))
 
 
+@wrap_response
 @authenticate
 def change_location(
         id_: str,

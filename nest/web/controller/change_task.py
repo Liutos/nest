@@ -11,7 +11,9 @@ from nest.app.use_case.change_task import (
     IParams,
 )
 from nest.infra.repository import RepositoryFactory
+from nest.web.authenticate import authenticate
 from nest.web.cookies_params import CookiesParams
+from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.task import Presenter
 
@@ -42,17 +44,13 @@ class HTTPParams(IParams):
         return int(request.cookies.get('user_id'))
 
 
+@wrap_response
+@authenticate
 def change_task(
-        certificate_repository: ICertificateRepository,
         id_: str,
         repository_factory: RepositoryFactory,
+        **kwargs,
 ):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
     params = HTTPParams(task_id=id_)
     use_case = ChangeTaskUseCase(
         params=params,

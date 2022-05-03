@@ -4,9 +4,8 @@ from typing import List, Union
 from flask import request
 from webargs import fields, validate
 
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.list_location import IParams, ListLocationUseCase
-from nest.web.cookies_params import CookiesParams
+from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.location import LocationPresenter
@@ -59,13 +58,8 @@ class ListPlanPresenter:
 
 
 @wrap_response
-def list_location(certificate_repository, repository_factory):
-    authenticate_use_case = AuthenticateUseCase(
-        certificate_repository=certificate_repository,
-        params=CookiesParams(),
-    )
-    authenticate_use_case.run()
-
+@authenticate
+def list_location(repository_factory, **kwargs):
     params = HTTPParams()
     use_case = ListLocationUseCase(
         location_repository=repository_factory.location(),

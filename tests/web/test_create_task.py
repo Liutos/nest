@@ -49,17 +49,23 @@ def client():
 
 
 def test_create_task(client):
+    detail = 'This is a detailed description contains of 2\nlines.'
     rv = client.post('/task', json={
         'brief': 'Hello, nest!',
+        'detail': detail,
         'keywords': [
             'hello',
             'nest',
         ],
     })
-    print('rv', rv)
+    print('rv', rv.get_data())
     json_data = rv.get_json()
     assert json_data['result']['id']
     assert isinstance(json_data['result']['id'], int)
+    # 用重新查询出的结果做验证，才能证明数据都被持久化了。
+    rv = client.get('/task/{}'.format(json_data['result']['id']))
+    json_data = rv.get_json()
+    assert json_data['result']['detail'] == detail
     assert 'hello' in json_data['result']['keywords']
     assert 'nest' in json_data['result']['keywords']
     assert json_data['result']['status'] == 1

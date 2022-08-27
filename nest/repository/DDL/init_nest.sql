@@ -46,6 +46,7 @@ CREATE TABLE `t_task` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '创建该任务的用户的ID',
   `brief` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '对所要做的事情的简短描述',
+  `detail` text COLLATE utf8mb4_bin COMMENT '任务的详情',
   `status` int(11) NOT NULL COMMENT '任务的状态',
   `ctime` datetime NOT NULL,
   `mtime` datetime NOT NULL,

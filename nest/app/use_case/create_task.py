@@ -11,6 +11,11 @@ class IParams(ABC):
         pass
 
     @abstractmethod
+    def get_detail(self) -> str:
+        """获取输入中的 detail 参数。"""
+        pass
+
+    @abstractmethod
     def get_keywords(self) -> List[str]:
         pass
 
@@ -36,6 +41,7 @@ class CreateTaskUseCase:
         task = Task.new(
             brief,
             user_id,
+            detail=params.get_detail(),
             keywords=keywords,
         )
         task_repository = self.task_repository

@@ -23,6 +23,9 @@ class MockParams(IParams):
     def get_brief(self) -> str:
         return 'Hello'
 
+    def get_detail(self) -> str:
+        return ''
+
     def get_keywords(self) -> List[str]:
         return []
 

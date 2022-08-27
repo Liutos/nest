@@ -20,6 +20,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             now = datetime.now()
             insert_id = self.insert_to_db({
                 'brief': task.brief,
+                'detail': task.detail,
                 'status': task.status and task.status.value,
                 'user_id': task.user_id,
                 'ctime': now,
@@ -155,6 +156,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
     def _row_to_task(self, row):
         task = Task()
         task.brief = row['brief']
+        task.detail = row['detail']
         task.id = row['id']
         task.status = row['status'] and TaskStatus(row['status'])
         task.user_id = row['user_id']

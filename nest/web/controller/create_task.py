@@ -15,14 +15,19 @@ class HTTPParams(IParams):
     def __init__(self):
         args = {
             'brief': fields.Str(required=True),
+            'detail': fields.Str(missing=''),
             'keywords': fields.List(fields.Str(), missing=[]),
         }
         parsed_args = parser.parse(args, request)
+        self._detail = parsed_args['detail']
         self.brief = parsed_args['brief']
         self.keywords = parsed_args['keywords']
 
     def get_brief(self):
         return self.brief
+
+    def get_detail(self) -> str:
+        return self._detail
 
     def get_keywords(self) -> List[str]:
         return self.keywords

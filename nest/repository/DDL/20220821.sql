@@ -1,0 +1,1 @@
+ALTER TABLE `t_task` ADD COLUMN `detail` TEXT DEFAULT '' AFTER `brief`;

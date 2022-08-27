@@ -9,14 +9,12 @@ from nest.repository.task import DatabaseTaskRepository
 from nest.repository.user import DatabaseUserRepository
 
 
+# TODO: 需要与文件 nest/web/config.py 中的函数 _load_config 统一。
 def get_config_file_path():
     current_dir = os.path.dirname(__file__)
     print('current_dir', current_dir)
     config_dir = os.path.join(current_dir, '../../nest/web/config')
-    file_name = 'default'
-    mode = os.environ.get('MODE')
-    if mode == 'unittest':
-        file_name = 'unittest'
+    file_name = os.environ.get('MODE', 'default')
     return os.path.join(config_dir, file_name + '.ini')
 
 

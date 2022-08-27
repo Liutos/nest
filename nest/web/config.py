@@ -8,10 +8,7 @@ from nest.infra.config import Config
 def _load_config():
     current_dir = os.path.dirname(__file__)
     config_dir = os.path.join(current_dir, './config')
-    file_name = 'default'
-    mode = os.environ.get('MODE')
-    if mode == 'unittest':
-        file_name = 'unittest'
+    file_name = os.environ.get('MODE', 'default')
     config_file = os.path.join(config_dir, file_name + '.ini')
     return Config(config_file)
 

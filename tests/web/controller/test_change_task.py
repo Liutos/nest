@@ -41,6 +41,7 @@ class ChangeTaskTestCase(unittest.TestCase):
             # 先创建一个才能修改
             rv = client.post('/task', json={
                 'brief': 'Hello, nest!',
+                'detail': 'first',
                 'keywords': [
                     'hello',
                     'nest',
@@ -52,17 +53,19 @@ class ChangeTaskTestCase(unittest.TestCase):
 
             rv = client.patch('/task/{}'.format(task_id), json={
                 'brief': 'Goodbye, nest!',
+                'detail': 'second',
                 'keywords': [
                     'goodbye',
                     'nest',
                 ],
                 'status': 2,
             })
-            self.assertEqual(rv.status_code, 200)
+            self.assertEqual(rv.status_code, 200, rv.get_data())
             json_data = rv.get_json()
             self.assertIn('result', json_data)
             task = json_data['result']
             self.assertEqual(task['brief'], 'Goodbye, nest!')
+            self.assertEqual(task['detail'], 'second')
             self.assertEqual(task['id'], task_id)
             self.assertEqual(task['status'], 2)
             self.assertIn('goodbye', task['keywords'])

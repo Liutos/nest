@@ -4,15 +4,12 @@ from typing import Tuple
 from flask import request
 from webargs import fields
 
-from nest.app.entity.certificate import ICertificateRepository
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.change_task import (
     ChangeTaskUseCase,
     IParams,
 )
 from nest.infra.repository import RepositoryFactory
 from nest.web.authenticate import authenticate
-from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.task import Presenter
@@ -22,6 +19,7 @@ class HTTPParams(IParams):
     def __init__(self, *, task_id: str):
         args = {
             'brief': fields.Str(),
+            'detail': fields.Str(),
             'keywords': fields.List(fields.Str()),
             'status': fields.Int(),
         }
@@ -30,6 +28,9 @@ class HTTPParams(IParams):
 
     def get_brief(self) -> Tuple[bool, str]:
         return 'brief' in self.parsed_args, self.parsed_args.get('brief')
+
+    def get_detail(self) -> Tuple[bool, str]:
+        return 'detail' in self.parsed_args, self.parsed_args.get('detail')
 
     def get_keywords(self) -> Tuple[bool, str]:
         return 'keywords' in self.parsed_args, self.parsed_args.get('keywords')

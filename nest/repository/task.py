@@ -39,6 +39,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             query = Query\
                 .update(task_table)\
                 .set(task_table.brief, task.brief)\
+                .set(task_table.detail, task.detail)\
                 .where(task_table.id == task.id)
             if task.status:
                 query = query.set(task_table.status, task.status.value)

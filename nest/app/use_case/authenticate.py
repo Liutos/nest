@@ -38,7 +38,17 @@ class AuthenticateUseCase:
         self.certificate_repository = certificate_repository
         self.params = params
 
-    def run(self):
+    def run(self) -> int:
+        """
+        Raises:
+            CertificateIdMissingError: 如果缺少登录凭证的 ID。
+            CertificateNotFoundError: 如果 ID 找不到登录凭证。
+            UserIdMissingError: 如果缺少用户 ID。
+            AuthenticateFailError: 如果登录凭证与用户不匹配。
+
+        Returns:
+            int: 认证通过的用户的 ID。
+        """
         params = self.params
         certificate_id = params.get_certificate_id()
         if not certificate_id:
@@ -55,3 +65,5 @@ class AuthenticateUseCase:
 
         if user_id != certificate.user_id:
             raise AuthenticateFailError()
+
+        return user_id

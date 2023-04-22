@@ -12,7 +12,7 @@ from nest.web.presenter.task import Presenter
 
 
 class HTTPParams(IParams):
-    def __init__(self):
+    def __init__(self, user_id: int):
         args = {
             'brief': fields.Str(required=True),
             'detail': fields.Str(missing=''),
@@ -20,6 +20,7 @@ class HTTPParams(IParams):
         }
         parsed_args = parser.parse(args, request)
         self._detail = parsed_args['detail']
+        self._user_id = user_id
         self.brief = parsed_args['brief']
         self.keywords = parsed_args['keywords']
 
@@ -33,13 +34,13 @@ class HTTPParams(IParams):
         return self.keywords
 
     def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
+        return self._user_id
 
 
 @wrap_response
 @authenticate
-def create_task(repository_factory, **kwargs):
-    params = HTTPParams()
+def create_task(repository_factory, *, user_id: int, **kwargs):
+    params = HTTPParams(user_id)
     use_case = CreateTaskUseCase(
         params=params,
         task_repository=repository_factory.task(),

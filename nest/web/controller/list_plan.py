@@ -12,7 +12,7 @@ from nest.web.presenter.plan import PlanPresenter
 
 
 class HTTPParams(IParams):
-    def __init__(self):
+    def __init__(self, user_id: int):
         args = {
             'location_id': fields.Int(allow_none=True),
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
@@ -21,6 +21,7 @@ class HTTPParams(IParams):
             'task_ids': fields.DelimitedList(fields.Int, allow_none=True, missing=[]),
         }
         parsed_args = parser.parse(args, request, location='querystring')
+        self._user_id = user_id
         self.location_id = parsed_args.get('location_id')
         self.page = parsed_args['page']
         self.per_page = parsed_args['per_page']
@@ -43,7 +44,7 @@ class HTTPParams(IParams):
         return self.task_ids
 
     def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
+        return self._user_id
 
 
 class ListPlanPresenter:
@@ -68,8 +69,8 @@ class ListPlanPresenter:
 
 @wrap_response
 @authenticate
-def list_plan(repository_factory, **kwargs):
-    params = HTTPParams()
+def list_plan(repository_factory, user_id: int, **kwargs):
+    params = HTTPParams(user_id)
     use_case = ListPlanUseCase(
         location_repository=repository_factory.location(),
         params=params,

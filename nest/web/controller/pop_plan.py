@@ -12,12 +12,13 @@ from nest.web.presenter.plan import PlanPresenter
 
 
 class HTTPParams(IParams):
-    def __init__(self):
+    def __init__(self, user_id: int):
         args = {
             'location_id': fields.Int(allow_none=True),
             'size': fields.Int(required=True),
         }
         parsed_args = parser.parse(args, request)
+        self._user_id = user_id
         self.location_id = parsed_args.get('location_id')
         self.size = parsed_args['size']
 
@@ -28,13 +29,13 @@ class HTTPParams(IParams):
         return self.size
 
     def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
+        return self._user_id
 
 
 @wrap_response
 @authenticate
-def pop_plan(repository_factory, **kwargs):
-    params = HTTPParams()
+def pop_plan(repository_factory, *, user_id: int, **kwargs):
+    params = HTTPParams(user_id)
     use_case = PopPlanUseCase(
         location_repository=repository_factory.location(),
         params=params,

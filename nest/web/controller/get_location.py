@@ -12,20 +12,21 @@ from nest.web.presenter.location import LocationPresenter
 
 
 class HTTPParams(IParams):
-    def __init__(self, *, location_id: str):
+    def __init__(self, *, location_id: str, user_id: int):
+        self._user_id = user_id
         self.location_id = int(location_id)
 
     def get_id(self) -> int:
         return self.location_id
 
     def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
+        return self._user_id
 
 
 @wrap_response
 @authenticate
-def get_location(id_, repository_factory, **kwargs):
-    params = HTTPParams(location_id=id_)
+def get_location(id_, repository_factory, user_id: int, **kwargs):
+    params = HTTPParams(location_id=id_, user_id=user_id)
     use_case = GetLocationUseCase(
         location_repository=repository_factory.location(),
         params=params,

@@ -16,13 +16,14 @@ from nest.web.presenter.task import Presenter
 
 
 class HTTPParams(IParams):
-    def __init__(self, *, task_id: str):
+    def __init__(self, *, task_id: str, user_id: int):
         args = {
             'brief': fields.Str(),
             'detail': fields.Str(),
             'keywords': fields.List(fields.Str()),
             'status': fields.Int(),
         }
+        self._user_id = user_id
         self.parsed_args = parser.parse(args, request)
         self.task_id = int(task_id)
 
@@ -42,7 +43,7 @@ class HTTPParams(IParams):
         return self.task_id
 
     def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
+        return self._user_id
 
 
 @wrap_response
@@ -50,9 +51,10 @@ class HTTPParams(IParams):
 def change_task(
         id_: str,
         repository_factory: RepositoryFactory,
+        user_id: int,
         **kwargs,
 ):
-    params = HTTPParams(task_id=id_)
+    params = HTTPParams(task_id=id_, user_id=user_id)
     use_case = ChangeTaskUseCase(
         params=params,
         task_repository=repository_factory.task(),

@@ -14,7 +14,7 @@ def authenticate(func):
             certificate_repository=certificate_repository,
             params=CookiesParams(),
         )
-        authenticate_use_case.run()
-        return func(*args, **kwargs)
+        user_id = authenticate_use_case.run()
+        return func(*args, **{**kwargs, 'user_id': user_id})
 
     return wrapper

@@ -6,7 +6,8 @@ from nest.web.presenter.task import Presenter
 
 
 class HTTPParams(IParams):
-    def __init__(self, *, task_id: str):
+    def __init__(self, *, task_id: str, user_id: int):
+        self._user_id = user_id
         self.task_id = int(task_id)
 
     def get_task_id(self) -> int:
@@ -15,8 +16,8 @@ class HTTPParams(IParams):
 
 @wrap_response
 @authenticate
-def get_task(id_, repository_factory, **kwargs):
-    params = HTTPParams(task_id=id_)
+def get_task(id_, repository_factory, user_id: int, **kwargs):
+    params = HTTPParams(task_id=id_, user_id=user_id)
     use_case = GetTaskUseCase(
         params=params,
         task_repository=repository_factory.task(),

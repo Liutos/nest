@@ -15,7 +15,7 @@ from nest.web.presenter.task import Presenter
 
 
 class HTTPParams(IParams):
-    def __init__(self):
+    def __init__(self, user_id: int):
         args = {
             'keyword': fields.Str(),
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
@@ -25,6 +25,7 @@ class HTTPParams(IParams):
             'task_ids': fields.DelimitedList(fields.Int()),
         }
         parsed_args = parser.parse(args, request, location='querystring')
+        self._user_id = user_id
         self.count = parsed_args['per_page']
         self.keyword = parsed_args.get('keyword')
         self.plan_trigger_time = parsed_args.get('plan_trigger_time')
@@ -53,7 +54,7 @@ class HTTPParams(IParams):
         return self.task_ids
 
     def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
+        return self._user_id
 
 
 class ListPresenter:
@@ -71,8 +72,8 @@ class ListPresenter:
 
 @wrap_response
 @authenticate
-def list_task(repository_factory: RepositoryFactory, **kwargs):
-    params = HTTPParams()
+def list_task(repository_factory: RepositoryFactory, user_id: int, **kwargs):
+    params = HTTPParams(user_id)
     use_case = ListTaskUseCase(
         params=params,
         plan_repository=repository_factory.plan(),

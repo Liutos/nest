@@ -12,7 +12,7 @@ from nest.web.presenter.location import LocationPresenter
 
 
 class HTTPParams(IParams):
-    def __init__(self):
+    def __init__(self, user_id: int):
         args = {
             'ids': fields.DelimitedList(fields.Int, allow_none=True),
             'name': fields.Str(allow_none=True),
@@ -20,6 +20,7 @@ class HTTPParams(IParams):
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
         }
         parsed_args = parser.parse(args, request, location='querystring')
+        self._user_id = user_id
         self.ids = parsed_args.get('ids')
         self.name = parsed_args.get('name')
         self.page = parsed_args['page']
@@ -38,7 +39,7 @@ class HTTPParams(IParams):
         return self.per_page
 
     def get_user_id(self) -> int:
-        return int(request.cookies.get('user_id'))
+        return self._user_id
 
 
 class ListPlanPresenter:
@@ -59,8 +60,8 @@ class ListPlanPresenter:
 
 @wrap_response
 @authenticate
-def list_location(repository_factory, **kwargs):
-    params = HTTPParams()
+def list_location(repository_factory, user_id: int, **kwargs):
+    params = HTTPParams(user_id)
     use_case = ListLocationUseCase(
         location_repository=repository_factory.location(),
         params=params,

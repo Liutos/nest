@@ -5,6 +5,7 @@ from nest.app.entity.certificate import Certificate, ICertificateRepository
 from nest.app.entity.user import IUserRepository, User, UserStatus
 from nest.app.use_case.login import IParams, \
     LoginUseCase, PasswordError
+from nest.service.authenticate_service import AuthenticateService
 
 
 class MockLoginIO(IParams):
@@ -45,9 +46,9 @@ class MockUserRepository(IUserRepository):
 
 def test_succeed():
     use_case = LoginUseCase(
+        authenticate_service=AuthenticateService(MockUserRepository()),
         params=MockLoginIO(),
         certificate_repository=MockSessionRepository(),
-        user_repository=MockUserRepository(),
     )
     is_error_occur = False
     try:

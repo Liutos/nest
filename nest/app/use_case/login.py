@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 
 from ..entity.certificate import Certificate, ICertificateRepository
-from ..entity.user import IUserRepository
+from ..entity.user import User
 
 
 class PasswordError(Exception):
@@ -12,6 +12,19 @@ class PasswordError(Exception):
 class UserNotActive(Exception):
     """表示所要登录的用户尚未激活的异常。"""
     pass
+
+
+class IAuthenticateService(ABC):
+    """实现该接口的类将会提供认证身份的服务。"""
+    @abstractmethod
+    def check_is_email_password_match(self, email: str, password: str) -> User:
+        """
+        如果邮箱与密码匹配，则返回该邮箱对应的用户，否则抛出各个场景对应的异常。
+
+        :raises PasswordError: 用户不存在或密码不正确时抛出该异常。
+        :raises UserNotActive: 用户未激活时抛出该异常。
+        """
+        pass
 
 
 class IParams(ABC):
@@ -25,29 +38,19 @@ class IParams(ABC):
 
 
 class LoginUseCase:
-    def __init__(self, *, params,
-                 certificate_repository, user_repository):
+    def __init__(self, *, authenticate_service: IAuthenticateService, params,
+                 certificate_repository):
         assert isinstance(params, IParams)
         assert isinstance(certificate_repository, ICertificateRepository)
-        assert isinstance(user_repository, IUserRepository)
+        self._authenticate_service = authenticate_service
         self.params = params
         self.certificate_repository = certificate_repository
-        self.user_repository = user_repository
 
     def run(self):
         login_io = self.params
-        user_repository = self.user_repository
         email = login_io.get_email()
-        user = user_repository.get_by_email(email)
-        if not user:
-            raise PasswordError()
-        if not user.is_active():
-            raise UserNotActive()
-
         password = login_io.get_password()
-        is_match = user.test_password(password)
-        if not is_match:
-            raise PasswordError()
+        user = self._authenticate_service.check_is_email_password_match(email, password)
 
         certificate = Certificate.new(user.id)
         self.certificate_repository.add(certificate)

@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 # 测试更新地点的接口
+import base64
 import unittest
 
 from nest.web import main
@@ -45,6 +46,18 @@ class ChangeLocationTestCase(unittest.TestCase):
             location = json_data['result']
             self.assertEqual(location['name'], '公司')
             self.assertEqual(location['id'], location_id)
+
+    def test_create_location_with_basic_auth(self):
+        """测试使用 HTTP Basic Auth 代替登录操作的场景。"""
+        with main.create_app().test_client() as client:
+            # 先创建一个才能修改
+            rv = client.post('/location', headers={
+                'Authorization': 'Basic ' + base64.b64encode((EMAIL + ':' + PASSWORD).encode('UTF-8')).decode('ASCII'),
+            }, json={
+                'name': '家里',
+            })
+            print('rv.get_json()', rv.get_json())
+            self.assertEqual(rv.status_code, 201)
 
     def clear_database(self):
         self.location_repository.clear()

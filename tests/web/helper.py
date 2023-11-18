@@ -3,10 +3,7 @@ import os
 
 from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.config import Config
-from nest.repository.location import DatabaseLocationRepository
-from nest.repository.plan import DatabasePlanRepository
-from nest.repository.task import DatabaseTaskRepository
-from nest.repository.user import DatabaseUserRepository
+from nest.infra.repository import RepositoryFactory
 
 
 # TODO: 需要与文件 nest/web/config.py 中的函数 _load_config 统一。
@@ -20,16 +17,9 @@ def get_config_file_path():
 
 config = Config(get_config_file_path())
 mysql_connection = DBUtilsConnectionPool(config)
+repository_factory = RepositoryFactory(mysql_connection)
 # 在各个单元测试中直接使用。
-location_repository = DatabaseLocationRepository(
-    connection=mysql_connection,
-)
-plan_repository = DatabasePlanRepository(
-    connection=mysql_connection,
-)
-task_repository = DatabaseTaskRepository(
-    connection=mysql_connection,
-)
-user_repository = DatabaseUserRepository(
-    connection=mysql_connection,
-)
+location_repository = repository_factory.location()
+plan_repository = repository_factory.plan()
+task_repository = repository_factory.task()
+user_repository = repository_factory.user()

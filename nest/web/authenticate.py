@@ -2,7 +2,7 @@
 import functools
 
 from nest.infra.db_connection import DBUtilsConnectionPool
-from nest.repository.user import DatabaseUserRepository
+from nest.infra.repository import RepositoryFactory
 
 from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.service.authenticate_service import AuthenticateService
@@ -15,7 +15,8 @@ def authenticate(func):
     def wrapper(*args, **kwargs):
         certificate_repository = certificate.get_repository()
         mysql_connection = DBUtilsConnectionPool(config.get_config())
-        user_repository = DatabaseUserRepository(mysql_connection)
+        repository_factory = RepositoryFactory(mysql_connection)
+        user_repository = repository_factory.user()
         authenticate_use_case = AuthenticateUseCase(
             authenticate_service=AuthenticateService(user_repository),
             certificate_repository=certificate_repository,

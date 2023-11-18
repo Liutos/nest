@@ -5,11 +5,8 @@ import unittest
 
 from nest.app.entity.plan import PlanStatus
 from nest.app.entity.task import TaskStatus
-from nest.repository.location import DatabaseLocationRepository
-from nest.repository.plan import DatabasePlanRepository
-from nest.repository.task import DatabaseTaskRepository
-from nest.repository.user import DatabaseUserRepository
 from nest.web import main
+from tests.web import helper
 from tests.web.user_helper import (
     EMAIL,
     PASSWORD,
@@ -17,7 +14,6 @@ from tests.web.user_helper import (
 )
 from tests.web.helper import (
     location_repository,
-    mysql_connection,
     plan_repository,
     task_repository,
     user_repository,
@@ -26,18 +22,10 @@ from tests.web.helper import (
 
 class PopPlanTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.location_repository = DatabaseLocationRepository(
-            connection=mysql_connection,
-        )
-        self.plan_repository = DatabasePlanRepository(
-            connection=mysql_connection,
-        )
-        self.task_repository = DatabaseTaskRepository(
-            connection=mysql_connection,
-        )
-        self.user_repository = DatabaseUserRepository(
-            connection=mysql_connection,
-        )
+        self.location_repository = helper.location_repository
+        self.plan_repository = helper.plan_repository
+        self.task_repository = helper.task_repository
+        self.user_repository = helper.user_repository
         self.clear_database()
         register_user(self.location_repository, self.user_repository)
         print('初始化完毕')

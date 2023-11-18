@@ -1,22 +1,16 @@
 # -*- coding: utf8 -*-
 import unittest
 
-from nest.repository.location import DatabaseLocationRepository
-from nest.repository.user import DatabaseUserRepository
 from nest.web import main
-from tests.web.helper import mysql_connection
+from tests.web import helper
 from tests.web.user_helper import register_user
 
 
 class CreateLocationTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """清空数据库，注册用户。"""
-        self.location_repository = DatabaseLocationRepository(
-            connection=mysql_connection,
-        )
-        self.user_repository = DatabaseUserRepository(
-            connection=mysql_connection,
-        )
+        self.location_repository = helper.location_repository
+        self.user_repository = helper.user_repository
         self.location_repository.clear()
         self.user_repository.clear()
         register_user(self.location_repository, self.user_repository)

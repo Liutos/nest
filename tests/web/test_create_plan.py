@@ -2,29 +2,16 @@
 from datetime import timedelta
 import pytest
 
-from nest.repository.location import DatabaseLocationRepository
-from nest.repository.plan import DatabasePlanRepository
-from nest.repository.task import DatabaseTaskRepository
-from nest.repository.user import DatabaseUserRepository
 from nest.web import main
+from . import helper
 from .user_helper import register_user
-from tests.web.helper import mysql_connection
 
 _plan_ids = []
 _task_id = None
-# TODO: 精简一下遍布各个单元测试代码中的创建仓库的代码
-location_repository = DatabaseLocationRepository(
-    connection=mysql_connection,
-)
-plan_repository = DatabasePlanRepository(
-    connection=mysql_connection,
-)
-task_repository = DatabaseTaskRepository(
-    connection=mysql_connection,
-)
-user_repository = DatabaseUserRepository(
-    connection=mysql_connection,
-)
+location_repository = helper.location_repository
+plan_repository = helper.plan_repository
+task_repository = helper.task_repository
+user_repository = helper.user_repository
 
 
 def clear_database():

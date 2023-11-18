@@ -3,25 +3,16 @@
 from datetime import datetime, timedelta
 import unittest
 
-from nest.repository.location import DatabaseLocationRepository
-from nest.repository.task import DatabaseTaskRepository
-from nest.repository.user import DatabaseUserRepository
 from nest.web import main
+from tests.web import helper
 from tests.web.user_helper import EMAIL, PASSWORD, register_user
-from tests.web.helper import mysql_connection
 
 
 class ListTaskTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        location_repository = DatabaseLocationRepository(
-            connection=mysql_connection,
-        )
-        task_repository = DatabaseTaskRepository(
-            connection=mysql_connection,
-        )
-        user_repository = DatabaseUserRepository(
-            connection=mysql_connection,
-        )
+        location_repository = helper.location_repository
+        task_repository = helper.task_repository
+        user_repository = helper.user_repository
         self.task_repository = task_repository
         self.user_repository = user_repository
 

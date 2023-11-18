@@ -14,15 +14,15 @@ marshmallow==3.10.0
 packaging==20.9
 pep517==0.9.1
 pluggy==0.13.1
-py==1.10.0
 pycodestyle==2.6.0
 PyMySQL==1.0.2
 pymysql-pooling==1.0.6
 pyparsing==2.4.7
 PyPika==0.47.7
-pytest==6.2.2
+pytest==7.4.3
 redis==3.5.3
 rope==0.18.0
+ruff==0.0.271
 scandir==1.10.0
 sh==1.14.1
 toml==0.10.2

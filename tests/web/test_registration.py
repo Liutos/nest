@@ -3,10 +3,9 @@
 from unittest.mock import patch
 import unittest
 
-from nest.repository.user import DatabaseUserRepository
 from nest.service.mail import SinaMailService
 from nest.web import main
-from tests.web.helper import mysql_connection
+from tests.web import helper
 
 
 def _mock_send_activate_code(*args, email: str, **kwargs):
@@ -16,10 +15,10 @@ def _mock_send_activate_code(*args, email: str, **kwargs):
 @patch.object(SinaMailService, 'send_activate_code', _mock_send_activate_code)
 class RegistrationTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        DatabaseUserRepository(mysql_connection).clear()
+        helper.user_repository.clear()
 
     def tearDown(self) -> None:
-        DatabaseUserRepository(mysql_connection).clear()
+        helper.user_repository.clear()
 
     def test_param_missing(self):
         with main.create_app().test_client() as client:
@@ -40,8 +39,7 @@ class RegistrationTestCase(unittest.TestCase):
             self.assertEqual(json_data['status'], 'success')
             self.assertIn('id', json_data['result'])
             self.assertIsInstance(json_data['result']['id'], int)
-            user_repository = DatabaseUserRepository(mysql_connection)
-            user = user_repository.get_by_email(email)
+            user = helper.user_repository.get_by_email(email)
             self.assertFalse(user.is_active())
             # 此时是无法登录的
             rv = client.post('/user/login', json={
@@ -62,7 +60,7 @@ class RegistrationTestCase(unittest.TestCase):
             json_data = rv.get_json()
             self.assertIn('id', json_data['result'])
             self.assertIsInstance(json_data['result']['id'], int)
-            user_repository = DatabaseUserRepository(mysql_connection)
+            user_repository = helper.user_repository
             user = user_repository.get_by_email(email)
             self.assertFalse(user.is_active())
 

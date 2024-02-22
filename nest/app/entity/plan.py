@@ -147,8 +147,13 @@ class RepeatIntervalMissingError(Exception):
     pass
 
 
-class UnchangeableError(Exception):
-    pass
+class ExternalError(Exception):
+    """表示由于请求的入参不正确而导致的错误。"""
+
+
+class UnchangeableError(ExternalError):
+    def __str__(self):
+        return '计划的状态不正确，不允许修改'
 
 
 class PlanStatus(Enum):

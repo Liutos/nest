@@ -4,7 +4,7 @@ import traceback
 
 from webargs.core import ValidationError
 
-from nest.app.entity.plan import RepeatIntervalMissingError
+from nest.app.entity.plan import RepeatIntervalMissingError, ExternalError
 from nest.app.use_case.authenticate import (
     AuthenticateFailError,
     CertificateIdMissingError,
@@ -41,6 +41,15 @@ def wrap_response(func):
                 'result': None,
                 'status': 'failure',
             }, 401
+        except ExternalError as e:
+            return {
+                'error': {
+                    'code': 400,
+                    'message': str(e),
+                },
+                'result': None,
+                'status': 'failure',
+            }, 400
         except RepeatIntervalMissingError:
             return {
                 'error': {

@@ -31,7 +31,7 @@ def destroy_user(user_repository):
     user_repository.remove(_user_id)
 
 
-def register_user(location_repository, user_repository: IUserRepository):
+def register_user(location_repository, user_repository: IUserRepository) -> int:
     use_case = RegistrationUseCase(
         location_repository=location_repository,
         mail_service=MockMailService(),
@@ -43,4 +43,4 @@ def register_user(location_repository, user_repository: IUserRepository):
     _user_id = user.id
     user.status = UserStatus.ACTIVATED
     user_repository.add(user)
-
+    return _user_id

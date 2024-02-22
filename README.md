@@ -40,6 +40,7 @@ lsof -i:9090
 # 运行单元测试
 
 ```shell
+. ./venv/bin/activate
 MODE=local_unittest pytest -ra -s -x ./
 ```
 

@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Optional, Union
@@ -54,7 +55,7 @@ class ITaskRepository(ABC):
 
     @abstractmethod
     def find(self, *, count,
-             keyword: Optional[str] = None,
+             keywords: typing.List[str] = None,
              start, status: Optional[TaskStatus] = None, user_id,
              task_ids: Union[None, List[int]] = None) -> [Task]:
         pass

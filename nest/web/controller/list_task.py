@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from datetime import datetime
 from typing import List, Optional, Tuple, Union
 
@@ -17,7 +18,7 @@ from nest.web.presenter.task import Presenter
 class HTTPParams(IParams):
     def __init__(self, user_id: int):
         args = {
-            'keyword': fields.Str(),
+            'keywords': fields.DelimitedList(fields.Str, missing=[]),
             'page': fields.Int(missing=1, validate=validate.Range(min=1)),
             'per_page': fields.Int(missing=10, validate=validate.Range(min=1)),
             'plan_trigger_time': fields.DelimitedList(fields.DateTime()),
@@ -27,7 +28,7 @@ class HTTPParams(IParams):
         parsed_args = parser.parse(args, request, location='querystring')
         self._user_id = user_id
         self.count = parsed_args['per_page']
-        self.keyword = parsed_args.get('keyword')
+        self.keywords = parsed_args.get('keywords')
         self.plan_trigger_time = parsed_args.get('plan_trigger_time')
         self.start = (parsed_args['page'] - 1) * parsed_args['per_page']
         self.status = parsed_args.get('status')
@@ -36,8 +37,8 @@ class HTTPParams(IParams):
     def get_count(self) -> int:
         return self.count
 
-    def get_keyword(self) -> Optional[str]:
-        return self.keyword
+    def get_keywords(self) -> typing.List[str]:
+        return self.keywords
 
     def get_plan_trigger_time(self) -> Optional[Tuple[datetime, datetime]]:
         if self.plan_trigger_time:

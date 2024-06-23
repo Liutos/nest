@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional, Tuple, Union
@@ -13,7 +14,7 @@ class IParams(ABC):
         pass
 
     @abstractmethod
-    def get_keyword(self) -> Optional[str]:
+    def get_keywords(self) -> typing.List[str]:
         pass
 
     def get_plan_trigger_time(self) -> Optional[Tuple[datetime, datetime]]:
@@ -59,7 +60,7 @@ class ListTaskUseCase:
         task_repository = self.task_repository
         tasks = task_repository.find(
             count=count,
-            keyword=params.get_keyword(),
+            keywords=params.get_keywords(),
             start=start,
             status=params.get_status() and TaskStatus(params.get_status()),
             task_ids=task_ids,

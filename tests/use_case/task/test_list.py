@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from datetime import datetime
 from typing import List, Optional, Union, Tuple
 
@@ -14,8 +15,8 @@ class MockParams(IParams):
     def get_count(self) -> int:
         return 1
 
-    def get_keyword(self) -> Optional[str]:
-        return None
+    def get_keywords(self) -> typing.List[str]:
+        return []
 
     def get_plan_trigger_time(self) -> Optional[Tuple[datetime, datetime]]:
         pass
@@ -75,7 +76,7 @@ class MockTaskRepository(ITaskRepository):
     def commit(self):
         pass
 
-    def find(self, *, count, keyword=None, start, status=None, user_id,
+    def find(self, *, count, keywords=None, start, status=None, user_id,
              task_ids=None):
         task = Task()
         task.id = 233

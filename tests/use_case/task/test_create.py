@@ -43,7 +43,7 @@ class MockTaskRepository(ITaskRepository):
     def commit(self):
         pass
 
-    def find(self, *, count, keyword, start, user_id, task_ids=None):
+    def find(self, *, count, keywords=None, start, status=None, user_id, task_ids=None):
         pass
 
     def find_by_id(self, *, id_) -> Union[None, Task]:

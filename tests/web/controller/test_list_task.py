@@ -3,6 +3,8 @@
 from datetime import datetime, timedelta
 import unittest
 
+import flask.wrappers
+
 from nest.web import main
 from tests.web import helper
 from tests.web.user_helper import EMAIL, PASSWORD, register_user
@@ -49,7 +51,9 @@ class ListTaskTestCase(unittest.TestCase):
             })
             self.assertEqual(rv.status_code, 201)
 
-            rv = client.get('/task')
+            rv: flask.wrappers.Response = client.get('/task', query_string={
+                'keywords': ','.join(['goodbye', 'hello', 'nest']),
+            })
             self.assertEqual(rv.status_code, 200)
             json_data = rv.get_json()
             self.assertIn('result', json_data)
@@ -59,6 +63,12 @@ class ListTaskTestCase(unittest.TestCase):
             self.assertIn('plans', task)
             self.assertEqual(len(task['plans']), 1)
             self.assertEqual(task['plans'][0]['trigger_time'], trigger_time)
+            # 用不存在的关键字来搜索也不能报错。
+            rv = client.get('/task', query_string={
+                'keywords': '字节跳动',
+            })
+            self.assertEqual(rv.status_code, 200)
+            self.assertEqual(rv.get_json()['result'], [])
 
     def clear_database(self):
         self.task_repository.clear()

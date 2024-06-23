@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from datetime import datetime
 from typing import List, Optional, Union
 
@@ -77,7 +78,7 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
             with connection.cursor() as cursor:
                 cursor.execute(sql)
 
-    def find(self, *, count, keyword: Optional[str] = None,
+    def find(self, *, count, keywords: typing.List[str] = None,
              start,
              status: Optional[TaskStatus] = None,
              user_id,
@@ -92,13 +93,16 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
                     .orderby(task_table.ctime, order=Order.desc)\
                     .limit(count)\
                     .offset(start)
-                if keyword is not None:
-                    keyword_id = self._find_keyword(keyword)
+                if keywords:
+                    keyword_ids = self._find_keywords(keywords)
+                    if not keyword_ids:
+                        return []
+
                     task_keyword_table = Table('t_task_keyword')
                     subquery = Query\
                         .from_(task_keyword_table)\
                         .select(task_keyword_table.task_id)\
-                        .where(task_keyword_table.keyword_id == keyword_id)
+                        .where(task_keyword_table.keyword_id.isin(keyword_ids))
                     query = query.where(task_table.id.isin(subquery))
                 if status:
                     query = query.where(task_table.status == status)
@@ -153,6 +157,17 @@ class DatabaseTaskRepository(DatabaseOperationMixin, ITaskRepository):
         cursor = self.execute_sql(sql)
         row = cursor.fetchone()
         return row and row.get('id')
+
+    def _find_keywords(self, keywords: typing.List[str]) -> typing.List[int]:
+        keyword_table = Table('t_keyword')
+        query = Query \
+            .from_(keyword_table) \
+            .select(keyword_table.star) \
+            .where(keyword_table.content.isin(keywords))
+        sql = query.get_sql(quote_char=None)
+        cursor = self.execute_sql(sql)
+        rows: typing.List[dict] = cursor.fetchall()
+        return [row['id'] for row in rows]
 
     def _row_to_task(self, row):
         task = Task()

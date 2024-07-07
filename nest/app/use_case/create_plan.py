@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Set, Union
@@ -7,12 +8,17 @@ from nest.app.entity.location import ILocationRepository
 from nest.app.entity.plan import (
     InvalidRepeatTypeError,
     IPlanRepository,
-    Plan,
+    Plan, REPEAT_TYPE_CRONTAB,
 )
 from nest.app.entity.task import ITaskRepository
 
 
 class IParams(ABC):
+    @abstractmethod
+    def get_crontab(self) -> typing.Optional[str]:
+        """获取 crontab 风格的、提醒触发的控制字符串。"""
+        pass
+
     @abstractmethod
     def get_duration(self) -> Union[None, int]:
         pass
@@ -60,6 +66,7 @@ class CreatePlanUseCase:
 
     def run(self):
         params = self.params
+        crontab = params.get_crontab()
         duration = params.get_duration()
         location_id = params.get_location_id()
         if location_id is None:
@@ -71,6 +78,9 @@ class CreatePlanUseCase:
             location_id = default_location.id
 
         repeat_type = params.get_repeat_type()
+        if crontab:
+            repeat_type = REPEAT_TYPE_CRONTAB
+
         if repeat_type and not Plan.is_valid_repeat_type(repeat_type):
             raise InvalidRepeatTypeError(repeat_type)
 
@@ -82,6 +92,7 @@ class CreatePlanUseCase:
         plan = Plan.new(
             task_id,
             trigger_time,
+            crontab=crontab,
             duration=duration,
             location_id=location_id,
             repeat_interval=params.get_repeat_interval(),

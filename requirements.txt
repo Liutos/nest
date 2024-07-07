@@ -2,7 +2,9 @@ attrs==20.3.0
 autopep8==1.5.5
 build==0.3.0
 click==7.1.2
+croniter==2.0.5
 DBUtils==2.0.1
+exceptiongroup==1.2.1
 Flask==1.1.2
 gittyleaks==0.0.31
 honcho==1.0.1
@@ -20,11 +22,15 @@ pymysql-pooling==1.0.6
 pyparsing==2.4.7
 PyPika==0.47.7
 pytest==7.4.3
+python-dateutil==2.9.0.post0
+pytz==2024.1
 redis==3.5.3
 rope==0.18.0
 ruff==0.0.271
 scandir==1.10.0
 sh==1.14.1
+six==1.16.0
 toml==0.10.2
+tomli==2.0.1
 webargs==7.0.1
 Werkzeug==1.0.1

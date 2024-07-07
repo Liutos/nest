@@ -26,6 +26,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
                 repeat_interval = int(repeat_interval.total_seconds())
 
             insert_id = self.insert_to_db({
+                'crontab': plan.crontab,
                 'duration': plan.duration,
                 'location_id': plan.location_id,
                 'repeat_interval': repeat_interval,
@@ -48,6 +49,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
             query = Query\
                 .update(plan_table)\
+                .set(plan_table.crontab, plan.crontab)\
                 .set(plan_table.duration, plan.duration)\
                 .set(plan_table.location_id, plan.location_id)\
                 .set(plan_table.repeat_interval, repeat_interval)\
@@ -165,6 +167,7 @@ class DatabasePlanRepository(DatabaseOperationMixin, IPlanRepository):
 
     def _row2entity(self, row: dict):
         plan = Plan()
+        plan.crontab = row['crontab']
         plan.duration = row['duration']
         plan.id = row['id']
         plan.location_id = row['location_id']

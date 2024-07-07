@@ -15,7 +15,9 @@ def get_config_file_path():
     return os.path.join(config_dir, file_name + '.ini')
 
 
-config = Config(get_config_file_path())
+file_path = get_config_file_path()
+print('单测的配置文件为 %s' % file_path)
+config = Config(file_path)
 mysql_connection = DBUtilsConnectionPool(config)
 repository_factory = RepositoryFactory(mysql_connection)
 # 在各个单元测试中直接使用。

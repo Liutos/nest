@@ -1,0 +1,1 @@
+ALTER TABLE `t_plan` ADD COLUMN `crontab` CHAR(16) DEFAULT '' COMMENT 'crontab 风格的执行周期' AFTER `id`;

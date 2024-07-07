@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from datetime import timedelta
 from typing import List, Set, Union
 import unittest
@@ -30,6 +31,9 @@ class MockLocationRepository(EmptyLocationRepository):
 class MockParams(IParams):
     def __init__(self, *, duration: int):
         self.duration = duration
+
+    def get_crontab(self) -> typing.Optional[str]:
+        pass
 
     def get_duration(self) -> Union[None, int]:
         return self.duration

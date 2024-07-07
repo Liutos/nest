@@ -5,10 +5,8 @@ from typing import Set, Union
 from flask import request
 from webargs import fields
 
-from nest.app.use_case.authenticate import AuthenticateUseCase
 from nest.app.use_case.create_plan import CreatePlanUseCase, InvalidRepeatTypeError, IParams
 from nest.web.authenticate import authenticate
-from nest.web.cookies_params import CookiesParams
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 from nest.web.presenter.plan import PlanPresenter
@@ -17,6 +15,7 @@ from nest.web.presenter.plan import PlanPresenter
 class HTTPParams(IParams):
     def __init__(self):
         args = {
+            'crontab': fields.Str(default=''),
             'duration': fields.Int(allow_none=True),
             'location_id': fields.Int(allow_none=True),
             'repeat_interval': fields.TimeDelta(allow_none=True),
@@ -27,6 +26,7 @@ class HTTPParams(IParams):
             'visible_wdays': fields.List(fields.Int, allow_none=True),
         }
         parsed_args = parser.parse(args, request)
+        self._crontab = parsed_args.get('crontab')
         self.duration = parsed_args.get('duration')
         self.location_id = parsed_args.get('location_id')
         self.repeat_interval = parsed_args.get('repeat_interval')
@@ -35,6 +35,9 @@ class HTTPParams(IParams):
         self.trigger_time = parsed_args['trigger_time']
         self.visible_hours = set(parsed_args.get('visible_hours') or [])
         self.visible_wdays = set(parsed_args.get('visible_wdays') or [])
+
+    def get_crontab(self):
+        return self._crontab
 
     def get_duration(self) -> Union[None, int]:
         return self.duration

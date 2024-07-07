@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import typing
 from datetime import datetime, timedelta
 import unittest
 from typing import List, Union, Set
@@ -14,6 +15,9 @@ from tests.web.user_helper import EMAIL, PASSWORD, register_user
 class CreatePlanParams(create_plan.IParams):
     def __init__(self, task_id):
         self._task_id = task_id
+
+    def get_crontab(self) -> typing.Optional[str]:
+        pass
 
     def get_duration(self) -> Union[None, int]:
         return None

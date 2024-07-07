@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, Optional, Set, Tuple, Union
 
+from croniter import croniter
+
 
 class IRepeater(ABC):
     @abstractmethod
@@ -11,8 +13,21 @@ class IRepeater(ABC):
         pass
 
 
+class CrontabRepeater(IRepeater):
+    """按照 crontab 风格来重复提醒的类。"""
+    def __init__(self, *, crontab: str = '', last_trigger_time: datetime, repeat_interval):
+        # TODO: 入参做成一整个 Plan 对象可能更合适。
+        self._crontab = crontab
+        self.last_trigger_time = last_trigger_time
+        self.repeat_interval = repeat_interval
+
+    def compute_next_trigger_time(self) -> timedelta:
+        _iter = croniter(self._crontab, self.last_trigger_time)
+        return _iter.get_next(datetime)
+
+
 class FixedIntervalRepeaterMixin(ABC):
-    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
+    def __init__(self, *, last_trigger_time: datetime, repeat_interval, **_):
         self.last_trigger_time = last_trigger_time
         self.repeat_interval = repeat_interval
 
@@ -30,7 +45,7 @@ class DailyRepeater(FixedIntervalRepeaterMixin, IRepeater):
 
 
 class EndOfMonthRepeater(IRepeater):
-    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
+    def __init__(self, *, last_trigger_time: datetime, repeat_interval, **_):
         self.last_trigger_time = last_trigger_time
         self.repeat_interval = repeat_interval
 
@@ -119,7 +134,11 @@ class WeeklyRepeater(FixedIntervalRepeaterMixin, IRepeater):
         return timedelta(days=7)
 
 
+REPEAT_TYPE_CRONTAB = 'crontab'
+
+
 _TYPE_TO_REPEATER_CLASS = {
+    REPEAT_TYPE_CRONTAB: CrontabRepeater,
     'daily': DailyRepeater,
     'end_of_month': EndOfMonthRepeater,
     'hourly': HourRepeater,
@@ -131,9 +150,10 @@ _TYPE_TO_REPEATER_CLASS = {
 
 class RepeaterFactory:
     @classmethod
-    def get_repeater(cls, *, last_trigger_time, repeat_interval, repeat_type):
+    def get_repeater(cls, *, crontab, last_trigger_time, repeat_interval, repeat_type):
         repeater_class = _TYPE_TO_REPEATER_CLASS[repeat_type]
         return repeater_class(
+            crontab=crontab,
             last_trigger_time=last_trigger_time,
             repeat_interval=repeat_interval,
         )
@@ -162,8 +182,12 @@ class PlanStatus(Enum):
 
 
 class Plan:
+    """
+    :ivar crontab: crontab 风格的循环模式。
+    """
     def __init__(self):
         self._duration: Optional[int] = None
+        self.crontab: str = ''
         self.id = None
         self.location_id = None
         self.repeat_interval: Union[None, timedelta] = None
@@ -184,11 +208,27 @@ class Plan:
             raise InvalidDurationError()
         self._duration = value
 
+    def get_next_trigger_time(self):
+        """下一次触发提醒的时刻。"""
+        next_trigger_time: datetime = self.trigger_time
+        now = datetime.now()
+        while next_trigger_time.timestamp() < now.timestamp():
+            repeater = RepeaterFactory.get_repeater(
+                crontab=self.crontab,
+                last_trigger_time=next_trigger_time,
+                repeat_interval=self.repeat_interval,
+                repeat_type=self.repeat_type,
+            )
+            next_trigger_time = repeater.compute_next_trigger_time()
+
+        return next_trigger_time
+
     def get_repeating_description(self) -> str:
         """生成可读的、重复模式的描述。"""
         if self.repeat_type is None:
             return '不重复'
         simple_repeat_types = {
+            REPEAT_TYPE_CRONTAB: self.crontab,
             'daily': '每天',
             'end_of_month': '每月末',
             'hourly': '每小时',
@@ -224,6 +264,7 @@ class Plan:
 
     @classmethod
     def new(cls, task_id, trigger_time, *,
+            crontab: str = '',
             duration: Union[None, int] = None,
             location_id: Union[None, int] = None,
             repeat_interval: Union[None, timedelta] = None,
@@ -234,6 +275,7 @@ class Plan:
             raise RepeatIntervalMissingError()
 
         instance = Plan()
+        instance.crontab = crontab
         instance.duration = duration
         instance.location_id = location_id
         instance.repeat_interval = repeat_interval
@@ -274,24 +316,15 @@ class Plan:
         """
         生成下一个触发时间的计划。
         """
-        next_trigger_time: datetime = self.trigger_time
-        now = datetime.now()
-        while next_trigger_time.timestamp() < now.timestamp():
-            repeater = RepeaterFactory.get_repeater(
-                last_trigger_time=next_trigger_time,
-                repeat_interval=self.repeat_interval,
-                repeat_type=self.repeat_type,
-            )
-            next_trigger_time = repeater.compute_next_trigger_time()
-
         instance = Plan()
+        instance.crontab = self.crontab
         instance.duration = self.duration
         instance.location_id = self.location_id
         instance.repeat_interval = self.repeat_interval
         instance.repeat_type = self.repeat_type
         instance.status = self.status
         instance.task_id = self.task_id
-        instance.trigger_time = next_trigger_time
+        instance.trigger_time = self.get_next_trigger_time()
         instance.visible_hours = self.visible_hours
         instance.visible_wdays = self.visible_wdays
         return instance

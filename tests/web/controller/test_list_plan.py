@@ -64,6 +64,8 @@ class ListPlanTestCase(unittest.TestCase):
             result = rv.get_json()['result']
             self.assertEqual(len(result['plans']), 1)
             self.assertEqual(result['plans'][0]['id'], plan_id)
+            plan = result['plans'][0]
+            self.assertIn('crontab', plan)
 
     def clear_database(self):
         self.plan_repository.clear()

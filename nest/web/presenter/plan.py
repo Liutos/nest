@@ -16,6 +16,7 @@ class PlanPresenter:
 
         trigger_time: datetime = self.plan.trigger_time
         return {
+            'crontab': self.plan.crontab,
             'duration': self.plan.duration,
             'id': self.plan.id,
             'location_id': self.plan.location_id,

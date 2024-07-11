@@ -73,7 +73,7 @@ class HourRepeater(FixedIntervalRepeaterMixin, IRepeater):
 
 
 class MonthlyRepeater(IRepeater):
-    def __init__(self, *, last_trigger_time: datetime, repeat_interval):
+    def __init__(self, *, last_trigger_time: datetime, repeat_interval, **_):
         self.last_trigger_time = last_trigger_time
         self.repeat_interval = repeat_interval
 

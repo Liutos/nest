@@ -28,11 +28,10 @@ class Connection:
 
 
 class DatabaseOperationMixin:
-    def __init__(self, pool):
-        assert isinstance(pool, IConnectionPool)
-        self.cached_connection = None
+    def __init__(self, connection):
+        assert not isinstance(connection, IConnectionPool)
+        self.cached_connection = connection
         self.is_transaction = False
-        self.pool = pool
         self.transaction_participants: List[DatabaseOperationMixin] = []
 
     def commit(self):
@@ -53,11 +52,7 @@ class DatabaseOperationMixin:
                 return cursor
 
     def get_connection(self):
-        if self.cached_connection:
-            return self.cached_connection
-
-        connection = self.pool.acquire_connection()
-        return Connection(connection)
+        return Connection(self.cached_connection)
 
     def insert_to_db(self, kvs: dict, table_name: str) -> int:
         sql = 'INSERT INTO `{}` SET'.format(table_name)

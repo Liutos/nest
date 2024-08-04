@@ -37,9 +37,8 @@ class HTTPParams(IParams):
 def pop_plan(repository_factory, *, user_id: int, **kwargs):
     params = HTTPParams(user_id)
     use_case = PopPlanUseCase(
-        location_repository=repository_factory.location(),
         params=params,
-        plan_repository=repository_factory.plan(),
+        repository_factory=repository_factory,
     )
     plans = use_case.run()
     return {

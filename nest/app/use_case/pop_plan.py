@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Union
 
-from nest.app.entity.location import ILocationRepository
-from nest.app.entity.plan import IPlanRepository, PlanStatus
+from nest.app.entity.plan import PlanStatus
+from nest.app.use_case.base import IRepositoryFactory
 
 
 class IParams(ABC):
@@ -22,23 +22,21 @@ class IParams(ABC):
 
 
 class PopPlanUseCase:
-    def __init__(self, *, location_repository: ILocationRepository,
-                 params, plan_repository):
+    def __init__(self, *, params,
+                 repository_factory: IRepositoryFactory):
         assert isinstance(params, IParams)
-        assert isinstance(plan_repository, IPlanRepository)
-        self.location_repository = location_repository
+        self._repository_factory = repository_factory
         self.params = params
-        self.plan_repository = plan_repository
 
     def run(self):
         params = self.params
         location_id = params.get_location_id()
         size = params.get_size()
         user_id = params.get_user_id()
-        plan_repository = self.plan_repository
+        plan_repository = self._repository_factory.plan()
         location_ids = None
         if location_id:
-            default_location = self.location_repository.get_default(user_id=user_id)
+            default_location = self._repository_factory.location().get_default(user_id=user_id)
             location_ids = [
                 default_location.id,
                 location_id,
@@ -52,7 +50,7 @@ class PopPlanUseCase:
             user_id=user_id,
         )
         for plan in plans:
-            plan_repository.start_transaction()
+            self._repository_factory.begin()
             try:
                 if plan.is_repeated():
                     next_plan = plan.rebirth()
@@ -60,11 +58,11 @@ class PopPlanUseCase:
 
                 plan.terminate()
                 plan_repository.add(plan)
-                plan_repository.commit()
-            except Exception as e:
+                self._repository_factory.commit()
+            except Exception:
                 # TODO: 这里有办法改写为更具体的异常类型吗？
-                plan_repository.rollback()
-                raise e
+                self._repository_factory.rollback()
+                raise
 
         now = datetime.now()
         plans = [plan for plan in plans if plan.is_visible(trigger_time=now)]

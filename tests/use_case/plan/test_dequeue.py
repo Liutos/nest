@@ -1,8 +1,11 @@
 # -*- coding: utf8 -*-
 from typing import List, Tuple, Union
 
-from nest.app.entity.location import Location
+from nest.app.entity.location import Location, ILocationRepository
 from nest.app.entity.plan import IPlanRepository, Plan
+from nest.app.entity.task import ITaskRepository
+from nest.app.entity.user import IUserRepository
+from nest.app.use_case.base import IRepositoryFactory
 from nest.app.use_case.pop_plan import IParams, PopPlanUseCase
 from tests.use_case import EmptyLocationRepository
 
@@ -70,11 +73,34 @@ class MockPlanRepository(IPlanRepository):
         pass
 
 
+class MockRepositoryFactory(IRepositoryFactory):
+
+    def begin(self):
+        pass
+
+    def commit(self):
+        pass
+
+    def location(self) -> ILocationRepository:
+        return MockLocationRepository()
+
+    def plan(self) -> IPlanRepository:
+        return MockPlanRepository()
+
+    def rollback(self):
+        pass
+
+    def task(self) -> ITaskRepository:
+        pass
+
+    def user(self) -> IUserRepository:
+        pass
+
+
 def test_dequeue():
     use_case = PopPlanUseCase(
-        location_repository=MockLocationRepository(),
         params=MockParams(),
-        plan_repository=MockPlanRepository()
+        repository_factory=MockRepositoryFactory(),
     )
     plans = use_case.run()
     assert plans

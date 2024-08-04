@@ -14,11 +14,8 @@ class IConnectionPool(ABC):
 
 
 class Connection:
-    def __init__(self, connection, pool, *, is_transaction=False):
-        assert isinstance(pool, IConnectionPool)
+    def __init__(self, connection):
         self.connection = connection
-        self.is_transaction = is_transaction
-        self.pool = pool
 
     def __getattr__(self, item):
         return getattr(self.connection, item)
@@ -27,9 +24,7 @@ class Connection:
         return self.connection
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        # TODO: 这里让连接自己归还给连接池好像不是一个好主意？
-        if not self.is_transaction:
-            self.pool.release_connection(self.connection)
+        print('什么也不用做')
 
 
 class DatabaseOperationMixin:
@@ -62,7 +57,7 @@ class DatabaseOperationMixin:
             return self.cached_connection
 
         connection = self.pool.acquire_connection()
-        return Connection(connection, self.pool, is_transaction=self.is_transaction)
+        return Connection(connection)
 
     def insert_to_db(self, kvs: dict, table_name: str) -> int:
         sql = 'INSERT INTO `{}` SET'.format(table_name)

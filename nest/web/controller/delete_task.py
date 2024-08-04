@@ -1,6 +1,4 @@
 # -*- coding: utf8 -*-
-from flask import request
-
 from nest.app.use_case.delete_task import DeleteTaskUseCase, IParams
 from nest.infra.repository import RepositoryFactory
 from nest.web.authenticate import authenticate
@@ -24,8 +22,7 @@ class HTTPParams(IParams):
 def delete_task(id_, repository_factory: RepositoryFactory, user_id: int, **kwargs):
     use_case = DeleteTaskUseCase(
         params=HTTPParams(task_id=id_, user_id=user_id),
-        plan_repository=repository_factory.plan(),
-        task_repository=repository_factory.task(),
+        repository_factory=repository_factory,
     )
     use_case.run()
     return {

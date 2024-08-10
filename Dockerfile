@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-bullseye
 
 # Set timezone
 RUN ln -sf /usr/share/zoneinfo/Asia/ShangHai /etc/localtime

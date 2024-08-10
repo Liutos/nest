@@ -26,6 +26,7 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         "click",
+        "croniter==2.0.5",
         "DBUtils",
         "Flask",
         "PyMySQL==1.0.2",

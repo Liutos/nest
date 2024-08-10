@@ -47,9 +47,6 @@ class MockPlanRepository(IPlanRepository):
     def clear(self):
         pass
 
-    def commit(self):
-        pass
-
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
                       page: int, per_page: int,
@@ -64,12 +61,6 @@ class MockPlanRepository(IPlanRepository):
         pass
 
     def remove(self, id_: int):
-        pass
-
-    def rollback(self):
-        pass
-
-    def start_transaction(self):
         pass
 
 

@@ -71,9 +71,6 @@ class MockPlanRepository(IPlanRepository):
     def clear(self):
         pass
 
-    def commit(self):
-        pass
-
     def find_as_queue(self, *, location_ids: Union[None, List[int]] = None,
                       max_trigger_time=None,
                       page: int, per_page: int, user_id=None) -> List[Plan]:
@@ -88,21 +85,12 @@ class MockPlanRepository(IPlanRepository):
     def remove(self, id_: int):
         pass
 
-    def rollback(self):
-        pass
-
-    def start_transaction(self):
-        pass
-
 
 class MockTaskRepository(ITaskRepository):
     def add(self, task: Task):
         pass
 
     def clear(self):
-        pass
-
-    def commit(self):
         pass
 
     def find(self, *, count, keywords=None, start, status=None, user_id,
@@ -113,12 +101,6 @@ class MockTaskRepository(ITaskRepository):
         pass
 
     def remove(self, *, id_: int):
-        pass
-
-    def rollback(self):
-        pass
-
-    def start_transaction(self, *, with_repository=None):
         pass
 
 

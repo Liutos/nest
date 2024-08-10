@@ -40,9 +40,6 @@ class MockTaskRepository(ITaskRepository):
     def clear(self):
         pass
 
-    def commit(self):
-        pass
-
     def find(self, *, count, keywords=None, start, status=None, user_id, task_ids=None):
         pass
 
@@ -50,12 +47,6 @@ class MockTaskRepository(ITaskRepository):
         pass
 
     def remove(self, *, id_: int):
-        pass
-
-    def rollback(self):
-        pass
-
-    def start_transaction(self, *, with_repository=None):
         pass
 
 

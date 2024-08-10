@@ -34,17 +34,6 @@ class DatabaseOperationMixin:
         self.is_transaction = False
         self.transaction_participants: List[DatabaseOperationMixin] = []
 
-    def commit(self):
-        for repository in self.transaction_participants:
-            r: DatabaseOperationMixin = repository
-            r.cached_connection = None
-            r.is_transaction = False
-
-        self.cached_connection.commit()
-        self.cached_connection = None
-        self.is_transaction = False
-        print('提交数据库事务')
-
     def execute_sql(self, sql: str):
         with self.get_connection() as connection:
             with connection.cursor() as cursor:
@@ -71,7 +60,7 @@ class DatabaseOperationMixin:
             with connection.cursor() as cursor:
                 cursor.execute(sql, tuple(values))
                 inserted_id = cursor.lastrowid
-            connection.commit()
+
         return inserted_id
 
     def remove_from_db(self, id_: int, table_name: str):
@@ -79,28 +68,3 @@ class DatabaseOperationMixin:
             with connection.cursor() as cursor:
                 sql = 'DELETE FROM `{}` WHERE `id` = %s'.format(table_name)
                 cursor.execute(sql, (id_,))
-            connection.commit()
-
-    def rollback(self):
-        for repository in self.transaction_participants:
-            r: DatabaseOperationMixin = repository
-            r.cached_connection = None
-            r.is_transaction = False
-
-        self.cached_connection.rollback()
-        self.cached_connection = None
-        self.is_transaction = False
-        print('回滚数据库事务')
-
-    def start_transaction(self, *, with_repository=None):
-        self.is_transaction = True
-        self.cached_connection = self.get_connection()
-        if with_repository is not None:
-            self.transaction_participants = with_repository
-            for repository in with_repository:
-                r: DatabaseOperationMixin = repository
-                r.cached_connection = self.cached_connection
-                r.is_transaction = True
-
-        self.cached_connection.begin()
-        print('开启数据库事务')

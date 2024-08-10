@@ -49,11 +49,6 @@ class ITaskRepository(ABC):
         pass
 
     @abstractmethod
-    def commit(self):
-        """提交一个事务，保证前面所有操作的持久性。"""
-        pass
-
-    @abstractmethod
     def find(self, *, count,
              keywords: typing.List[str] = None,
              start, status: Optional[TaskStatus] = None, user_id,
@@ -66,19 +61,6 @@ class ITaskRepository(ABC):
 
     @abstractmethod
     def remove(self, *, id_: int):
-        pass
-
-    @abstractmethod
-    def rollback(self):
-        """回滚一个事务，保证事务前后数据的一致性。"""
-        pass
-
-    @abstractmethod
-    def start_transaction(self, *, with_repository=None):
-        """开始一个事务，保证后续一系列操作的原子性。
-
-        如果with_repository不为空，则表示这些仓库的操作处于同一个事务中。
-        """
         pass
 
 

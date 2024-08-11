@@ -6,7 +6,7 @@ from nest.app.use_case.delete_location import (
     IParams,
     LocationInUseError,
 )
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 
@@ -25,7 +25,7 @@ class HTTPParams(IParams):
 
 @wrap_response
 @authenticate
-def delete_location(id_, repository_factory: RepositoryFactory, user_id: int, **kwargs):
+def delete_location(id_, repository_factory: MysqlUnitOfWork, user_id: int, **kwargs):
     params = HTTPParams(
         location_id=id_,
         user_id=user_id,

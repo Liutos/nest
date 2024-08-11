@@ -28,7 +28,7 @@ from nest.web.controller import (
     registration,
 )
 from nest.infra.db_connection import DBUtilsConnectionPool
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.infra.service_factory import ServiceFactory
 
 
@@ -39,7 +39,7 @@ def _make_url_defaults(config: Config):
     certificate_repository = certificate.get_repository()
 
     mysql_connection = DBUtilsConnectionPool(config)
-    repository_factory = RepositoryFactory(mysql_connection)
+    repository_factory = MysqlUnitOfWork(mysql_connection)
     global service_factory
     service_factory = ServiceFactory(config=config)
 

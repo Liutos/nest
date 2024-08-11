@@ -8,7 +8,7 @@ from nest.app.use_case.activate_user import (
     IncorrectActivateCodeError,
     UserNotExistError
 )
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
 
@@ -31,7 +31,7 @@ class HTTPParams(IParams):
 
 
 @wrap_response
-def activate_user(repository_factory: RepositoryFactory, **kwargs):
+def activate_user(repository_factory: MysqlUnitOfWork, **kwargs):
     try:
         params = HTTPParams()
         use_case = ActivateUserTestCase(

@@ -8,7 +8,7 @@ from nest.app.use_case.change_task import (
     ChangeTaskUseCase,
     IParams,
 )
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
@@ -50,7 +50,7 @@ class HTTPParams(IParams):
 @authenticate
 def change_task(
         id_: str,
-        repository_factory: RepositoryFactory,
+        repository_factory: MysqlUnitOfWork,
         user_id: int,
         **kwargs,
 ):

@@ -8,7 +8,7 @@ from webargs import fields, validate
 
 from nest.app.entity.task import Task
 from nest.app.use_case.list_task import IParams, ListTaskUseCase
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
@@ -73,7 +73,7 @@ class ListPresenter:
 
 @wrap_response
 @authenticate
-def list_task(repository_factory: RepositoryFactory, user_id: int, **kwargs):
+def list_task(repository_factory: MysqlUnitOfWork, user_id: int, **kwargs):
     params = HTTPParams(user_id)
     use_case = ListTaskUseCase(
         params=params,

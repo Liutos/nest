@@ -3,7 +3,7 @@ import os
 
 from nest.infra.db_connection import DBUtilsConnectionPool
 from nest.infra.config import Config
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 
 
 # TODO: 需要与文件 nest/web/config.py 中的函数 _load_config 统一。
@@ -19,7 +19,7 @@ file_path = get_config_file_path()
 print('单测的配置文件为 %s' % file_path)
 config = Config(file_path)
 mysql_connection = DBUtilsConnectionPool(config)
-repository_factory = RepositoryFactory(mysql_connection)
+repository_factory = MysqlUnitOfWork(mysql_connection)
 # 在各个单元测试中直接使用。
 location_repository = repository_factory.location()
 plan_repository = repository_factory.plan()

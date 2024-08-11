@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Union
 
 from nest.app.entity.plan import PlanStatus
-from nest.app.use_case.base import IRepositoryFactory
+from nest.app.use_case.base import IUnitOfWork
 
 
 class IParams(ABC):
@@ -23,7 +23,7 @@ class IParams(ABC):
 
 class PopPlanUseCase:
     def __init__(self, *, params,
-                 repository_factory: IRepositoryFactory):
+                 repository_factory: IUnitOfWork):
         assert isinstance(params, IParams)
         self._repository_factory = repository_factory
         self.params = params

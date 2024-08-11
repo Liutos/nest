@@ -6,7 +6,7 @@ from nest.app.use_case.create_location import (
     CreateLocationUseCase,
     IParams,
 )
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
@@ -31,7 +31,7 @@ class HTTPParams(IParams):
 
 @wrap_response  # wrap_response 必须位于最外层，否则无法处理认证失败的异常。
 @authenticate
-def create_location(repository_factory: RepositoryFactory,
+def create_location(repository_factory: MysqlUnitOfWork,
                     user_id: int,
                     **kwargs):
     use_case = CreateLocationUseCase(

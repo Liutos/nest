@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from nest.app.use_case.delete_task import DeleteTaskUseCase, IParams
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 
@@ -19,7 +19,7 @@ class HTTPParams(IParams):
 
 @wrap_response
 @authenticate
-def delete_task(id_, repository_factory: RepositoryFactory, user_id: int, **kwargs):
+def delete_task(id_, repository_factory: MysqlUnitOfWork, user_id: int, **kwargs):
     use_case = DeleteTaskUseCase(
         params=HTTPParams(task_id=id_, user_id=user_id),
         repository_factory=repository_factory,

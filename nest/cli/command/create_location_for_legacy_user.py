@@ -7,7 +7,7 @@ import click
 from nest.app.entity.location import Location
 from nest.infra.config import Config
 from nest.infra.db_connection import DBUtilsConnectionPool
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 
 
 @click.command()
@@ -22,7 +22,7 @@ def create_location():
     config_file = os.path.join(config_dir, file_name + '.ini')
     config = Config(config_file)
     mysql_connection = DBUtilsConnectionPool(config)
-    repository_factory = RepositoryFactory(mysql_connection)
+    repository_factory = MysqlUnitOfWork(mysql_connection)
     location_repository = repository_factory.location()
     plan_repository = repository_factory.plan()
     user_repository = repository_factory.user()

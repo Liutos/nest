@@ -3,14 +3,14 @@ import unittest
 
 from nest.app.entity.task import Task
 from nest.app.entity.user import User
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from tests.web.helper import mysql_connection
 
 
 class DeleteTaskUseCase(unittest.TestCase):
     def setUp(self) -> None:
         """创建用户和任务。"""
-        factory = RepositoryFactory(mysql_connection)
+        factory = MysqlUnitOfWork(mysql_connection)
         self.user_repository = factory.user()
         self.task_repository = factory.task()
 

@@ -7,7 +7,7 @@ from nest.app.entity.task import ITaskRepository
 from nest.app.entity.user import IUserRepository
 
 
-class IRepositoryFactory(abc.ABC):
+class IUnitOfWork(abc.ABC):
     @abc.abstractmethod
     def begin(self):
         """开启一个数据库事务。"""

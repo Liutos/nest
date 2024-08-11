@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from nest.app.use_case.base import IRepositoryFactory
+from nest.app.use_case.base import IUnitOfWork
 from nest.repository.db_operation import IConnectionPool
 from nest.repository.location import DatabaseLocationRepository
 from nest.repository.plan import DatabasePlanRepository
@@ -7,7 +7,7 @@ from nest.repository.task import DatabaseTaskRepository
 from nest.repository.user import DatabaseUserRepository
 
 
-class RepositoryFactory(IRepositoryFactory):
+class MysqlUnitOfWork(IUnitOfWork):
     def __init__(self, mysql_connection):
         assert isinstance(mysql_connection, IConnectionPool)
         self._cached_connection = mysql_connection.acquire_connection()

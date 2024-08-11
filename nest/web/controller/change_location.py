@@ -8,7 +8,7 @@ from nest.app.use_case.change_location import (
     ChangeLocationUseCase,
     IParams,
 )
-from nest.infra.repository import RepositoryFactory
+from nest.infra.repository import MysqlUnitOfWork
 from nest.web.authenticate import authenticate
 from nest.web.handle_response import wrap_response
 from nest.web.parser import parser
@@ -38,7 +38,7 @@ class HTTPParams(IParams):
 @authenticate
 def change_location(
         id_: str,
-        repository_factory: RepositoryFactory,
+        repository_factory: MysqlUnitOfWork,
         user_id: int,
         **kwargs,  # 用来容纳来自 Blueprint 的 url_defaults 中的多余参数。
 ):

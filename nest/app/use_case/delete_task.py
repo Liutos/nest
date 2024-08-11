@@ -5,7 +5,7 @@ from nest.app.entity.task import (
     AccessDeniedError,
     TaskNotFoundError,
 )
-from nest.app.use_case.base import IRepositoryFactory
+from nest.app.use_case.base import IUnitOfWork
 
 
 class IParams(ABC):
@@ -20,7 +20,7 @@ class IParams(ABC):
 
 class DeleteTaskUseCase:
     def __init__(self, *, params: IParams,
-                 repository_factory: IRepositoryFactory):
+                 repository_factory: IUnitOfWork):
         self._repository_factory = repository_factory
         self.params = params
 

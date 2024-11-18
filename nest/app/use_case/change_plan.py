@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import Set, Tuple, Union
+from typing import Set, Tuple, Union, Optional
 
 from nest.app.entity.location import ILocationRepository
 from nest.app.entity.plan import (
@@ -13,6 +13,10 @@ from nest.app.entity.plan import (
 
 
 class IParams(ABC):
+    @abstractmethod
+    def get_crontab(self) -> Tuple[bool, Optional[str]]:
+        pass
+
     @abstractmethod
     def get_duration(self) -> Tuple[bool, Union[None, int]]:
         pass
@@ -75,6 +79,10 @@ class ChangePlanUseCase:
             raise UnchangeableError()
 
         # TODO: 如何优化这类重复代码？引入元编程之类的写法划算吗？
+        found, crontab = params.get_crontab()
+        if found:
+            plan.crontab = crontab
+
         found, duration = params.get_duration()
         if found:
             plan.duration = duration

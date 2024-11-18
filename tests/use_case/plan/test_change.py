@@ -28,6 +28,9 @@ class MockLocationRepository(EmptyLocationRepository):
 
 
 class MockParams(IParams):
+    def get_crontab(self) -> Tuple[bool, Optional[str]]:
+        return False, None
+
     def get_duration(self) -> Tuple[bool, Optional[int]]:
         return False, None
 

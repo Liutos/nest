@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from datetime import datetime, timedelta
-from typing import Set, Tuple, Union
+from typing import Set, Tuple, Union, Optional
 
 from flask import request
 from webargs import fields
@@ -16,6 +16,7 @@ class HTTPParams(IParams):
     def __init__(self, *, plan_id):
         self.plan_id = plan_id
         args = {
+            'crontab': fields.Str(allow_none=True),
             'duration': fields.Int(allow_none=True),
             'location_id': fields.Int(allow_none=True),
             'repeat_interval': fields.TimeDelta(allow_none=True),
@@ -26,6 +27,12 @@ class HTTPParams(IParams):
         }
         parsed_args = parser.parse(args, request)
         self.parsed_args = parsed_args
+
+    def get_crontab(self) -> Tuple[bool, Optional[str]]:
+        return (
+            'crontab' in self.parsed_args,
+            self.parsed_args.get('crontab'),
+        )
 
     def get_duration(self) -> Tuple[bool, Union[None, int]]:
         return (

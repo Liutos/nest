@@ -1,2 +1,4 @@
 #!/bin/bash
-MODE=local_unittest pytest -ra -s -x ./
+export MODE=local_unittest
+
+pytest -ra -s -x ./tests

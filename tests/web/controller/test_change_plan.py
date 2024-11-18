@@ -116,3 +116,56 @@ class PlanTestCase(unittest.TestCase):
         self.plan_repository.clear()
         self.task_repository.clear()
         self.user_repository.clear()
+
+
+class ChangeCrontabTestCase(unittest.TestCase):
+    """与修改 crontab 字段有关的单测用例。"""
+    _plan_id = None
+
+    def setUp(self) -> None:
+        self.location_repository = helper.location_repository
+        self.plan_repository = helper.plan_repository
+        self.task_repository = helper.task_repository
+        self.user_repository = helper.user_repository
+
+        self.clear_database()
+        user_id = register_user(self.location_repository, self.user_repository)
+        # 创建任务。
+        params = CreateTaskParams(user_id)
+        task = create_task.CreateTaskUseCase(
+            params=params,
+            task_repository=helper.task_repository,
+        ).run()
+        # 创建计划。
+        create_plan_params = CreatePlanParams(task.id)
+        plan = create_plan.CreatePlanUseCase(
+            location_repository=helper.location_repository,
+            params=create_plan_params,
+            plan_repository=helper.plan_repository,
+            task_repository=helper.task_repository,
+        ).run()
+        self._plan_id = plan.id
+
+    def tearDown(self) -> None:
+        self.clear_database()
+
+    def test_change_crontab(self):
+        """测试通过接口修改计划的 crontab 字段的场景。"""
+        with main.create_app().test_client() as client:
+            client.post('/user/login', json={
+                'email': EMAIL,
+                'password': PASSWORD,
+            })
+            rv: Response = client.patch(f'/plan/{self._plan_id}', json={
+                'crontab': '30 18 * * 1-5',
+            })
+            print('rv.get_data()', rv.get_data())
+            self.assertEqual(rv.status_code, 200)
+            # 此时数据库中的 crontab 必须是新的值。
+            plan = self.plan_repository.find_by_id(self._plan_id)
+            self.assertEqual(plan.crontab, '30 18 * * 1-5')
+
+    def clear_database(self):
+        self.plan_repository.clear()
+        self.task_repository.clear()
+        self.user_repository.clear()

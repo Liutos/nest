@@ -159,6 +159,11 @@ class RepeaterFactory:
         )
 
 
+class InvalidCrontabError(Exception):
+    def __str__(self):
+        return 'crontab 表达式格式不正确，请修改后重试'
+
+
 class InvalidDurationError(Exception):
     pass
 
@@ -183,11 +188,11 @@ class PlanStatus(Enum):
 
 class Plan:
     """
-    :ivar crontab: crontab 风格的循环模式。
+    :ivar _crontab: crontab 风格的循环模式。
     """
     def __init__(self):
         self._duration: Optional[int] = None
-        self.crontab: str = ''
+        self._crontab: str = ''
         self.id = None
         self.location_id = None
         self.repeat_interval: Union[None, timedelta] = None
@@ -197,6 +202,17 @@ class Plan:
         self.trigger_time = None
         self.visible_hours = set([])
         self.visible_wdays = set([])
+
+    @property
+    def crontab(self):
+        return self._crontab
+
+    @crontab.setter
+    def crontab(self, value):
+        if value and not croniter.is_valid(value):
+            raise InvalidCrontabError()
+
+        self._crontab = value
 
     @property
     def duration(self):

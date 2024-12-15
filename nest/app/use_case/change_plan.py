@@ -8,7 +8,7 @@ from nest.app.entity.plan import (
     InvalidRepeatTypeError,
     IPlanRepository,
     Plan,
-    UnchangeableError,
+    UnchangeableError, REPEAT_TYPE_CRONTAB,
 )
 
 
@@ -96,11 +96,16 @@ class ChangePlanUseCase:
         found, repeat_interval = params.get_repeat_interval()
         if found:
             plan.repeat_interval = repeat_interval
-        found, repeat_type = params.get_repeat_type()
-        if found:
-            if not Plan.is_valid_repeat_type(repeat_type):
-                raise InvalidRepeatTypeError(repeat_type)
-            plan.repeat_type = repeat_type
+
+        if crontab:
+            plan.repeat_type = REPEAT_TYPE_CRONTAB
+        else:
+            found, repeat_type = params.get_repeat_type()
+            if found:
+                if not Plan.is_valid_repeat_type(repeat_type):
+                    raise InvalidRepeatTypeError(repeat_type)
+                plan.repeat_type = repeat_type
+
         found, trigger_time = params.get_trigger_time()
         if found:
             plan.trigger_time = trigger_time

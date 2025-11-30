@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `t_plan`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `t_plan` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `crontab` CHAR(16) DEFAULT '' COMMENT 'crontab 风格的执行周期',
+  `crontab` CHAR(32) DEFAULT '' COMMENT 'crontab 风格的执行周期',
   `duration` int(11) DEFAULT '0' COMMENT '持续时长',
   `location_id` bigint(20) DEFAULT NULL COMMENT '计划生效的地点的ID',
   `task_id` int(11) NOT NULL COMMENT '该计划所属的任务',
